@@ -1,4 +1,4 @@
-import React, {memo} from 'react'
+import React, { memo } from 'react'
 import {
   FormControl,
   InputLabel,
@@ -6,52 +6,42 @@ import {
   Select,
   MenuItem,
 } from '@material-ui/core'
-import {ComunesProps, OpcionesProps, Tipos} from '.'
-import {useField} from 'formik'
+import { useField } from 'formik'
 import BaseInput from './BaseInput'
+import { Tipos, ComunesProps, OpcionesProps } from './Tipos'
 
 export interface AlSelectProps extends ComunesProps {
-  tipo: Tipos.Opciones
+  type: Tipos.Opciones
   placeholder: string
-  opciones: OpcionesProps[]
+  options: OpcionesProps[]
 }
 
 export default memo((props: AlSelectProps) => {
-  const {
-    id,
-    titulo,
-    placeholder,
-    validar,
-    filtrar,
-    grow,
-    opciones,
-    cargando,
-    ocultar,
-  } = props
-  const [{value}, {error, touched}, {setValue}] = useField<string>(id)
+  const { id, title, placeholder, validate, filter, grow, options, loading, hide } = props
+  const [{ value }, { error, touched }, { setValue }] = useField<string>(id)
 
-  const title = `${titulo} ${!filtrar && validar ? '*' : ''}`
+  const finalTitle = `${title} ${!filter && validate ? '*' : ''}`
 
   return (
-    <BaseInput grow={grow} ocultar={ocultar}>
+    <BaseInput grow={grow} ocultar={hide}>
       <FormControl fullWidth error={touched && !!error} variant="outlined">
-        <InputLabel htmlFor={id}>{title}</InputLabel>
+        <InputLabel htmlFor={id}>{finalTitle}</InputLabel>
         <Select
-          disabled={cargando}
+          disabled={loading}
           placeholder={placeholder}
           labelId={id}
           id={`${id}-select`}
           value={value}
-          onChange={({target: {value}}) => {
+          onChange={({ target: { value } }) => {
             setValue(value as string)
           }}
-          label={title}>
+          label={finalTitle}>
           <MenuItem value="">
             <em>{placeholder || 'Seleccione una opción'}</em>
           </MenuItem>
-          {opciones.map((e) => (
+          {options.map((e) => (
             <MenuItem key={e.id} value={e.id}>
-              {e.titulo || e.id}
+              {e.title || e.id}
             </MenuItem>
           ))}
         </Select>

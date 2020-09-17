@@ -2,18 +2,19 @@ import { IconButton, makeStyles, Paper, Typography } from '@material-ui/core'
 import { useField } from 'formik'
 import React, { useMemo } from 'react'
 import { FaPlus } from 'react-icons/fa'
-import Formulario, { ComunesProps, Tipos, TodosProps } from '.'
+import Formulario from '.'
 import BaseInput from './BaseInput'
+import { Tipos, ComunesProps } from './Tipos'
 
 type ConfProps = { [key: string]: { tipo: Tipos; title: string } }
 
 export interface AlMultipleProps extends ComunesProps {
-  tipo: Tipos.Multiple
+  type: Tipos.Multiple
   configuration: ConfProps
 }
 
 export default (props: AlMultipleProps) => {
-  const { id, titulo, grow, ocultar, configuration } = props
+  const { id, title, grow, hide, configuration } = props
   const [{ value }, { error }, { setValue }] = useField<ConfProps[]>(id)
 
   const classes = useClasses()
@@ -32,21 +33,21 @@ export default (props: AlMultipleProps) => {
   console.log(fields)
 
   return (
-    <BaseInput grow={grow} ocultar={ocultar}>
+    <BaseInput grow={grow} ocultar={hide}>
       <Paper elevation={0}>
         <div className={classes.headerContainer}>
-          <Typography variant="body1">{`${titulo} (${value.length})`}</Typography>
+          <Typography variant="body1">{`${title} (${value.length})`}</Typography>
           <IconButton onClick={() => setValue([...value, configuration])}>
             <FaPlus />
           </IconButton>
         </div>
-        <Formulario campos={fields}></Formulario>
+        <Formulario fields={fields} />
       </Paper>
     </BaseInput>
   )
 }
 
-const useClasses = makeStyles((theme) => ({
+const useClasses = makeStyles(() => ({
   headerContainer: {
     display: 'flex',
     alignItems: 'center',

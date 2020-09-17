@@ -1,4 +1,4 @@
-import React, {memo, ReactNode, useMemo, useState} from 'react'
+import React, { memo, ReactNode, useMemo, useState } from 'react'
 import {
   FormControl,
   InputLabel,
@@ -11,8 +11,7 @@ import {
   ListItemText,
   Tooltip,
 } from '@material-ui/core'
-import {Tipos, ComunesProps} from '.'
-import {useField, useFormikContext} from 'formik'
+import { useField, useFormikContext } from 'formik'
 import {
   FaArrowRight,
   FaNotEqual,
@@ -21,6 +20,7 @@ import {
   FaChevronRight,
 } from 'react-icons/fa'
 import BaseInput from './BaseInput'
+import { Tipos, ComunesProps } from './Tipos'
 
 type FiltroTipo =
   | 'empiezaCon'
@@ -87,114 +87,117 @@ const opcionesFiltros: FiltrosProps = {
 }
 
 export interface AlInputProps extends ComunesProps {
-  tipo: Tipos.Input | Tipos.Correo | Tipos.Multilinea | Tipos.Numerico | Tipos.Telefono
-  maximo?: number
-  submitear?: boolean
+  type: Tipos.Input | Tipos.Correo | Tipos.Multilinea | Tipos.Numerico | Tipos.Telefono
+  max?: number
+  willSubmit?: boolean
   placeholder?: string
   fullWidth?: boolean
-  ocultar?: boolean
 }
 
 export default memo((props: AlInputProps) => {
   const {
     id,
-    titulo,
+    title,
     placeholder,
-    validar,
-    tipo,
+    validate,
+    type,
     grow,
-    maximo,
-    submitear,
-    cargando,
-    filtrar,
-    soloLectura,
+    max,
+    willSubmit,
+    loading,
+    filter,
+    readonly,
     fullWidth,
-    ayuda,
-    ocultar,
+    help,
+    hide,
   } = props
-  const [anchorFiltro, setAnchorFiltro] = useState<HTMLElement | null>(null)
-  const [{value}, {error, touched}, {setValue}] = useField<string | Filtro>(id)
+
+  const [anchorFilter, setAnchorFilter] = useState<HTMLElement | null>(null)
+  const [{ value }, { error, touched }, { setValue }] = useField<string | Filtro>(id)
   const formik = useFormikContext()
 
-  const obligatorio = !!validar?.describe().tests.find((e) => e.name === 'required')
-  const valMax = validar?.describe().tests.find((e) => e.name === 'max')?.params.max
+  const mandatory = !!validate?.describe().tests.find((e) => e.name === 'required')
+  const valMax = validate?.describe().tests.find((e) => e.name === 'max')?.params.max
 
-  const tituloFinal = useMemo<string>(() => {
-    if (filtrar) {
-      return titulo
+  const finalTitle = useMemo<string>(() => {
+    if (filter) {
+      return title
     } else {
       const valor = value as string
-      return `${titulo} ${valMax ? `(${valor?.length || 0}/${valMax})` : ''} ${
-        obligatorio ? '*' : ''
+      return `${title} ${valMax ? `(${valor?.length || 0}/${valMax})` : ''} ${
+        mandatory ? '*' : ''
       }`
     }
-  }, [filtrar, obligatorio, titulo, valMax, value])
+  }, [filter, mandatory, title, valMax, value])
 
-  const valorFinal = useMemo(() => {
-    if (filtrar) {
+  const finalValue = useMemo(() => {
+    if (filter) {
       return (value as Filtro).valor
     }
     return value as string
-  }, [filtrar, value])
+  }, [filter, value])
 
-  const tipoFilto = useMemo(() => {
-    switch (tipo) {
+  const filterType = useMemo(() => {
+    switch (type) {
       case Tipos.Numerico:
         return opcionesFiltros.numerico
       default:
         return opcionesFiltros.texto
     }
-  }, [tipo])
+  }, [type])
 
   return (
-    <BaseInput grow={grow} fullWidth={fullWidth} ocultar={ocultar}>
+    <BaseInput grow={grow} fullWidth={fullWidth} ocultar={hide}>
       <FormControl
         fullWidth
-        error={(touched && !!error) || (valorFinal?.length || 0) > valMax}
+        error={(touched && !!error) || (finalValue?.length || 0) > valMax}
         variant="outlined">
-        <InputLabel htmlFor={id}>{tituloFinal}</InputLabel>
+        <InputLabel htmlFor={id}>{finalTitle}</InputLabel>
         <OutlinedInput
-          disabled={cargando || soloLectura}
+          disabled={loading || readonly}
           id={id}
           startAdornment={
-            filtrar && (
-              <Tooltip title={'Definir TIPO de filtro'}>
-                <IconButton onClick={(e) => setAnchorFiltro(e.currentTarget)}>
-                  {tipoFilto.find((e) => e.id === (value as Filtro).filtro)?.icono}
+            filter && (
+              <Tooltip title="Definir TIPO de filtro">
+                <IconButton onClick={(e) => setAnchorFilter(e.currentTarget)}>
+                  {filterType.find((e) => e.id === (value as Filtro).filtro)?.icono}
                 </IconButton>
               </Tooltip>
             )
           }
-          multiline={!filtrar && tipo === Tipos.Multilinea}
-          rows={tipo === Tipos.Multilinea ? 4 : undefined}
-          value={valorFinal}
-          onChange={({target}) => {
+          multiline={!filter && type === Tipos.Multilinea}
+          rows={type === Tipos.Multilinea ? 4 : undefined}
+          value={finalValue}
+          onChange={({ target }) => {
             if (typeof value !== 'object') {
               setValue(target.value)
             } else {
-              setValue({filtro: (value as Filtro).filtro, valor: target.value})
+              setValue({
+                filtro: (value as Filtro).filtro,
+                valor: target.value,
+              })
             }
           }}
-          onKeyPress={({which}) => {
-            if (which === 13 && submitear) {
+          onKeyPress={({ which }) => {
+            if (which === 13 && willSubmit) {
               formik.submitForm()
             }
           }}
           placeholder={placeholder}
-          type={tipo === Tipos.Numerico || tipo === Tipos.Telefono ? 'number' : undefined}
-          label={tituloFinal}
-          inputProps={{maxLength: maximo || undefined}}
+          type={type === Tipos.Numerico || type === Tipos.Telefono ? 'number' : undefined}
+          label={finalTitle}
+          inputProps={{ maxLength: max || undefined }}
         />
-        {((touched && error) || ayuda) && (
-          <FormHelperText id={id}>{(touched && error) || ayuda}</FormHelperText>
+        {((touched && error) || help) && (
+          <FormHelperText id={id}>{(touched && error) || help}</FormHelperText>
         )}
-        {filtrar && (
-          <Menu anchorEl={anchorFiltro} open={!!anchorFiltro}>
-            {tipoFilto.map((e) => (
+        {filter && (
+          <Menu anchorEl={anchorFilter} open={!!anchorFilter}>
+            {filterType.map((e) => (
               <MenuItem
                 onClick={() => {
-                  setAnchorFiltro(null)
-                  setValue({filtro: e.id, valor: (value as Filtro).valor})
+                  setAnchorFilter(null)
+                  setValue({ filtro: e.id, valor: (value as Filtro).valor })
                 }}
                 selected={(value as Filtro).filtro === e.id}
                 key={e.id}>

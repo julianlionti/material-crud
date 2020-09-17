@@ -1,5 +1,4 @@
-import React, {useState, memo, useMemo} from 'react'
-import {ComunesProps, Tipos} from '.'
+import React, { useState, memo, useMemo } from 'react'
 import {
   makeStyles,
   IconButton,
@@ -7,20 +6,23 @@ import {
   CircularProgress,
   Collapse,
 } from '@material-ui/core'
-import {ReactComponent as Camara} from '../../assets/icons/camera.svg'
-import {useField} from 'formik'
-import {red} from '@material-ui/core/colors'
+import { ReactComponent as Camara } from '../../assets/icons/camera.svg'
+import { useField } from 'formik'
+import { red } from '@material-ui/core/colors'
 import BaseInput from './BaseInput'
+import { Tipos, ComunesProps } from './Tipos'
 
 export interface AlImagenProps extends ComunesProps {
-  tipo: Tipos.Imagen
+  type: Tipos.Imagen
   baseURL: string
 }
 
 export default memo((props: AlImagenProps) => {
-  const {id, cargando, grow, baseURL} = props
+  const { id, loading, grow, baseURL } = props
   const [base64, setBase64] = useState<string | null>(null)
-  const [{value}, {error}, {setValue, setTouched}] = useField<string | File | null>(id)
+  const [{ value }, { error }, { setValue, setTouched }] = useField<string | File | null>(
+    id,
+  )
   const [subiendo, setSubiendo] = useState(false)
 
   const camaraId = `camara-${id}`
@@ -48,7 +50,7 @@ export default memo((props: AlImagenProps) => {
           </Typography>
           <label htmlFor={camaraId}>
             <IconButton
-              disabled={cargando}
+              disabled={loading}
               color="primary"
               component="span"
               onClick={() => {
@@ -71,7 +73,7 @@ export default memo((props: AlImagenProps) => {
       <input
         type="file"
         accept="image/*"
-        disabled={cargando}
+        disabled={loading}
         className={clases.input}
         id={camaraId}
         onChange={(e) => {

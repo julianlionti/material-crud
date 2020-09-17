@@ -1,5 +1,5 @@
-import React, {ReactNode} from 'react'
-import {makeStyles, Collapse} from '@material-ui/core'
+import React, { ReactNode } from 'react'
+import { makeStyles, Collapse } from '@material-ui/core'
 
 interface Props {
   children: ReactNode
@@ -9,8 +9,8 @@ interface Props {
   ocultar?: boolean
 }
 
-export default ({children, grow, fullWidth, centrado, ocultar}: Props) => {
-  const clases = useClases({grow, fullWidth, centrado})
+export default ({ children, grow, fullWidth, centrado, ocultar }: Props) => {
+  const clases = useClases({ grow, fullWidth, centrado })
   return (
     <Collapse className={clases.input} in={!ocultar} unmountOnExit>
       {children}
@@ -19,7 +19,7 @@ export default ({children, grow, fullWidth, centrado, ocultar}: Props) => {
 }
 
 const useClases = makeStyles((tema) => ({
-  input: ({grow, fullWidth, centrado}: any) => ({
+  input: ({ grow, fullWidth, centrado }: any) => ({
     margin: tema.spacing(1),
     flex: fullWidth === false ? undefined : 1,
     flexGrow: grow,

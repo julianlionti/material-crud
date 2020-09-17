@@ -1,14 +1,14 @@
 import React, { memo, useCallback, useMemo } from 'react'
 import { Formik, FormikValues, FormikHelpers } from 'formik'
-import { makeStyles, Button, CircularProgress } from '@material-ui/core'
+import { Button, CircularProgress, makeStyles } from '@material-ui/core'
 import * as Yup from 'yup'
 import AlInput, { AlInputProps } from './AlInput'
 import AlSelect, { AlSelectProps } from './AlSelect'
 import AlImagen, { AlImagenProps } from './AlImagen'
-import AlUbicacion, { AlUbicacionProps } from './AlUbicacion'
 import AlAutocomplete, { AlAutocompleteProps } from './AlAutocomplete'
 import AlSwitch, { AlSwitchProps } from './AlSwitch'
 import AlMultiple, { AlMultipleProps } from './AlMultiple'
+import { Tipos } from './Tipos'
 
 Yup.setLocale({
   string: {
@@ -19,85 +19,47 @@ Yup.setLocale({
   },
 })
 
-export interface OpcionesProps {
-  id: string
-  titulo?: string
-  extras?: object
-}
-
-export interface ComunesProps {
-  id: string
-  titulo: string
-  validar?: Yup.Schema<any>
-  grow?: number
-  ayuda?: string
-  cargando?: boolean
-  filtrar?: boolean
-  ordenar?: boolean
-  soloLectura?: boolean
-  depende?: (props: any) => boolean
-  ocultar?: boolean
-}
-
-export enum Tipos {
-  Input = 0,
-  Numerico,
-  Correo,
-  Telefono,
-  Multilinea,
-  Opciones,
-  Imagen,
-  Autocomplete,
-  Ubicacion,
-  Switch,
-  Multiple,
-}
-
 export type TodosProps =
   | AlInputProps
   | AlSelectProps
   | AlImagenProps
   | AlAutocompleteProps
-  | AlUbicacionProps
   | AlSwitchProps
   | AlMultipleProps
 
 export type CamposProps = TodosProps | TodosProps[]
 
-interface Props {
-  campos: CamposProps[]
+export interface Props {
+  fields: CamposProps[]
   onSubmit?: (values: FormikValues, helpers: FormikHelpers<any>) => void | Promise<any>
-  aceptar?: string
-  cargando?: boolean
-  iniciales?: any
-  sinValidar?: boolean
+  accept?: string
+  loading?: boolean
+  intials?: any
+  noValidate?: boolean
 }
 
-export const crearCampos = (props: () => CamposProps[]) => props()
+export const createFields = (props: () => CamposProps[]) => props()
 
 const generarDefault = (item: TodosProps) => {
-  if (item.filtrar) {
-    if (item.tipo === Tipos.Autocomplete) {
+  if (item.filter) {
+    if (item.type === Tipos.Autocomplete) {
       if (item.multiple) return []
       else {
         return { valor: [], filtro: 'igual' }
       }
     }
-    if (item.tipo === Tipos.Numerico) {
+    if (item.type === Tipos.Numerico) {
       return { valor: '', filtro: 'igual' }
     }
     return { valor: '', filtro: 'empiezaCon' }
   }
-  switch (item.tipo) {
+  switch (item.type) {
     case Tipos.Switch: {
       return false
     }
     case Tipos.Autocomplete: {
       if (item.multiple) return []
       return null
-    }
-    case Tipos.Ubicacion: {
-      return { lat: '', lng: '', provincia: '', localidad: '' }
     }
     case Tipos.Multiple:
       return [
@@ -117,66 +79,60 @@ const generarDefault = (item: TodosProps) => {
 }
 
 export default memo((props: Props) => {
-  const { campos, onSubmit, aceptar, cargando, iniciales, sinValidar } = props
+  const { fields, onSubmit, accept, loading, intials, noValidate } = props
   const clases = useClases()
 
   const renderInput = useCallback(
     (campo: TodosProps, valores: any) => {
-      const { depende } = campo
-      const ocultar = depende && depende(valores) === false
+      const { depends } = campo
+      const ocultar = depends && depends(valores) === false
 
-      switch (campo.tipo) {
+      switch (campo.type) {
         case Tipos.Input:
         case Tipos.Correo:
         case Tipos.Multilinea:
         case Tipos.Numerico:
         case Tipos.Telefono:
-          return (
-            <AlInput key={campo.id} {...campo} cargando={cargando} ocultar={ocultar} />
-          )
+          return <AlInput key={campo.id} {...campo} loading={loading} hide={ocultar} />
         case Tipos.Opciones:
-          return (
-            <AlSelect key={campo.id} {...campo} cargando={cargando} ocultar={ocultar} />
-          )
+          return <AlSelect key={campo.id} {...campo} loading={loading} hide={ocultar} />
         case Tipos.Imagen:
-          return <AlImagen key={campo.id} {...campo} cargando={cargando} />
+          return <AlImagen key={campo.id} {...campo} loading={loading} />
         case Tipos.Autocomplete:
-          return <AlAutocomplete key={campo.id} {...campo} cargando={cargando} />
-        case Tipos.Ubicacion:
-          return <AlUbicacion key={campo.id} {...campo} cargando={cargando} />
+          return <AlAutocomplete key={campo.id} {...campo} loading={loading} />
         case Tipos.Switch:
-          return <AlSwitch key={campo.id} {...campo} cargando={cargando} />
+          return <AlSwitch key={campo.id} {...campo} loading={loading} />
         case Tipos.Multiple:
-          return <AlMultiple key={campo.id} {...campo} cargando={cargando} />
+          return <AlMultiple key={campo.id} {...campo} loading={loading} />
         default:
           return null
       }
     },
-    [cargando],
+    [loading],
   )
 
   const valSchema = useMemo(
-    () => campos.flat().reduce((acc, it) => ({ ...acc, [it.id]: it.validar }), {}),
-    [campos],
+    () => fields.flat().reduce((acc, it) => ({ ...acc, [it.id]: it.validate }), {}),
+    [fields],
   )
 
   const porDefecto = useMemo(
     () =>
-      campos.flat().reduce((acc, it) => ({ ...acc, [it.id]: generarDefault(it) }), {}),
-    [campos],
+      fields.flat().reduce((acc, it) => ({ ...acc, [it.id]: generarDefault(it) }), {}),
+    [fields],
   )
 
   return (
     <Formik
       enableReinitialize={!onSubmit}
-      initialValues={Object.keys(iniciales || {}).length > 0 ? iniciales : porDefecto}
-      validationSchema={sinValidar ? null : Yup.object().shape(valSchema)}
+      initialValues={Object.keys(intials || {}).length > 0 ? intials : porDefecto}
+      validationSchema={noValidate ? null : Yup.object().shape(valSchema)}
       onSubmit={(vals, helpers) => {
         if (onSubmit) onSubmit(vals, helpers)
       }}>
       {({ submitForm, values }) => (
         <div className={clases.contenedor}>
-          {campos.map((campo) => {
+          {fields.map((campo) => {
             if (Array.isArray(campo)) {
               return (
                 <div key={`${campo[0].id}-row`} className={clases.horizontal}>
@@ -186,15 +142,15 @@ export default memo((props: Props) => {
             }
             return renderInput(campo, values)
           })}
-          {aceptar && (
+          {accept && (
             <Button
-              disabled={cargando}
+              disabled={loading}
               onClick={submitForm}
               className={clases.boton}
               color="primary"
-              endIcon={cargando && <CircularProgress size={16} />}
+              endIcon={loading && <CircularProgress size={16} />}
               variant="outlined">
-              {aceptar}
+              {accept}
             </Button>
           )}
         </div>
