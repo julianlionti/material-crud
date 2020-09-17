@@ -3,11 +3,11 @@
 [![NPM](https://img.shields.io/npm/v/material-crud.svg)](https://www.npmjs.com/package/material-crud) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 Crud components with @material-ui design
-  - Independant Form component to user everywhere
-  - Filter
+  - Independant Form component to use everywhere
+  - Filters
   - Sort
   - Pagination
-  - Card Desgin
+  - Card Design
 
 ### Tech
 
