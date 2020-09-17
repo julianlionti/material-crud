@@ -21,11 +21,11 @@ export interface CartelState {
 }
 
 export interface Props {
-  mostrar: boolean
-  onCerrar?: (confirmado: boolean) => void
-  titulo?: string
-  contenido?: string
-  cargando?: boolean
+  show: boolean
+  onClose?: (confirmado: boolean) => void
+  title?: string
+  content?: string
+  loading?: boolean
 }
 
 export const Transition = forwardRef(
@@ -35,32 +35,32 @@ export const Transition = forwardRef(
   ) => <Slide direction="up" ref={ref} {...props} />,
 )
 
-export default memo(({ mostrar, onCerrar, titulo, contenido, cargando }: Props) => {
+export default memo(({ show, onClose, title, content, loading }: Props) => {
   const clases = useClases()
   return (
-    <Dialog open={mostrar} TransitionComponent={Transition}>
-      {cargando && <LinearProgress />}
-      <DialogTitle>{titulo}</DialogTitle>
+    <Dialog open={show} TransitionComponent={Transition}>
+      {loading && <LinearProgress />}
+      <DialogTitle>{title}</DialogTitle>
       <DialogContent className={clases.contenido}>
-        {contenido?.split('\n').map((e) => (
+        {content?.split('\n').map((e) => (
           <DialogContentText key={e}>{e}</DialogContentText>
         ))}
       </DialogContent>
       <DialogActions>
         <Button
           onClick={() => {
-            if (onCerrar) onCerrar(false)
+            if (onClose) onClose(false)
           }}
           color="primary">
-          Cancelar
+          Cancel
         </Button>
         <Button
           onClick={() => {
-            if (onCerrar) onCerrar(true)
+            if (onClose) onClose(true)
           }}
           color="primary"
           autoFocus>
-          Aceptar
+          Accept
         </Button>
       </DialogActions>
     </Dialog>

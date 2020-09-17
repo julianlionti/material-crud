@@ -17,7 +17,7 @@ import {
   LinearProgress,
 } from '@material-ui/core'
 import { FaFilter } from 'react-icons/fa'
-import Formulario, { CamposProps } from '../Formulario'
+import Formulario, { CamposProps } from '../Form'
 import useAxios from '../../utils/useAxios'
 import { useABM } from '../../utils/ABMContext'
 // import { useSnackbar } from 'notistack'
@@ -25,7 +25,7 @@ import Dialog, { CartelState } from '../UI/Dialog'
 import Ordenado from './Ordenado'
 import useWindowSize from '../../utils/useWindowSize'
 import { CenteredCard } from '../..'
-// import { serialize } from 'object-to-formdata'
+import { serialize } from 'object-to-formdata'
 
 export interface ABM {
   onEditar?: () => void
@@ -286,12 +286,12 @@ export default memo((props: Props) => {
             accept={editando ? 'Editar' : 'Agregar'}
             fields={camposSinFiltros}
             onSubmit={(vals) => {
-              const data = vals
+              let data = vals
               if (esFormData) {
-                // data = serialize(vals, {
-                //   indices: true,
-                //   allowEmptyArrays: true
-                // })
+                data = serialize(vals, {
+                  indices: true,
+                  allowEmptyArrays: true,
+                })
               }
 
               llamar({
@@ -304,11 +304,11 @@ export default memo((props: Props) => {
         </CenteredCard>
       </Collapse>
       <Dialog
-        mostrar={cartel.visible}
-        titulo={cartel?.titulo || ''}
-        contenido={cartel?.contenido || ''}
-        onCerrar={cartel.onCerrar}
-        cargando={cargando}
+        show={cartel.visible}
+        title={cartel?.titulo || ''}
+        content={cartel?.contenido || ''}
+        onClose={cartel.onCerrar}
+        loading={cargando}
       />
     </div>
   )

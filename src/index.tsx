@@ -1,8 +1,8 @@
 import React, { ReactNode } from 'react'
 
-import Crud from './components/ABM'
-import Form from './components/Formulario'
-import { Tipos } from './components/Formulario/Tipos'
+import Crud from './components/Crud'
+import Form from './components/Form'
+import { Tipos } from './components/Form/Tipos'
 
 import CenteredCard from './components/UI/CenteredCard'
 import Dialog from './components/UI/Dialog'

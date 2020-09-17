@@ -2,17 +2,18 @@ import { useReducer, useRef, useCallback, useEffect } from 'react'
 import axios, { AxiosRequestConfig, AxiosError } from 'axios'
 // import { useSnackbar } from 'notistack'
 
+interface Error {
+  mensaje: string
+  codigo: number
+}
+
 interface Props {
   alIniciar?: AxiosRequestConfig
+  onError?: (error: Error) => {}
 }
 
 interface Respuesta<T> extends Estado<T> {
   llamar: (props: AxiosRequestConfig, conAuth?: boolean) => void
-}
-
-interface Error {
-  mensaje: string
-  codigo: number
 }
 
 export interface ErrorRespuesta {
@@ -27,17 +28,17 @@ interface Estado<T = any> {
 }
 
 const inicial: Estado = {
-  cargando: false
+  cargando: false,
 }
 
 const reducer = (estado: Estado, accion: Estado): Estado => ({
   ...estado,
-  ...accion
+  ...accion,
 })
 
 export const llamarWS = async <T extends any>(
   config: AxiosRequestConfig,
-  usuario?: any | null
+  usuario?: any | null,
 ) => {
   let respuesta: undefined | T
   let error: undefined | ErrorRespuesta
@@ -46,11 +47,11 @@ export const llamarWS = async <T extends any>(
     let final = config
     if (usuario) {
       const headers = {
-        Authorization: usuario.token
+        Authorization: usuario.token,
       }
       final = {
         ...final,
-        headers: { ...config.headers, ...headers }
+        headers: { ...config.headers, ...headers },
       }
     }
     const { data } = await axios(final)
@@ -68,29 +69,31 @@ export const llamarWS = async <T extends any>(
 }
 
 export default <T extends any>(props?: Props): Respuesta<T> => {
-  const { alIniciar } = props || {}
+  const { alIniciar, onError } = props || {}
   // const { enqueueSnackbar } = useSnackbar()
   const alIniciarRef = useRef(false)
   const llamando = useRef(false)
   const [state, dispatch] = useReducer(reducer, inicial)
 
-  /* const { error } = state
+  const { error } = state
   useEffect(() => {
-    if (error) {
+    if (onError && error) {
       if (error.error) {
-        enqueueSnackbar(`${error.error.mensaje} (${error.error.codigo})`, {
-          variant: 'error',
-        })
+        onError(error.error)
+        // enqueueSnackbar(`${error.error.mensaje} (${error.error.codigo})`, {
+        //   variant: 'error',
+        // })
       }
       if (error.errores) {
         error.errores!!.forEach((err) => {
-          enqueueSnackbar(`${err.mensaje} (${err.codigo})`, { variant: 'error' })
+          onError(err)
+          // enqueueSnackbar(`${err.mensaje} (${err.codigo})`, { variant: 'error' })
         })
       }
 
       dispatch({ error: undefined })
     }
-  }, [enqueueSnackbar, error]) */
+  }, [error])
 
   const llamar = useCallback(async (config: AxiosRequestConfig) => {
     if (!llamando.current) {

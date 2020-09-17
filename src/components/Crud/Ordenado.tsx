@@ -7,8 +7,8 @@ import {
   FaSortNumericDown,
   FaSortNumericUpAlt,
 } from 'react-icons/fa'
-import { TodosProps } from '../Formulario'
-import { Tipos } from '../Formulario/Tipos'
+import { TodosProps } from '../Form'
+import { Tipos } from '../Form/Tipos'
 
 export interface Ordenado {
   [key: string]: 1 | -1 | 0
