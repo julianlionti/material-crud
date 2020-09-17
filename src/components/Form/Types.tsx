@@ -1,15 +1,15 @@
 import * as Yup from 'yup'
 
-export enum Tipos {
+export enum Types {
   Input,
-  Numerico,
-  Correo,
-  Telefono,
-  Multilinea,
-  Opciones,
-  Imagen,
+  Number,
+  Email,
+  Phone,
+  Multiline,
+  Options,
+  Image,
   Autocomplete,
-  Ubicacion,
+  // Ubicacion,
   Switch,
   Multiple,
 }

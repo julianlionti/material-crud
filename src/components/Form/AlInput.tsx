@@ -20,7 +20,7 @@ import {
   FaChevronRight,
 } from 'react-icons/fa'
 import BaseInput from './BaseInput'
-import { Tipos, ComunesProps } from './Tipos'
+import { Types, ComunesProps } from './Types'
 
 type FiltroTipo =
   | 'empiezaCon'
@@ -87,7 +87,7 @@ const opcionesFiltros: FiltrosProps = {
 }
 
 export interface AlInputProps extends ComunesProps {
-  type: Tipos.Input | Tipos.Correo | Tipos.Multilinea | Tipos.Numerico | Tipos.Telefono
+  type: Types.Input | Types.Email | Types.Multiline | Types.Number | Types.Phone
   max?: number
   willSubmit?: boolean
   placeholder?: string
@@ -139,7 +139,7 @@ export default memo((props: AlInputProps) => {
 
   const filterType = useMemo(() => {
     switch (type) {
-      case Tipos.Numerico:
+      case Types.Number:
         return opcionesFiltros.numerico
       default:
         return opcionesFiltros.texto
@@ -165,8 +165,8 @@ export default memo((props: AlInputProps) => {
               </Tooltip>
             )
           }
-          multiline={!filter && type === Tipos.Multilinea}
-          rows={type === Tipos.Multilinea ? 4 : undefined}
+          multiline={!filter && type === Types.Multiline}
+          rows={type === Types.Multiline ? 4 : undefined}
           value={finalValue}
           onChange={({ target }) => {
             if (typeof value !== 'object') {
@@ -184,7 +184,7 @@ export default memo((props: AlInputProps) => {
             }
           }}
           placeholder={placeholder}
-          type={type === Tipos.Numerico || type === Tipos.Telefono ? 'number' : undefined}
+          type={type === Types.Number || type === Types.Phone ? 'number' : undefined}
           label={finalTitle}
           inputProps={{ maxLength: max || undefined }}
         />

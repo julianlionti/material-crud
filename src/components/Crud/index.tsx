@@ -18,7 +18,7 @@ import {
 } from '@material-ui/core'
 import { FaFilter } from 'react-icons/fa'
 import Formulario, { CamposProps } from '../Form'
-import useAxios from '../../utils/useAxios'
+import useAxios, { Error } from '../../utils/useAxios'
 import { useABM } from '../../utils/ABMContext'
 // import { useSnackbar } from 'notistack'
 import Dialog, { CartelState } from '../UI/Dialog'
@@ -37,15 +37,17 @@ export interface ABM {
 
 interface Props {
   url?: string
-  que: string
-  genero?: 'M' | 'F'
-  descripcion: string
-  campos: CamposProps[]
+  name: string
+  titleSize?: number
+  gender?: 'M' | 'F'
+  description: string
+  fields: CamposProps[]
   renderItem: (vals: any) => ReactNode
-  columnas?: number
-  filtrosColumnas?: number
-  esFormData?: boolean
+  columns?: number
+  columnsFilters?: number
+  isFormData?: boolean
   onFinished?: (what: 'new' | 'add' | 'update' | 'delete', genero?: 'M' | 'F') => void
+  onError?: (err: Error) => void
 }
 
 interface Paginado {
@@ -60,56 +62,60 @@ export default memo((props: Props) => {
   const ultimaBusqueda = useRef<any>({})
   const {
     url,
-    que,
-    genero,
-    descripcion,
-    campos,
+    name,
+    gender,
+    description,
+    fields,
     renderItem,
-    columnas,
-    filtrosColumnas,
-    esFormData,
+    columns,
+    columnsFilters,
+    isFormData,
     onFinished,
+    titleSize,
+    onError,
   } = props
 
   const llamado = useRef(false)
 
   const { listado, agregar, editar: editarABM, reemplazar, borrar } = useABM<any>({})
-  const { cargando, respuesta, llamar } = useAxios<any>()
+  const { cargando, respuesta, llamar } = useAxios<any>({
+    onError,
+  })
 
   // const { enqueueSnackbar } = useSnackbar()
 
   const [paginado, setPaginado] = useState<Paginado>({ page: 1 })
   const [cartel, setCartel] = useState<CartelState>({ visible: false })
   const [toolbar, setToolbar] = useState(false)
-  const [editar, setEditar] = useState<object | null>({})
+  const [editar, setEditar] = useState<object | null>(null)
 
   const { width } = useWindowSize()
-  const clases = useClases()
+  const clases = useClases({ titleSize })
 
   const editando = editar ? Object.keys(editar!!).length > 0 : false
   const { borrado, item, _id, data } = respuesta || {}
   useEffect(() => {
     if (item && !_id) {
       agregar([item])
-      onFinished && onFinished('new', genero)
+      onFinished && onFinished('new', gender)
       // enqueueSnackbar(`${que} agregad${genero === 'F' ? 'a' : 'o'}`, {
       //   variant: 'success',
       // })
       setEditar(null)
     } else if (item && _id) {
       editarABM({ id: _id, item: { ...item, editado: true } })
-      onFinished && onFinished('update', genero)
+      onFinished && onFinished('update', gender)
       // enqueueSnackbar(`${que} editad${genero === 'F' ? 'a' : 'o'}`, {
       //   variant: 'success',
       // })
       setEditar(null)
     } else if (borrado) {
       editarABM({ id: _id, item: { ...borrado, borrado: true } })
-      onFinished && onFinished('delete', genero)
+      onFinished && onFinished('delete', gender)
       // enqueueSnackbar(`${que} borrad${genero === 'F' ? 'a' : 'o'}`, { variant: 'info' })
       setCartel({ visible: false })
     }
-  }, [item, _id, agregar, editarABM, borrado, borrar, que, genero])
+  }, [item, _id, agregar, editarABM, borrado, borrar, gender])
 
   const { docs, page } = data || {}
   useEffect(() => {
@@ -140,7 +146,7 @@ export default memo((props: Props) => {
       setCartel({
         visible: true,
         contenido: `¿Estás segure de borrar el ${it.nombre}? Esta accion no se puede deshacer?`,
-        titulo: `Borrar ${que}`,
+        titulo: `Borrar ${name}`,
         onCerrar: (aceptado: boolean) => {
           if (aceptado) {
             llamar({ method: 'DELETE', data: { id: it._id }, url })
@@ -150,36 +156,36 @@ export default memo((props: Props) => {
         },
       })
     },
-    [llamar, que, url],
+    [llamar, name, url],
   )
 
   const filtros = useMemo(() => {
-    const items = campos.flat().filter((e) => e.filter)
-    const columnas = filtrosColumnas || 3
+    const items = fields.flat().filter((e) => e.filter)
+    const columnas = columnsFilters || 3
     return new Array(Math.ceil(items.length / columnas))
       .fill(null)
       .map((_) => items.splice(0, columnas))
-  }, [campos, filtrosColumnas])
+  }, [fields, columnsFilters])
 
-  const ordenar = useMemo(() => campos.flat().filter((e) => e.sort), [campos])
+  const ordenar = useMemo(() => fields.flat().filter((e) => e.sort), [fields])
 
   const camposSinFiltros = useMemo(() => {
-    return campos.map((cam) => {
+    return fields.map((cam) => {
       if (Array.isArray(cam)) {
         return cam.map(({ filter, ...etc }) => etc)
       }
       const { filter, ...etc } = cam
       return etc
     })
-  }, [campos])
+  }, [fields])
 
   return (
     <div className={clases.contenedor}>
       <Collapse in={!editar} timeout="auto" unmountOnExit>
         <div className={clases.toolbarContainer}>
-          <Typography gutterBottom={false} variant="h1">{`${
+          <Typography gutterBottom={false} variant="h1" className={clases.title}>{`${
             toolbar ? 'Filtrar ' : 'Listado de '
-          } ${que}`}</Typography>
+          } ${name}`}</Typography>
           <div>
             {Object.keys(filtros || {}).length > 0 && (
               <Button
@@ -192,7 +198,7 @@ export default memo((props: Props) => {
               </Button>
             )}
             <Ordenado
-              que={que}
+              que={name}
               columnas={ordenar}
               onOrden={(ordenado) => {
                 ultimaBusqueda.current = {
@@ -213,7 +219,7 @@ export default memo((props: Props) => {
               variant="outlined"
               className={clases.nuevoBtn}
               onClick={() => setEditar({})}>
-              {`Agregar nuev${genero === 'F' ? 'a' : 'o'} ${que}`}
+              {`Agregar nuev${gender === 'F' ? 'a' : 'o'} ${name}`}
             </Button>
           </div>
         </div>
@@ -250,7 +256,7 @@ export default memo((props: Props) => {
                   ...e,
                   onEditar: () => onEditar(e),
                   onBorrar: () => onBorrar(e),
-                  ancho: (width - 320) / (columnas || 3),
+                  ancho: (width - 320) / (columns || 3),
                 })}
               </Fragment>
             ))}
@@ -278,8 +284,8 @@ export default memo((props: Props) => {
       <Collapse in={!!editar} timeout="auto" unmountOnExit>
         <CenteredCard
           onClose={() => setEditar(null)}
-          title={`${editando ? 'Editar ' : `Nuev${genero === 'F' ? 'a' : 'o'}`} ${que}`}
-          subtitle={descripcion}>
+          title={`${editando ? 'Editar ' : `Nuev${gender === 'F' ? 'a' : 'o'}`} ${name}`}
+          subtitle={description}>
           <Formulario
             intials={editar}
             loading={cargando}
@@ -287,7 +293,7 @@ export default memo((props: Props) => {
             fields={camposSinFiltros}
             onSubmit={(vals) => {
               let data = vals
-              if (esFormData) {
+              if (isFormData) {
                 data = serialize(vals, {
                   indices: true,
                   allowEmptyArrays: true,
@@ -319,6 +325,9 @@ const useClases = makeStyles((tema) => ({
     width: '85%',
     margin: '0 auto',
   },
+  title: ({ titleSize }: any) => ({
+    fontSize: titleSize || 26,
+  }),
   toolbarContainer: {
     display: 'flex',
     justifyContent: 'space-between',

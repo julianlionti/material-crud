@@ -8,7 +8,7 @@ import AlImagen, { AlImagenProps } from './AlImagen'
 import AlAutocomplete, { AlAutocompleteProps } from './AlAutocomplete'
 import AlSwitch, { AlSwitchProps } from './AlSwitch'
 import AlMultiple, { AlMultipleProps } from './AlMultiple'
-import { Tipos } from './Tipos'
+import { Types } from './Types'
 
 Yup.setLocale({
   string: {
@@ -42,26 +42,26 @@ export const createFields = (props: () => CamposProps[]) => props()
 
 const generarDefault = (item: TodosProps) => {
   if (item.filter) {
-    if (item.type === Tipos.Autocomplete) {
+    if (item.type === Types.Autocomplete) {
       if (item.multiple) return []
       else {
         return { valor: [], filtro: 'igual' }
       }
     }
-    if (item.type === Tipos.Numerico) {
+    if (item.type === Types.Number) {
       return { valor: '', filtro: 'igual' }
     }
     return { valor: '', filtro: 'empiezaCon' }
   }
   switch (item.type) {
-    case Tipos.Switch: {
+    case Types.Switch: {
       return false
     }
-    case Tipos.Autocomplete: {
+    case Types.Autocomplete: {
       if (item.multiple) return []
       return null
     }
-    case Tipos.Multiple:
+    case Types.Multiple:
       return [
         Object.keys(item.configuration).reduce(
           (acc, it) => ({
@@ -71,7 +71,7 @@ const generarDefault = (item: TodosProps) => {
           {},
         ),
       ]
-    case Tipos.Imagen:
+    case Types.Image:
       return null
     default:
       return ''
@@ -88,21 +88,21 @@ export default memo((props: Props) => {
       const ocultar = depends && depends(valores) === false
 
       switch (campo.type) {
-        case Tipos.Input:
-        case Tipos.Correo:
-        case Tipos.Multilinea:
-        case Tipos.Numerico:
-        case Tipos.Telefono:
+        case Types.Input:
+        case Types.Email:
+        case Types.Multiline:
+        case Types.Number:
+        case Types.Phone:
           return <AlInput key={campo.id} {...campo} loading={loading} hide={ocultar} />
-        case Tipos.Opciones:
+        case Types.Options:
           return <AlSelect key={campo.id} {...campo} loading={loading} hide={ocultar} />
-        case Tipos.Imagen:
+        case Types.Image:
           return <AlImagen key={campo.id} {...campo} loading={loading} />
-        case Tipos.Autocomplete:
+        case Types.Autocomplete:
           return <AlAutocomplete key={campo.id} {...campo} loading={loading} />
-        case Tipos.Switch:
+        case Types.Switch:
           return <AlSwitch key={campo.id} {...campo} loading={loading} />
-        case Tipos.Multiple:
+        case Types.Multiple:
           return <AlMultiple key={campo.id} {...campo} loading={loading} />
         default:
           return null

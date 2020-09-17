@@ -4,12 +4,12 @@ import React, { useMemo } from 'react'
 import { FaPlus } from 'react-icons/fa'
 import Formulario from '.'
 import BaseInput from './BaseInput'
-import { Tipos, ComunesProps } from './Tipos'
+import { Types, ComunesProps } from './Types'
 
-type ConfProps = { [key: string]: { tipo: Tipos; title: string } }
+type ConfProps = { [key: string]: { tipo: Types; title: string } }
 
 export interface AlMultipleProps extends ComunesProps {
-  type: Tipos.Multiple
+  type: Types.Multiple
   configuration: ConfProps
 }
 

@@ -2,14 +2,14 @@ import { useReducer, useRef, useCallback, useEffect } from 'react'
 import axios, { AxiosRequestConfig, AxiosError } from 'axios'
 // import { useSnackbar } from 'notistack'
 
-interface Error {
+export interface Error {
   mensaje: string
   codigo: number
 }
 
 interface Props {
   alIniciar?: AxiosRequestConfig
-  onError?: (error: Error) => {}
+  onError?: (error: Error) => void
 }
 
 interface Respuesta<T> extends Estado<T> {

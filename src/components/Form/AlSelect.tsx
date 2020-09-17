@@ -8,10 +8,10 @@ import {
 } from '@material-ui/core'
 import { useField } from 'formik'
 import BaseInput from './BaseInput'
-import { Tipos, ComunesProps, OpcionesProps } from './Tipos'
+import { Types, ComunesProps, OpcionesProps } from './Types'
 
 export interface AlSelectProps extends ComunesProps {
-  type: Tipos.Opciones
+  type: Types.Options
   placeholder: string
   options: OpcionesProps[]
 }

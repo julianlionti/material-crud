@@ -8,7 +8,7 @@ import {
   FaSortNumericUpAlt,
 } from 'react-icons/fa'
 import { TodosProps } from '../Form'
-import { Tipos } from '../Form/Tipos'
+import { Types } from '../Form/Types'
 
 export interface Ordenado {
   [key: string]: 1 | -1 | 0
@@ -31,10 +31,10 @@ export default (props: Props) => {
       if (!ordenado) return <FaSortAmountDownAlt fontSize={icono} />
       switch (ordenado[id]) {
         case 1:
-          if (type === Tipos.Numerico) return <FaSortNumericDown fontSize={icono} />
+          if (type === Types.Numerico) return <FaSortNumericDown fontSize={icono} />
           return <FaSortAlphaDown fontSize={icono} />
         case -1:
-          if (type === Tipos.Numerico) return <FaSortNumericUpAlt fontSize={icono} />
+          if (type === Types.Numerico) return <FaSortNumericUpAlt fontSize={icono} />
           return <FaSortAlphaUp fontSize={icono} />
         default:
           return <FaSortAmountDownAlt fontSize={icono} />

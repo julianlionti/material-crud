@@ -4,10 +4,10 @@ import { useField } from 'formik'
 import { TextField, Checkbox, Paper, makeStyles } from '@material-ui/core'
 import { FaRegCheckSquare, FaRegSquare } from 'react-icons/fa'
 import BaseInput from './BaseInput'
-import { OpcionesProps, Tipos, ComunesProps } from './Tipos'
+import { OpcionesProps, Types, ComunesProps } from './Types'
 
 export interface AlAutocompleteProps extends ComunesProps {
-  type: Tipos.Autocomplete
+  type: Types.Autocomplete
   error?: any
   options: OpcionesProps[]
   multiple?: boolean

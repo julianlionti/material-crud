@@ -2,10 +2,10 @@ import React from 'react'
 import { FormControlLabel, Switch } from '@material-ui/core'
 import { useField } from 'formik'
 import BaseInput from './BaseInput'
-import { ComunesProps, Tipos } from './Tipos'
+import { ComunesProps, Types } from './Types'
 
 export interface AlSwitchProps extends ComunesProps {
-  type: Tipos.Switch
+  type: Types.Switch
 }
 
 export default (props: AlSwitchProps) => {

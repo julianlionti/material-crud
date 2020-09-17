@@ -10,10 +10,10 @@ import { ReactComponent as Camara } from '../../assets/icons/camera.svg'
 import { useField } from 'formik'
 import { red } from '@material-ui/core/colors'
 import BaseInput from './BaseInput'
-import { Tipos, ComunesProps } from './Tipos'
+import { Types, ComunesProps } from './Types'
 
 export interface AlImagenProps extends ComunesProps {
-  type: Tipos.Imagen
+  type: Types.Image
   baseURL: string
 }
 

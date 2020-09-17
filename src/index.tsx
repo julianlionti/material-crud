@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react'
 
 import Crud from './components/Crud'
 import Form from './components/Form'
-import { Tipos } from './components/Form/Tipos'
+import { Types } from './components/Form/Types'
 
 import CenteredCard from './components/UI/CenteredCard'
 import Dialog from './components/UI/Dialog'
@@ -21,5 +21,5 @@ export {
   useAxios,
   llamarWS,
   useWindowSize,
-  Tipos,
+  Types,
 }

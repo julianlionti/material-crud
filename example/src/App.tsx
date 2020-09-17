@@ -1,25 +1,30 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { BrowserRouter, Switch, Route, Link } from 'react-router-dom'
 
-import { Dialog, CenteredCard, Form, Tipos } from 'material-crud'
+import FormExample from './FormExample'
+import CrudExample from './CrudExample'
 
-const App = () => {
-  const [dialog, setDialog] = useState<null | Object>(null)
-
-  return (
-    <CenteredCard title="Ejemplo" subtitle={'Subtitulo'}>
-      <Form
-        fields={[{ id: 'prueba', type: Tipos.Input, title: 'Prueba' }]}
-        accept={'Submit'}
-        onSubmit={(vals) => setDialog(vals)}
+const App = () => (
+  <BrowserRouter>
+    <Switch>
+      <Route
+        path="/"
+        exact
+        component={() => (
+          <ul>
+            <li>
+              <Link to="/form">Form example</Link>
+            </li>
+            <li>
+              <Link to="/crud">Crud example</Link>
+            </li>
+          </ul>
+        )}
       />
-      <Dialog
-        show={!!dialog}
-        onClose={() => setDialog(null)}
-        title={'Material-CRUD'}
-        content={JSON.stringify(dialog || {})}
-      />
-    </CenteredCard>
-  )
-}
+      <Route path="/form" component={FormExample} />
+      <Route path="/crud" component={CrudExample} />
+    </Switch>
+  </BrowserRouter>
+)
 
 export default App
