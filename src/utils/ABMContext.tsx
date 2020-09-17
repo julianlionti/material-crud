@@ -17,7 +17,7 @@ export const ABMProvider = ({ children }: { children: ReactNode }) => {
   return <ABMContext.Provider value={estado}>{children}</ABMContext.Provider>
 }
 
-interface UseProps<T> {
+export interface UseProps<T> {
   id?: keyof T
 }
 
