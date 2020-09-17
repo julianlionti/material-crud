@@ -30,7 +30,7 @@ OR
 $ yarn add material-crud
 ```
 
-Instalar todas las dependencias que tiene
+Install all dependencies
 
 ```sh
 $ npm install @material-ui/core @material-ui/lab axios formik react-icons moment
