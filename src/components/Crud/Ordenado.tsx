@@ -31,10 +31,10 @@ export default (props: Props) => {
       if (!ordenado) return <FaSortAmountDownAlt fontSize={icono} />
       switch (ordenado[id]) {
         case 1:
-          if (type === Types.Numerico) return <FaSortNumericDown fontSize={icono} />
+          if (type === Types.Number) return <FaSortNumericDown fontSize={icono} />
           return <FaSortAlphaDown fontSize={icono} />
         case -1:
-          if (type === Types.Numerico) return <FaSortNumericUpAlt fontSize={icono} />
+          if (type === Types.Number) return <FaSortNumericUpAlt fontSize={icono} />
           return <FaSortAlphaUp fontSize={icono} />
         default:
           return <FaSortAmountDownAlt fontSize={icono} />
