@@ -124,7 +124,8 @@ export default memo((props: Props) => {
 
   return (
     <Formik
-      enableReinitialize={!onSubmit}
+      // enableReinitialize={!onSubmit}
+      enableReinitialize
       initialValues={Object.keys(intials || {}).length > 0 ? intials : porDefecto}
       validationSchema={noValidate ? null : Yup.object().shape(valSchema)}
       onSubmit={(vals, helpers) => {

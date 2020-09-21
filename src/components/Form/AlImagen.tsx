@@ -37,8 +37,6 @@ export default memo((props: AlImagenProps) => {
     return null
   }, [base64, baseURL, value])
 
-  console.log(srcFinal, value)
-
   return (
     <BaseInput grow={grow}>
       <Collapse in={!subiendo}>

@@ -20,12 +20,12 @@ import { FaFilter } from 'react-icons/fa'
 import Formulario, { CamposProps } from '../Form'
 import useAxios, { Error } from '../../utils/useAxios'
 import { useABM } from '../../utils/ABMContext'
-// import { useSnackbar } from 'notistack'
 import Dialog, { CartelState } from '../UI/Dialog'
 import Ordenado from './Ordenado'
 import useWindowSize from '../../utils/useWindowSize'
 import { CenteredCard } from '../..'
 import { serialize } from 'object-to-formdata'
+import { Translations } from '../../translate'
 
 export interface ABM {
   onEditar?: () => void
@@ -48,6 +48,7 @@ interface Props {
   isFormData?: boolean
   onFinished?: (what: 'new' | 'add' | 'update' | 'delete', genero?: 'M' | 'F') => void
   onError?: (err: Error) => void
+  lang?: Translations
 }
 
 interface Paginado {
@@ -73,6 +74,7 @@ export default memo((props: Props) => {
     onFinished,
     titleSize,
     onError,
+    lang,
   } = props
 
   const llamado = useRef(false)
@@ -98,24 +100,17 @@ export default memo((props: Props) => {
     if (item && !_id) {
       agregar([item])
       onFinished && onFinished('new', gender)
-      // enqueueSnackbar(`${que} agregad${genero === 'F' ? 'a' : 'o'}`, {
-      //   variant: 'success',
-      // })
       setEditar(null)
     } else if (item && _id) {
       editarABM({ id: _id, item: { ...item, editado: true } })
       onFinished && onFinished('update', gender)
-      // enqueueSnackbar(`${que} editad${genero === 'F' ? 'a' : 'o'}`, {
-      //   variant: 'success',
-      // })
       setEditar(null)
     } else if (borrado) {
       editarABM({ id: _id, item: { ...borrado, borrado: true } })
       onFinished && onFinished('delete', gender)
-      // enqueueSnackbar(`${que} borrad${genero === 'F' ? 'a' : 'o'}`, { variant: 'info' })
       setCartel({ visible: false })
     }
-  }, [item, _id, agregar, editarABM, borrado, borrar, gender])
+  }, [item, _id, agregar, editarABM, borrado, borrar, gender, onFinished])
 
   const { docs, page } = data || {}
   useEffect(() => {
@@ -146,7 +141,7 @@ export default memo((props: Props) => {
       setCartel({
         visible: true,
         contenido: `¿Estás segure de borrar el ${it.nombre}? Esta accion no se puede deshacer?`,
-        titulo: `Borrar ${name}`,
+        titulo: `${lang?.delete || 'Borrar'} ${name}`,
         onCerrar: (aceptado: boolean) => {
           if (aceptado) {
             llamar({ method: 'DELETE', data: { id: it._id }, url })
@@ -156,35 +151,39 @@ export default memo((props: Props) => {
         },
       })
     },
-    [llamar, name, url],
+    [llamar, name, url, lang],
   )
 
   const filtros = useMemo(() => {
-    const items = fields.flat().filter((e) => e.filter)
+    const items = fields
+      .flat()
+      .filter((e) => e.filter)
+      .map(({ grow, ...etc }) => etc)
     const columnas = columnsFilters || 3
     return new Array(Math.ceil(items.length / columnas))
       .fill(null)
       .map((_) => items.splice(0, columnas))
-  }, [fields, columnsFilters])
+  }, [columnsFilters, fields])
+
+  const camposSinFiltros = useMemo(
+    () =>
+      fields.map((cam) => {
+        if (Array.isArray(cam)) {
+          return cam.map(({ filter, ...etc }) => etc)
+        }
+        const { filter, ...etc } = cam
+        return etc
+      }),
+    [fields],
+  )
 
   const ordenar = useMemo(() => fields.flat().filter((e) => e.sort), [fields])
-
-  const camposSinFiltros = useMemo(() => {
-    return fields.map((cam) => {
-      if (Array.isArray(cam)) {
-        return cam.map(({ filter, ...etc }) => etc)
-      }
-      const { filter, ...etc } = cam
-      return etc
-    })
-  }, [fields])
-
   return (
     <div className={clases.contenedor}>
       <Collapse in={!editar} timeout="auto" unmountOnExit>
         <div className={clases.toolbarContainer}>
           <Typography gutterBottom={false} variant="h1" className={clases.title}>{`${
-            toolbar ? 'Filtrar ' : 'Listado de '
+            toolbar ? lang?.filter || 'Filtrar' : lang?.listOf || 'Listado de '
           } ${name}`}</Typography>
           <div>
             {Object.keys(filtros || {}).length > 0 && (
@@ -194,10 +193,13 @@ export default memo((props: Props) => {
                 disabled={!!editar}
                 className={clases.colapseBtn}
                 onClick={() => setToolbar((t) => !t)}>
-                {`${toolbar ? 'Cerrar' : 'Abrir'} filtros`}
+                {`${toolbar ? lang?.close || 'Cerrar' : lang?.open || 'Abrir'} ${
+                  lang?.filters || 'filtros'
+                }`}
               </Button>
             )}
             <Ordenado
+              lang={lang}
               que={name}
               columnas={ordenar}
               onOrden={(ordenado) => {
@@ -219,14 +221,16 @@ export default memo((props: Props) => {
               variant="outlined"
               className={clases.nuevoBtn}
               onClick={() => setEditar({})}>
-              {`Agregar nuev${gender === 'F' ? 'a' : 'o'} ${name}`}
+              {`${lang?.add || 'Agregar nuev'}${
+                gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''
+              } ${name}`}
             </Button>
           </div>
         </div>
         {filtros && (
           <Collapse in={toolbar} timeout="auto" unmountOnExit>
             <Formulario
-              accept="Filtrar"
+              accept={lang?.filter || 'Filtrar'}
               fields={filtros}
               onSubmit={(filtros) => {
                 ultimaBusqueda.current = {
@@ -276,7 +280,7 @@ export default memo((props: Props) => {
               })
             }}>
             <Button variant="outlined" color="primary">
-              Ver más
+              {lang?.seeMore || 'Ver más'}
             </Button>
           </div>
         )}
@@ -284,12 +288,16 @@ export default memo((props: Props) => {
       <Collapse in={!!editar} timeout="auto" unmountOnExit>
         <CenteredCard
           onClose={() => setEditar(null)}
-          title={`${editando ? 'Editar ' : `Nuev${gender === 'F' ? 'a' : 'o'}`} ${name}`}
+          title={`${
+            editando
+              ? lang?.edit || 'Editar '
+              : lang?.new || `Nuev${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
+          } ${name}`}
           subtitle={description}>
           <Formulario
             intials={editar}
             loading={cargando}
-            accept={editando ? 'Editar' : 'Agregar'}
+            accept={editando ? lang?.edit || 'Editar' : lang?.add || 'Agregar'}
             fields={camposSinFiltros}
             onSubmit={(vals) => {
               let data = vals

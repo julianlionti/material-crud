@@ -6,7 +6,7 @@ import Formulario from '.'
 import BaseInput from './BaseInput'
 import { Types, ComunesProps } from './Types'
 
-type ConfProps = { [key: string]: { tipo: Types; title: string } }
+type ConfProps = { [key: string]: { type: Types; title: string } }
 
 export interface AlMultipleProps extends ComunesProps {
   type: Types.Multiple
@@ -24,13 +24,11 @@ export default (props: AlMultipleProps) => {
       value.map((e) =>
         Object.keys(e).map((key) => {
           const conf = configuration[key]
-          return { id: key, titulo: conf.title, tipo: conf.tipo }
+          return { id: key, titulo: conf.title, type: conf.type }
         }),
       ),
     [configuration, value],
   )
-
-  console.log(fields)
 
   return (
     <BaseInput grow={grow} ocultar={hide}>
