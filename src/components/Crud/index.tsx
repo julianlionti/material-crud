@@ -16,7 +16,7 @@ import {
   Button,
   LinearProgress,
 } from '@material-ui/core'
-import { FaFilter } from 'react-icons/fa'
+import { FaFilter, FaArrowLeft } from 'react-icons/fa'
 import Formulario, { CamposProps } from '../Form'
 import useAxios, { Error } from '../../utils/useAxios'
 import { useABM } from '../../utils/ABMContext'
@@ -48,6 +48,7 @@ interface Props {
   isFormData?: boolean
   onFinished?: (what: 'new' | 'add' | 'update' | 'delete', genero?: 'M' | 'F') => void
   onError?: (err: Error) => void
+  Left?: ReactNode
 }
 
 interface Paginado {
@@ -73,6 +74,7 @@ export default memo((props: Props) => {
     onFinished,
     titleSize,
     onError,
+    Left,
   } = props
 
   const llamado = useRef(false)
@@ -183,9 +185,12 @@ export default memo((props: Props) => {
     <div className={clases.contenedor}>
       <Collapse in={!editar} timeout="auto" unmountOnExit>
         <div className={clases.toolbarContainer}>
-          <Typography gutterBottom={false} variant="h1" className={clases.title}>{`${
-            toolbar ? 'Filtrar ' : 'Listado de '
-          } ${name}`}</Typography>
+          <div style={{ display: 'flex' }}>
+            {Left && <div hidden={cargando}>{Left}</div>}
+            <Typography gutterBottom={false} variant="h1" className={clases.title}>{`${
+              toolbar ? 'Filtrar ' : 'Listado de '
+            } ${name}`}</Typography>
+          </div>
           <div>
             {Object.keys(filtros || {}).length > 0 && (
               <Button

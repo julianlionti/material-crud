@@ -1,6 +1,8 @@
-import React, { useCallback, useState } from 'react'
-
-import { Dialog, CenteredCard, Form, Types, Crud } from 'material-crud'
+import React, { useEffect } from 'react'
+import { useHistory } from 'react-router-dom'
+import { Types, Crud } from 'material-crud'
+import { FaArrowLeft } from 'react-icons/fa'
+import { Button } from '@material-ui/core'
 
 interface Camiseta {
   jugador: string
@@ -19,8 +21,19 @@ const ItemCamiseta = ({ jugador, numero, equipo }: Camiseta) => {
 }
 
 export default () => {
+  const history = useHistory()
+
+  useEffect(() => {
+    return () => {}
+  }, [])
+
   return (
     <Crud
+      Left={
+        <Button color="inherit" onClick={() => history.push('/')}>
+          <FaArrowLeft />
+        </Button>
+      }
       fields={[
         { id: 'equipo', type: Types.Input, title: 'Equipo' },
         [
@@ -30,7 +43,7 @@ export default () => {
       ]}
       gender="F"
       description="Crud example"
-      name="Camiseta"
+      name="Camisetas"
       url="http://localhost:5050/api/camiseta"
       renderItem={(props: Camiseta) => {
         return <ItemCamiseta {...props} />
