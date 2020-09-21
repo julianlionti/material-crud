@@ -1,41 +1,73 @@
-import React, { useCallback, useState } from 'react'
+import React from 'react'
 
-import { Dialog, CenteredCard, Form, Types, Crud } from 'material-crud'
+import { Types, Crud, ABMProvider } from 'material-crud'
+import { Card } from '@material-ui/core'
+import { english } from "./lang";
 
-interface Camiseta {
-  jugador: string
-  numero: number
-  equipo: string
+interface Categoria {
+  nombre: string
+  descripcion: string
+  requiereNormativa?: boolean
+  normativas: { nombre: string }[]
 }
 
-const ItemCamiseta = ({ jugador, numero, equipo }: Camiseta) => {
+const ItemCategoria = ({ nombre }: Categoria) => {
   return (
-    <div style={{ flex: 1 }}>
+    <Card style={{ flex: 1, minWidth: 260, maxWidth: 260, height: 150, margin: 8 }}>
       <div>
-        <span>Equipo: {equipo}</span>
+        <span>Nombre: {nombre}</span>
       </div>
-    </div>
+    </Card>
   )
 }
 
 export default () => {
   return (
-    <Crud
-      fields={[
-        { id: 'equipo', type: Types.Input, title: 'Equipo' },
-        [
-          { id: 'jugador', type: Types.Input, title: 'Jugador', grow: 6 },
-          { id: 'numero', type: Types.Number, title: 'Numero', grow: 4 },
-        ],
-      ]}
-      gender="F"
-      description="Crud example"
-      name="Camiseta"
-      url="http://localhost:5050/api/camiseta"
-      renderItem={(props: Camiseta) => {
-        return <ItemCamiseta {...props} />
-      }}
-      onError={(err) => console.log(err)}
-    />
+    <ABMProvider>
+      <Crud
+        lang={english}
+        fields={[
+          {
+            id: 'nombre',
+            title: 'Nombre',
+            placeholder: 'Nombre de la categoría',
+            type: Types.Input,
+            filter: true,
+            sort: true,
+          },
+          {
+            id: 'descripcion',
+            title: 'Descripción',
+            placeholder: 'Descripción de la categoría',
+            type: Types.Multiline,
+            filter: true,
+            sort: true,
+          },
+          {
+            id: 'requiereNormativa',
+            type: Types.Switch,
+            title: 'Requiere normativa',
+          },
+          {
+            id: 'normativas',
+            type: Types.Multiple,
+            title: 'Normativas necesarias',
+            depends: ({ requiereNormativa }: Categoria) => requiereNormativa === false,
+            configuration: {
+              nombre: { type: Types.Input, title: 'Nombre' },
+              cantidad: { type: Types.Number, title: 'Cantidad' },
+            },
+          },
+        ]}
+        // gender="F"
+        description="Crud example"
+        name="Camiseta"
+        url="http://localhost:5050/api/categoria"
+        renderItem={(props: Categoria) => {
+          return <ItemCategoria {...props} />
+        }}
+        onError={(err) => console.log(err)}
+      />
+    </ABMProvider>
   )
 }
