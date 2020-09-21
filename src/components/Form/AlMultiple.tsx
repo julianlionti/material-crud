@@ -24,7 +24,7 @@ export default (props: AlMultipleProps) => {
       value.map((e) =>
         Object.keys(e).map((key) => {
           const conf = configuration[key]
-          return { id: key, titulo: conf.title, type: conf.type }
+          return { id: key, title: conf.title, type: conf.type }
         }),
       ),
     [configuration, value],
