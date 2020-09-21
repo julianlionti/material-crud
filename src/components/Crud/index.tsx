@@ -100,21 +100,14 @@ export default memo((props: Props) => {
     if (item && !_id) {
       agregar([item])
       onFinished && onFinished('new', gender)
-      // enqueueSnackbar(`${que} agregad${genero === 'F' ? 'a' : 'o'}`, {
-      //   variant: 'success',
-      // })
       setEditar(null)
     } else if (item && _id) {
       editarABM({ id: _id, item: { ...item, editado: true } })
       onFinished && onFinished('update', gender)
-      // enqueueSnackbar(`${que} editad${genero === 'F' ? 'a' : 'o'}`, {
-      //   variant: 'success',
-      // })
       setEditar(null)
     } else if (borrado) {
       editarABM({ id: _id, item: { ...borrado, borrado: true } })
       onFinished && onFinished('delete', gender)
-      // enqueueSnackbar(`${que} borrad${genero === 'F' ? 'a' : 'o'}`, { variant: 'info' })
       setCartel({ visible: false })
     }
   }, [item, _id, agregar, editarABM, borrado, borrar, gender, onFinished])
@@ -165,10 +158,7 @@ export default memo((props: Props) => {
     const items = fields
       .flat()
       .filter((e) => e.filter)
-      .map(({ grow, ...etc }) => {
-        console.log(etc, grow)
-        return etc
-      })
+      .map(({ grow, ...etc }) => etc)
     const columnas = columnsFilters || 3
     return new Array(Math.ceil(items.length / columnas))
       .fill(null)
@@ -182,8 +172,6 @@ export default memo((props: Props) => {
           return cam.map(({ filter, ...etc }) => etc)
         }
         const { filter, ...etc } = cam
-        console.log(etc, filter)
-
         return etc
       }),
     [fields],

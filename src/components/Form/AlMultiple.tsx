@@ -30,8 +30,6 @@ export default (props: AlMultipleProps) => {
     [configuration, value],
   )
 
-  console.log(fields)
-
   return (
     <BaseInput grow={grow} ocultar={hide}>
       <Paper elevation={0}>
