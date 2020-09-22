@@ -12,6 +12,7 @@ export enum Types {
   // Ubicacion,
   Switch,
   Multiple,
+  Custom,
 }
 
 export interface OpcionesProps {
@@ -22,7 +23,7 @@ export interface OpcionesProps {
 
 export interface ComunesProps {
   id: string
-  title: string
+  title?: string
   validate?: Yup.Schema<any>
   grow?: number
   help?: string

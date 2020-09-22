@@ -1,22 +1,36 @@
 import React, { useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
-import { Types, Crud } from 'material-crud'
+import { Types, Crud, CrudProps, ABMProvider } from 'material-crud'
 import { FaArrowLeft } from 'react-icons/fa'
-import { Button } from '@material-ui/core'
+import { Button, Card, CardActions, CardContent, IconButton } from '@material-ui/core'
+import { english } from './lang'
+import CustomField from './extra/CustomField'
 
-interface Camiseta {
-  jugador: string
-  numero: number
-  equipo: string
+interface Categoria extends CrudProps {
+  nombre: string
+  descripcion: string
+  requiereNormativa?: boolean
+  normativas: { nombre: string }[]
 }
 
-const ItemCamiseta = ({ jugador, numero, equipo }: Camiseta) => {
+const ItemCategoria = ({ nombre, onBorrar, onEditar }: Categoria) => {
   return (
-    <div style={{ flex: 1 }}>
-      <div>
-        <span>Equipo: {equipo}</span>
-      </div>
-    </div>
+    <Card
+      style={{
+        flex: 1,
+        minWidth: 260,
+        maxWidth: 260,
+        height: 150,
+        margin: 8,
+      }}>
+      <CardContent>
+        <p>Nombre: {nombre}</p>
+      </CardContent>
+      <CardActions>
+        <Button onClick={onBorrar}>Borrar</Button>
+        <Button onClick={onEditar}>Editar</Button>
+      </CardActions>
+    </Card>
   )
 }
 
@@ -28,27 +42,61 @@ export default () => {
   }, [])
 
   return (
-    <Crud
-      Left={
-        <Button color="inherit" onClick={() => history.push('/')}>
-          <FaArrowLeft />
-        </Button>
-      }
-      fields={[
-        { id: 'equipo', type: Types.Input, title: 'Equipo' },
-        [
-          { id: 'jugador', type: Types.Input, title: 'Jugador', grow: 6 },
-          { id: 'numero', type: Types.Number, title: 'Numero', grow: 4 },
-        ],
-      ]}
-      gender="F"
-      description="Crud example"
-      name="Camisetas"
-      url="http://localhost:5050/api/camiseta"
-      renderItem={(props: Camiseta) => {
-        return <ItemCamiseta {...props} />
-      }}
-      onError={(err) => console.log(err)}
-    />
+    <ABMProvider>
+      <Crud
+        Left={
+          <IconButton color="inherit" onClick={() => history.push('/')}>
+            <FaArrowLeft />
+          </IconButton>
+        }
+        lang={english}
+        fields={[
+          {
+            id: 'custom',
+            type: Types.Custom,
+            component: (props) => <CustomField {...props} />,
+          },
+          {
+            id: 'nombre',
+            title: 'Nombre',
+            placeholder: 'Nombre de la categoría',
+            type: Types.Input,
+            filter: true,
+            sort: true,
+          },
+          {
+            id: 'descripcion',
+            title: 'Descripción',
+            placeholder: 'Descripción de la categoría',
+            type: Types.Multiline,
+            filter: true,
+            sort: true,
+          },
+          {
+            id: 'requiereNormativa',
+            type: Types.Switch,
+            title: 'Requiere normativa',
+          },
+          {
+            id: 'normativas',
+            type: Types.Multiple,
+            title: 'Normativas necesarias',
+            depends: ({ requiereNormativa }: Categoria) => requiereNormativa === false,
+            configuration: [
+              { type: Types.Input, title: 'Nombre', id: 'nombre' },
+              { type: Types.Number, title: 'Cantidad', id: 'cantidad' },
+            ],
+          },
+        ]}
+        // gender="F"
+        description="Crud example"
+        name="Camiseta"
+        url="http://localhost:5050/api/categoria"
+        renderItem={(props: Categoria) => {
+          return <ItemCategoria {...props} />
+        }}
+        onError={(err) => console.log(err)}
+      />
+    </ABMProvider>
   )
 }

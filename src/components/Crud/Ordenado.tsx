@@ -9,6 +9,7 @@ import {
 } from 'react-icons/fa'
 import { TodosProps } from '../Form'
 import { Types } from '../Form/Types'
+import { Translations } from '../../translate'
 
 export interface Ordenado {
   [key: string]: 1 | -1 | 0
@@ -18,11 +19,12 @@ interface Props {
   que: string
   columnas: TodosProps[]
   onOrden: (orden: Ordenado) => void
+  lang?: Translations
 }
 
 const icono = 22
 export default (props: Props) => {
-  const { columnas, onOrden } = props
+  const { columnas, onOrden, lang } = props
   const [anchorOrdenar, setAnchorOrdenar] = useState<HTMLElement | null>(null)
   const [ordenado, setOrdenado] = useState<Ordenado>({})
 
@@ -43,7 +45,7 @@ export default (props: Props) => {
     [ordenado],
   )
 
-  if (columnas.length === 0) return null
+  if (!columnas.length) return null
 
   return (
     <Fragment>
@@ -51,7 +53,7 @@ export default (props: Props) => {
         color="primary"
         endIcon={<FaSortAmountDownAlt />}
         onClick={(e) => setAnchorOrdenar(e.currentTarget)}>
-        Ordenar
+        {lang?.sort || 'Ordenar'}
       </Button>
       <Menu
         transformOrigin={{

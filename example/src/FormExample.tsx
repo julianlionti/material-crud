@@ -3,6 +3,7 @@ import { Dialog, CenteredCard, Form, Types } from 'material-crud'
 import { useHistory } from 'react-router'
 import { Button } from '@material-ui/core'
 import { FaTimes } from 'react-icons/fa'
+import CustomField from './extra/CustomField'
 
 export default () => {
   const history = useHistory()
@@ -20,14 +21,23 @@ export default () => {
     <CenteredCard
       title="Ejemplo"
       subtitle={'Subtitulo'}
-      Right={
-        <Button color="inherit" onClick={() => history.push('/')}>
-          <FaTimes />
-        </Button>
-      }>
+      onClose={() => history.push('/')}
+      // Right={
+      //   <Button color="inherit" onClick={() => history.push('/')}>
+      //     <FaTimes />
+      //   </Button>
+      // }
+      >
       <Form
         loading={loading}
-        fields={[{ id: 'prueba', type: Types.Input, title: 'Prueba' }]}
+        fields={[
+          { id: 'prueba', type: Types.Input, title: 'Prueba' },
+          {
+            id: 'custom',
+            type: Types.Custom,
+            component: (props) => <CustomField {...props} />,
+          },
+        ]}
         accept={'Submit'}
         onSubmit={submitForm}
       />

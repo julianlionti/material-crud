@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { FormControlLabel, Switch } from '@material-ui/core'
 import { useField } from 'formik'
 import BaseInput from './BaseInput'
@@ -8,7 +8,7 @@ export interface AlSwitchProps extends ComunesProps {
   type: Types.Switch
 }
 
-export default (props: AlSwitchProps) => {
+export default memo((props: AlSwitchProps) => {
   const { id, title, grow } = props
   const [{ value, onChange }] = useField(id)
   return (
@@ -19,4 +19,4 @@ export default (props: AlSwitchProps) => {
       />
     </BaseInput>
   )
-}
+})
