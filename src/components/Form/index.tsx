@@ -9,6 +9,7 @@ import AlAutocomplete, { AlAutocompleteProps } from './AlAutocomplete'
 import AlSwitch, { AlSwitchProps } from './AlSwitch'
 import AlMultiple, { AlMultipleProps } from './AlMultiple'
 import { Types } from './Types'
+import AlCustom, { AlCustomProps } from './AlCustom'
 
 Yup.setLocale({
   string: {
@@ -26,6 +27,7 @@ export type TodosProps =
   | AlAutocompleteProps
   | AlSwitchProps
   | AlMultipleProps
+  | AlCustomProps
 
 export type CamposProps = TodosProps | TodosProps[]
 
@@ -40,7 +42,7 @@ export interface Props {
 
 export const createFields = (props: () => CamposProps[]) => props()
 
-const generarDefault = (item: TodosProps) => {
+const generarDefault = (item: TodosProps): any => {
   if (item.filter) {
     if (item.type === Types.Autocomplete) {
       if (item.multiple) return []
@@ -63,14 +65,18 @@ const generarDefault = (item: TodosProps) => {
     }
     case Types.Multiple:
       return [
-        Object.keys(item.configuration).reduce(
-          (acc, it) => ({
-            ...acc,
-            [it]: '',
-          }),
-          {},
-        ),
+        { nombre: 'uno 1', cantidad: 250 },
+        { nombre: 'Dos 2', cantidad: 125 },
+        // Object.keys(item.configuration).reduce(
+        //   (acc, it) => ({
+        //     ...acc,
+        //     [it]: generarDefault(item.configuration[it] as TodosProps),
+        //   }),
+        //   {},
+        // ),
       ]
+    case Types.Number:
+      return 0
     case Types.Image:
       return null
     default:
@@ -104,6 +110,8 @@ export default memo((props: Props) => {
           return <AlSwitch key={campo.id} {...campo} loading={loading} />
         case Types.Multiple:
           return <AlMultiple key={campo.id} {...campo} loading={loading} />
+        case Types.Custom:
+          return <AlCustom key={campo.id} {...campo} loading={loading} />
         default:
           return null
       }
@@ -133,10 +141,10 @@ export default memo((props: Props) => {
       }}>
       {({ submitForm, values }) => (
         <div className={clases.contenedor}>
-          {fields.map((campo) => {
+          {fields.map((campo, index) => {
             if (Array.isArray(campo)) {
               return (
-                <div key={`${campo[0].id}-row`} className={clases.horizontal}>
+                <div key={`${campo[0].id}-row-${index}`} className={clases.horizontal}>
                   {campo.map((e) => renderInput(e, values))}
                 </div>
               )

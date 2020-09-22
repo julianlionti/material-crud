@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import React, { memo, ReactNode } from 'react'
 import { makeStyles, Collapse } from '@material-ui/core'
 
 interface Props {
@@ -9,14 +9,14 @@ interface Props {
   ocultar?: boolean
 }
 
-export default ({ children, grow, fullWidth, centrado, ocultar }: Props) => {
+export default memo(({ children, grow, fullWidth, centrado, ocultar }: Props) => {
   const clases = useClases({ grow, fullWidth, centrado })
   return (
     <Collapse className={clases.input} in={!ocultar} unmountOnExit>
       {children}
     </Collapse>
   )
-}
+})
 
 const useClases = makeStyles((tema) => ({
   input: ({ grow, fullWidth, centrado }: any) => ({

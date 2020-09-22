@@ -86,8 +86,15 @@ const opcionesFiltros: FiltrosProps = {
   ],
 }
 
+export type InputsTypes =
+  | Types.Input
+  | Types.Email
+  | Types.Multiline
+  | Types.Number
+  | Types.Phone
+
 export interface AlInputProps extends ComunesProps {
-  type: Types.Input | Types.Email | Types.Multiline | Types.Number | Types.Phone
+  type: InputsTypes
   max?: number
   willSubmit?: boolean
   placeholder?: string
