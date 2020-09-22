@@ -1,4 +1,4 @@
-import React, { useMemo, ReactNode, useEffect, useRef, useCallback } from 'react'
+import React, { useMemo, ReactNode, useEffect, useRef, useCallback, memo } from 'react'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import { useField } from 'formik'
 import { TextField, Checkbox, Paper, makeStyles } from '@material-ui/core'
@@ -19,7 +19,7 @@ export interface AlAutocompleteProps extends ComunesProps {
   placeholder?: string
 }
 
-export default (props: AlAutocompleteProps) => {
+export default memo((props: AlAutocompleteProps) => {
   const {
     id,
     title,
@@ -123,7 +123,7 @@ export default (props: AlAutocompleteProps) => {
       )}
     </BaseInput>
   )
-}
+})
 
 const useClases = makeStyles((tema) => ({
   agregado: {

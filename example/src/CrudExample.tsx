@@ -1,22 +1,34 @@
 import React from 'react'
 
-import { Types, Crud, ABMProvider } from 'material-crud'
-import { Card } from '@material-ui/core'
-import { english } from "./lang";
+import { Types, Crud, ABMProvider, CrudProps } from 'material-crud'
+import { Button, Card, CardActions, CardContent } from '@material-ui/core'
+import { english } from './lang'
+import CustomField from './extra/CustomField'
 
-interface Categoria {
+interface Categoria extends CrudProps {
   nombre: string
   descripcion: string
   requiereNormativa?: boolean
   normativas: { nombre: string }[]
 }
 
-const ItemCategoria = ({ nombre }: Categoria) => {
+const ItemCategoria = ({ nombre, onBorrar, onEditar }: Categoria) => {
   return (
-    <Card style={{ flex: 1, minWidth: 260, maxWidth: 260, height: 150, margin: 8 }}>
-      <div>
-        <span>Nombre: {nombre}</span>
-      </div>
+    <Card
+      style={{
+        flex: 1,
+        minWidth: 260,
+        maxWidth: 260,
+        height: 150,
+        margin: 8,
+      }}>
+      <CardContent>
+        <p>Nombre: {nombre}</p>
+      </CardContent>
+      <CardActions>
+        <Button onClick={onBorrar}>Borrar</Button>
+        <Button onClick={onEditar}>Editar</Button>
+      </CardActions>
     </Card>
   )
 }
@@ -27,6 +39,11 @@ export default () => {
       <Crud
         lang={english}
         fields={[
+          {
+            id: 'custom',
+            type: Types.Custom,
+            component: (props) => <CustomField {...props} />,
+          },
           {
             id: 'nombre',
             title: 'Nombre',
@@ -53,10 +70,10 @@ export default () => {
             type: Types.Multiple,
             title: 'Normativas necesarias',
             depends: ({ requiereNormativa }: Categoria) => requiereNormativa === false,
-            configuration: {
-              nombre: { type: Types.Input, title: 'Nombre' },
-              cantidad: { type: Types.Number, title: 'Cantidad' },
-            },
+            configuration: [
+              { type: Types.Input, title: 'Nombre', id: 'nombre' },
+              { type: Types.Number, title: 'Cantidad', id: 'cantidad' },
+            ],
           },
         ]}
         // gender="F"

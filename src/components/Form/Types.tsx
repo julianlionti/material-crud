@@ -12,6 +12,7 @@ export enum Types {
   // Ubicacion,
   Switch,
   Multiple,
+  Custom,
 }
 
 export interface OpcionesProps {

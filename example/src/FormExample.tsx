@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react'
 
 import { Dialog, CenteredCard, Form, Types } from 'material-crud'
+import CustomField from './extra/CustomField'
 
 export default () => {
   const [dialog, setDialog] = useState<null | Object>(null)
@@ -17,7 +18,14 @@ export default () => {
     <CenteredCard title="Ejemplo" subtitle={'Subtitulo'}>
       <Form
         loading={loading}
-        fields={[{ id: 'prueba', type: Types.Input, title: 'Prueba' }]}
+        fields={[
+          { id: 'prueba', type: Types.Input, title: 'Prueba' },
+          {
+            id: 'custom',
+            type: Types.Custom,
+            component: (props) => <CustomField {...props} />,
+          },
+        ]}
         accept={'Submit'}
         onSubmit={submitForm}
       />

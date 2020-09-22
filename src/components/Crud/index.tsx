@@ -23,9 +23,9 @@ import { useABM } from '../../utils/ABMContext'
 import Dialog, { CartelState } from '../UI/Dialog'
 import Ordenado from './Ordenado'
 import useWindowSize from '../../utils/useWindowSize'
-import { CenteredCard } from '../..'
 import { serialize } from 'object-to-formdata'
 import { Translations } from '../../translate'
+import CenteredCard from '../UI/CenteredCard'
 
 export interface ABM {
   onEditar?: () => void
