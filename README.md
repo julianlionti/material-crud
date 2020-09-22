@@ -52,4 +52,4 @@ MIT
 
 **Free Software, Hell Yeah!**
 
-[![Donate](https://i.ibb.co/5rwJKVJ/bud.png)](https://www.paypal.com/donate/?cmd=_s-xclick&hosted_button_id=RXFBVZSHL5QLG&source=url)
+[![Donate](https://i.ibb.co/3stYnvP/bud.png)](https://www.paypal.com/donate/?cmd=_s-xclick&hosted_button_id=RXFBVZSHL5QLG&source=url)
