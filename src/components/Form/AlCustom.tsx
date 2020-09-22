@@ -10,7 +10,7 @@ export interface CustomComponentProps {
   field: [FieldInputProps<any>, FieldMetaProps<any>, FieldHelperProps<any>]
 }
 
-export interface AlCustomProps extends Omit<ComunesProps, 'title'> {
+export interface AlCustomProps extends ComunesProps {
   type: Types.Custom
   component: (props: CustomComponentProps) => ReactNode
 }

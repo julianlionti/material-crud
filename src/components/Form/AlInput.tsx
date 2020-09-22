@@ -128,7 +128,7 @@ export default memo((props: AlInputProps) => {
 
   const finalTitle = useMemo<string>(() => {
     if (filter) {
-      return title
+      return title!!
     } else {
       const valor = value as string
       return `${title} ${valMax ? `(${valor?.length || 0}/${valMax})` : ''} ${

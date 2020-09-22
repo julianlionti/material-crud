@@ -1,7 +1,8 @@
-import React from 'react'
-
-import { Types, Crud, ABMProvider, CrudProps } from 'material-crud'
-import { Button, Card, CardActions, CardContent } from '@material-ui/core'
+import React, { useEffect } from 'react'
+import { useHistory } from 'react-router-dom'
+import { Types, Crud, CrudProps, ABMProvider } from 'material-crud'
+import { FaArrowLeft } from 'react-icons/fa'
+import { Button, Card, CardActions, CardContent, IconButton } from '@material-ui/core'
 import { english } from './lang'
 import CustomField from './extra/CustomField'
 
@@ -34,9 +35,20 @@ const ItemCategoria = ({ nombre, onBorrar, onEditar }: Categoria) => {
 }
 
 export default () => {
+  const history = useHistory()
+
+  useEffect(() => {
+    return () => {}
+  }, [])
+
   return (
     <ABMProvider>
       <Crud
+        Left={
+          <IconButton color="inherit" onClick={() => history.push('/')}>
+            <FaArrowLeft />
+          </IconButton>
+        }
         lang={english}
         fields={[
           {

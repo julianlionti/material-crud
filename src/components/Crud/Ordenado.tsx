@@ -45,7 +45,7 @@ export default (props: Props) => {
     [ordenado],
   )
 
-  if (columnas.length === 0) return null
+  if (!columnas.length) return null
 
   return (
     <Fragment>

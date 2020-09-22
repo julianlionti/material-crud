@@ -16,7 +16,7 @@ import {
   Button,
   LinearProgress,
 } from '@material-ui/core'
-import { FaFilter } from 'react-icons/fa'
+import { FaFilter, FaArrowLeft } from 'react-icons/fa'
 import Formulario, { CamposProps } from '../Form'
 import useAxios, { Error } from '../../utils/useAxios'
 import { useABM } from '../../utils/ABMContext'
@@ -48,6 +48,7 @@ interface Props {
   isFormData?: boolean
   onFinished?: (what: 'new' | 'add' | 'update' | 'delete', genero?: 'M' | 'F') => void
   onError?: (err: Error) => void
+  Left?: ReactNode
   lang?: Translations
 }
 
@@ -74,6 +75,7 @@ export default memo((props: Props) => {
     onFinished,
     titleSize,
     onError,
+    Left,
     lang,
   } = props
 
@@ -182,9 +184,12 @@ export default memo((props: Props) => {
     <div className={clases.contenedor}>
       <Collapse in={!editar} timeout="auto" unmountOnExit>
         <div className={clases.toolbarContainer}>
-          <Typography gutterBottom={false} variant="h1" className={clases.title}>{`${
-            toolbar ? lang?.filter || 'Filtrar' : lang?.listOf || 'Listado de '
-          } ${name}`}</Typography>
+          <div className={clases.leftComponent}>
+            {Left && <div hidden={cargando}>{Left}</div>}
+            <Typography gutterBottom={false} variant="h1" className={clases.title}>{`${
+              toolbar ? lang?.filter || 'Filtrar' : lang?.listOf || 'Listado de '
+            } ${name}`}</Typography>
+          </div>
           <div>
             {Object.keys(filtros || {}).length > 0 && (
               <Button
@@ -343,6 +348,10 @@ const useClases = makeStyles((tema) => ({
     marginBottom: tema.spacing(1),
     paddingLeft: tema.spacing(2),
     paddingRight: tema.spacing(2),
+  },
+  leftComponent: {
+    display: 'flex',
+    alignItems: 'center',
   },
   colapseBtn: {
     marginLeft: tema.spacing(2),
