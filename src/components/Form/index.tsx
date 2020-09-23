@@ -64,9 +64,15 @@ const generarDefault = (item: TodosProps): any => {
       return null
     }
     case Types.Multiple:
+      const objDefault = item.configuration.reduce(
+        (acc, it) => ({ ...acc, [it.id]: '' }),
+        {},
+      )
+
       return [
-        { nombre: 'uno 1', cantidad: 250 },
-        { nombre: 'Dos 2', cantidad: 125 },
+        objDefault
+        // { nombre: 'uno 1', cantidad: 250 },
+        // { nombre: 'Dos 2', cantidad: 125 },
         // Object.keys(item.configuration).reduce(
         //   (acc, it) => ({
         //     ...acc,

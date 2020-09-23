@@ -92,9 +92,7 @@ export default () => {
         description="Crud example"
         name="Camiseta"
         url="http://localhost:5050/api/categoria"
-        renderItem={(props: Categoria) => {
-          return <ItemCategoria {...props} />
-        }}
+        renderItem={(props: Categoria) => <ItemCategoria {...props} />}
         onError={(err) => console.log(err)}
       />
     </ABMProvider>
