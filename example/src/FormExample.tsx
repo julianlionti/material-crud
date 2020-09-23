@@ -1,8 +1,6 @@
 import React, { useCallback, useState } from 'react'
 import { Dialog, CenteredCard, Form, Types } from 'material-crud'
 import { useHistory } from 'react-router'
-import { Button } from '@material-ui/core'
-import { FaTimes } from 'react-icons/fa'
 import CustomField from './extra/CustomField'
 
 export default () => {
@@ -27,7 +25,7 @@ export default () => {
       //     <FaTimes />
       //   </Button>
       // }
-      >
+    >
       <Form
         loading={loading}
         fields={[

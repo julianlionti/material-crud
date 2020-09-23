@@ -1,13 +1,13 @@
 import { IconButton, makeStyles, Paper, TextField, Typography } from '@material-ui/core'
-import { useField } from 'formik'
+import { useField, FieldArray } from 'formik'
 import React, { memo, useEffect, useMemo } from 'react'
-import { FaPlus } from 'react-icons/fa'
+import { FaPlus, FaTrash } from 'react-icons/fa'
 import BaseInput from './BaseInput'
-import Input from './Input'
-import { InputsTypes } from './AlInput'
+import AlInput, { InputsTypes } from './AlInput'
 import { Types, ComunesProps } from './Types'
 
 type ConfProps = { type: InputsTypes; title: string; id: string }[]
+type ValuesProps = { [key: string]: any }
 
 export interface AlMultipleProps extends ComunesProps {
   type: Types.Multiple
@@ -16,7 +16,7 @@ export interface AlMultipleProps extends ComunesProps {
 
 export default memo((props: AlMultipleProps) => {
   const { id, title, grow, hide, configuration } = props
-  const [{ value }, { error }, { setValue }] = useField<ConfProps>(id)
+  const [{ value }, { error }, { setValue }] = useField<ValuesProps[]>(id)
   const classes = useClasses()
 
   const valFinal = useMemo(() => value || [], [value])
@@ -27,35 +27,28 @@ export default memo((props: AlMultipleProps) => {
         <div className={classes.headerContainer}>
           <Typography variant="body1">{`${title} (${valFinal?.length})`}</Typography>
           <IconButton
-            onClick={() => {
-              setValue(
-                valFinal.concat([
-                  { id: 'sada', title: 'sadas', type: Types.Input },
-                  { id: 'sadasdasda', title: 'sa232das', type: Types.Input },
-                ]),
-              )
-            }}>
+            onClick={() =>
+              setValue([
+                ...valFinal,
+                configuration.reduce((acc, it) => ({ ...acc, [it.id]: '' }), {}),
+              ])
+            }>
             <FaPlus />
           </IconButton>
         </div>
-        {valFinal.map((item, index) => (
+        {valFinal.map((_, index) => (
           <div key={index} className={classes.horizontal}>
-            {configuration.map((col) => (
-              <Input
-                key={col.id}
-                value={item[col.id]}
-                onChange={(text) => {
-                  const final = valFinal.map((e, i) => {
-                    if (index === i) {
-                      return { ...e, [col.id]: text }
-                    }
-                    return e
-                  })
-                  setValue(final)
-                }}
-                {...col}
+            {configuration.map((col, i) => (
+              <AlInput
+                id={`${id}.${index}.${col.id}`}
+                key={i}
+                type={col.type}
+                title={col.title}
               />
             ))}
+            <IconButton onClick={() => setValue(valFinal.filter((_, i) => i !== index))}>
+              <FaTrash />
+            </IconButton>
           </div>
         ))}
       </Paper>
