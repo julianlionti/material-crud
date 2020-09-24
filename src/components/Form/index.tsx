@@ -7,7 +7,7 @@ import AlSelect, { AlSelectProps } from './AlSelect'
 import AlImagen, { AlImagenProps } from './AlImagen'
 import AlAutocomplete, { AlAutocompleteProps } from './AlAutocomplete'
 import AlSwitch, { AlSwitchProps } from './AlSwitch'
-import AlMultiple, { AlMultipleProps } from './AlMultiple'
+import AlMultiple, { AlMultipleProps, valDefault } from './AlMultiple'
 import { Types } from './Types'
 import AlCustom, { AlCustomProps } from './AlCustom'
 
@@ -42,7 +42,7 @@ export interface Props {
 
 export const createFields = (props: () => CamposProps[]) => props()
 
-const generarDefault = (item: TodosProps): any => {
+export const generarDefault = (item: TodosProps): any => {
   if (item.filter) {
     if (item.type === Types.Autocomplete) {
       if (item.multiple) return []
@@ -64,25 +64,7 @@ const generarDefault = (item: TodosProps): any => {
       return null
     }
     case Types.Multiple:
-      const objDefault = item.configuration.reduce(
-        (acc, it) => ({ ...acc, [it.id]: '' }),
-        {},
-      )
-
-      return [
-        objDefault
-        // { nombre: 'uno 1', cantidad: 250 },
-        // { nombre: 'Dos 2', cantidad: 125 },
-        // Object.keys(item.configuration).reduce(
-        //   (acc, it) => ({
-        //     ...acc,
-        //     [it]: generarDefault(item.configuration[it] as TodosProps),
-        //   }),
-        //   {},
-        // ),
-      ]
-    case Types.Number:
-      return 0
+      return [item.configuration]
     case Types.Image:
       return null
     default:

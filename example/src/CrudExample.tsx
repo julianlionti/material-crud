@@ -81,14 +81,23 @@ export default () => {
             id: 'normativas',
             type: Types.Multiple,
             title: 'Normativas necesarias',
-            depends: ({ requiereNormativa }: Categoria) => requiereNormativa === false,
+            depends: ({ requiereNormativa }: Categoria) => requiereNormativa === true,
             configuration: [
               { type: Types.Input, title: 'Nombre', id: 'nombre' },
+              // {
+              //   type: Types.Options,
+              //   title: 'Tipo',
+              //   id: 'tipo',
+              //   options: [
+              //     { id: '1', title: 'Empire' },
+              //     { id: '2', title: 'OTRO' },
+              //   ],
+              //   placeholder: 'Select one',
+              // },
               { type: Types.Number, title: 'Cantidad', id: 'cantidad' },
             ],
           },
         ]}
-        // gender="F"
         description="Crud example"
         name="Camiseta"
         url="http://localhost:5050/api/categoria"
