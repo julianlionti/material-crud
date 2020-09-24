@@ -22,7 +22,7 @@ Material-CRUD uses:
 
 ### Installation
 
-Materail CRUD
+Material CRUD
 
 ```sh
 $ npm install material-crud
@@ -33,9 +33,9 @@ $ yarn add material-crud
 Install all dependencies
 
 ```sh
-$ npm install @material-ui/core @material-ui/lab axios formik react-icons moment
+$ npm install @material-ui/core @material-ui/lab axios formik react-icons moment yup
 OR
-$ yarn add @material-ui/core @material-ui/lab axios formik react-icons moment
+$ yarn add @material-ui/core @material-ui/lab axios formik react-icons moment yup
 ```
 
 ### Todos
