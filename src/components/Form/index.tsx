@@ -64,7 +64,7 @@ export const generarDefault = (item: TodosProps): any => {
       return null
     }
     case Types.Multiple:
-      return [item.configuration]
+      return [valDefault(item.configuration)]
     case Types.Image:
       return null
     default:
@@ -97,7 +97,7 @@ export default memo((props: Props) => {
         case Types.Switch:
           return <AlSwitch key={campo.id} {...campo} loading={loading} />
         case Types.Multiple:
-          return <AlMultiple key={campo.id} {...campo} loading={loading} />
+          return <AlMultiple key={campo.id} {...campo} loading={loading} hide={ocultar} />
         case Types.Custom:
           return <AlCustom key={campo.id} {...campo} loading={loading} />
         default:

@@ -1,26 +1,25 @@
-import { IconButton, makeStyles, Paper, TextField, Typography } from '@material-ui/core'
-import { useField, FieldArray } from 'formik'
-import React, { memo, useEffect, useMemo } from 'react'
+import { IconButton, makeStyles, Paper, Typography } from '@material-ui/core'
+import { useField } from 'formik'
+import React, { memo, useMemo } from 'react'
 import { FaPlus, FaTrash } from 'react-icons/fa'
 import BaseInput from './BaseInput'
-import AlInput, { InputsTypes } from './AlInput'
+import AlInput from './AlInput'
 import { Types, ComunesProps } from './Types'
-import { CamposProps, generarDefault, TodosProps } from '.'
+import { generarDefault, TodosProps } from '.'
 import AlSelect from './AlSelect'
 import AlImagen from './AlImagen'
 import AlAutocomplete from './AlAutocomplete'
 import AlSwitch from './AlSwitch'
 import AlCustom from './AlCustom'
 
-type ConfProps = { type: TodosProps; title: string; id: string }[]
 type ValuesProps = { [key: string]: any }
 
 export interface AlMultipleProps extends ComunesProps {
   type: Types.Multiple
-  configuration: CamposProps[]
+  configuration: TodosProps[]
 }
 
-export const valDefault = (conf: CamposProps[]) =>
+export const valDefault = (conf: TodosProps[]) =>
   conf.flat().reduce((acc, it) => ({ ...acc, [it.id]: generarDefault(it) }), {})
 
 export default memo((props: AlMultipleProps) => {
@@ -41,24 +40,26 @@ export default memo((props: AlMultipleProps) => {
         </div>
         {valFinal.map((_, index) => (
           <div key={index} className={classes.horizontal}>
-            {configuration.flat().map((col, i) => {
-              switch (col.type) {
+            {configuration.flat().map(({ id: colId, ...etc }) => {
+              switch (etc.type) {
                 case Types.Input:
                 case Types.Email:
                 case Types.Multiline:
                 case Types.Number:
                 case Types.Phone:
-                  return <AlInput key={i} {...col} />
+                  return <AlInput id={`${id}.${index}.${colId}`} key={colId} {...etc} />
                 case Types.Options:
-                  return <AlSelect key={i} {...col} />
+                  return <AlSelect id={`${id}.${index}.${colId}`} key={colId} {...etc} />
                 case Types.Image:
-                  return <AlImagen key={i} {...col} />
+                  return <AlImagen id={`${id}.${index}.${colId}`} key={colId} {...etc} />
                 case Types.Autocomplete:
-                  return <AlAutocomplete key={i} {...col} />
+                  return (
+                    <AlAutocomplete id={`${id}.${index}.${colId}`} key={colId} {...etc} />
+                  )
                 case Types.Switch:
-                  return <AlSwitch key={i} {...col} />
+                  return <AlSwitch id={`${id}.${index}.${colId}`} key={colId} {...etc} />
                 case Types.Custom:
-                  return <AlCustom key={i} {...col} />
+                  return <AlCustom id={`${id}.${index}.${colId}`} key={colId} {...etc} />
                 default:
                   return null
               }

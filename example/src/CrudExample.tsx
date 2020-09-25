@@ -83,17 +83,17 @@ export default () => {
             title: 'Normativas necesarias',
             depends: ({ requiereNormativa }: Categoria) => requiereNormativa === true,
             configuration: [
-              { type: Types.Input, title: 'Nombre', id: 'nombre' },
-              // {
-              //   type: Types.Options,
-              //   title: 'Tipo',
-              //   id: 'tipo',
-              //   options: [
-              //     { id: '1', title: 'Empire' },
-              //     { id: '2', title: 'OTRO' },
-              //   ],
-              //   placeholder: 'Select one',
-              // },
+              { type: Types.Input, title: 'Nombre', id: 'prueba' },
+              {
+                type: Types.Options,
+                title: 'Tipo',
+                id: 'tipo',
+                options: [
+                  { id: '1', title: 'Empire' },
+                  { id: '2', title: 'OTRO' },
+                ],
+                placeholder: 'Select one',
+              },
               { type: Types.Number, title: 'Cantidad', id: 'cantidad' },
             ],
           },
