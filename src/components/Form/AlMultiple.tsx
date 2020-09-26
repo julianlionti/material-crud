@@ -5,7 +5,7 @@ import { FaPlus, FaTrash } from 'react-icons/fa'
 import BaseInput from './BaseInput'
 import AlInput from './AlInput'
 import { Types, ComunesProps } from './Types'
-import { generarDefault, TodosProps } from '.'
+import { generateDefault, TodosProps } from '.'
 import AlSelect from './AlSelect'
 import AlImagen from './AlImagen'
 import AlAutocomplete from './AlAutocomplete'
@@ -20,7 +20,7 @@ export interface AlMultipleProps extends ComunesProps {
 }
 
 export const valDefault = (conf: TodosProps[]) =>
-  conf.flat().reduce((acc, it) => ({ ...acc, [it.id]: generarDefault(it) }), {})
+  conf.flat().reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it) }), {})
 
 export default memo((props: AlMultipleProps) => {
   const { id, title, grow, hide, configuration } = props
