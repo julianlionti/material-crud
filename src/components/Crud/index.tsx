@@ -27,12 +27,12 @@ import { serialize } from 'object-to-formdata'
 import { Translations } from '../../translate'
 import CenteredCard from '../UI/CenteredCard'
 
-export interface ABM {
-  onEditar?: () => void
-  onBorrar?: () => void
-  editado?: boolean
-  borrado?: boolean
-  ancho: number
+export interface CRUD {
+  onEdit?: () => void
+  onDelete?: () => void
+  edited?: boolean
+  deleted?: boolean
+  widthAbm: number
 }
 
 interface Props {
@@ -52,7 +52,7 @@ interface Props {
   lang?: Translations
 }
 
-interface Paginado {
+interface Paged {
   hasNextPage?: boolean
   nextPage?: number
   page: number
@@ -61,7 +61,7 @@ interface Paginado {
 }
 
 export default memo((props: Props) => {
-  const ultimaBusqueda = useRef<any>({})
+  const lastFilter = useRef<any>({})
   const {
     url,
     name,
@@ -79,65 +79,60 @@ export default memo((props: Props) => {
     lang,
   } = props
 
-  const llamado = useRef(false)
+  const called = useRef(false)
 
-  const { listado, agregar, editar: editarABM, reemplazar, borrar } = useABM<any>({})
-  const { cargando, respuesta, llamar } = useAxios<any>({
-    onError,
-  })
+  const { list, add, edit: editABM, replace, deleteCall: deleteABM } = useABM<any>({})
+  const { loading, response, call } = useAxios<any>({ onError })
 
   // const { enqueueSnackbar } = useSnackbar()
 
-  const [paginado, setPaginado] = useState<Paginado>({ page: 1 })
+  const [paginated, setPaginated] = useState<Paged>({ page: 1 })
   const [cartel, setCartel] = useState<CartelState>({ visible: false })
   const [toolbar, setToolbar] = useState(false)
-  const [editar, setEditar] = useState<object | null>(null)
+  const [editObj, setEditObj] = useState<object | null>(null)
 
   const { width } = useWindowSize()
-  const clases = useClases({ titleSize })
+  const classes = useClasses({ titleSize })
 
-  const editando = editar ? Object.keys(editar!!).length > 0 : false
-  const { borrado, item, _id, data } = respuesta || {}
+  const editing = editObj ? Object.keys(editObj!!).length > 0 : false
+  const { borrado, item, _id, data } = response || {}
   useEffect(() => {
     if (item && !_id) {
-      agregar([item])
+      add([item])
       onFinished && onFinished('new', gender)
-      setEditar(null)
+      setEditObj(null)
     } else if (item && _id) {
-      editarABM({ id: _id, item: { ...item, editado: true } })
+      editABM({ id: _id, item: { ...item, editado: true } })
       onFinished && onFinished('update', gender)
-      setEditar(null)
+      setEditObj(null)
     } else if (borrado) {
-      editarABM({ id: _id, item: { ...borrado, borrado: true } })
+      editABM({ id: _id, item: { ...borrado, borrado: true } })
       onFinished && onFinished('delete', gender)
       setCartel({ visible: false })
     }
-  }, [item, _id, agregar, editarABM, borrado, borrar, gender, onFinished])
+  }, [item, _id, add, editABM, borrado, deleteABM, gender, onFinished])
 
   const { docs, page } = data || {}
   useEffect(() => {
     if (docs) {
-      setPaginado(data)
+      setPaginated(data)
       if (page === 1) {
-        reemplazar(docs)
+        replace(docs)
       } else {
-        agregar(docs)
+        add(docs)
       }
     }
-  }, [agregar, data, docs, page, paginado, reemplazar])
+  }, [add, data, docs, page, paginated, replace])
 
   useEffect(() => {
-    if (!llamado.current) {
-      llamar({ method: 'GET', url })
-      llamado.current = true
+    if (!called.current) {
+      call({ method: 'GET', url })
+      called.current = true
     }
-  }, [llamar, url])
+  }, [call, url])
 
-  const onEditar = useCallback((item) => {
-    setEditar(item)
-  }, [])
-
-  const onBorrar = useCallback(
+  const onEditCall = useCallback((item) => setEditObj(item), [])
+  const onDeleteCall = useCallback(
     (item) => {
       const it = item
       setCartel({
@@ -146,17 +141,17 @@ export default memo((props: Props) => {
         titulo: `${lang?.delete || 'Borrar'} ${name}`,
         onCerrar: (aceptado: boolean) => {
           if (aceptado) {
-            llamar({ method: 'DELETE', data: { id: it._id }, url })
+            call({ method: 'DELETE', data: { id: it._id }, url })
           } else {
             setCartel({ visible: false })
           }
         },
       })
     },
-    [llamar, name, url, lang],
+    [call, name, url, lang],
   )
 
-  const filtros = useMemo(() => {
+  const filters = useMemo(() => {
     const items = fields
       .flat()
       .filter((e) => e.filter)
@@ -167,7 +162,7 @@ export default memo((props: Props) => {
       .map((_) => items.splice(0, columnas))
   }, [columnsFilters, fields])
 
-  const camposSinFiltros = useMemo(
+  const fieldsWithoutFilters = useMemo(
     () =>
       fields.map((cam) => {
         if (Array.isArray(cam)) {
@@ -179,24 +174,24 @@ export default memo((props: Props) => {
     [fields],
   )
 
-  const ordenar = useMemo(() => fields.flat().filter((e) => e.sort), [fields])
+  const order = useMemo(() => fields.flat().filter((e) => e.sort), [fields])
   return (
-    <div className={clases.contenedor}>
-      <Collapse in={!editar} timeout="auto" unmountOnExit>
-        <div className={clases.toolbarContainer}>
-          <div className={clases.leftComponent}>
-            {Left && <div hidden={cargando}>{Left}</div>}
-            <Typography gutterBottom={false} variant="h1" className={clases.title}>{`${
+    <div className={classes.contenedor}>
+      <Collapse in={!editObj} timeout="auto" unmountOnExit>
+        <div className={classes.toolbarContainer}>
+          <div className={classes.leftComponent}>
+            {Left && <div hidden={loading}>{Left}</div>}
+            <Typography gutterBottom={false} variant="h1" className={classes.title}>{`${
               toolbar ? lang?.filter || 'Filtrar' : lang?.listOf || 'Listado de '
             } ${name}`}</Typography>
           </div>
           <div>
-            {Object.keys(filtros || {}).length > 0 && (
+            {Object.keys(filters || {}).length > 0 && (
               <Button
                 color="primary"
                 endIcon={<FaFilter />}
-                disabled={!!editar}
-                className={clases.colapseBtn}
+                disabled={!!editObj}
+                className={classes.colapseBtn}
                 onClick={() => setToolbar((t) => !t)}>
                 {`${toolbar ? lang?.close || 'Cerrar' : lang?.open || 'Abrir'} ${
                   lang?.filters || 'filtros'
@@ -206,46 +201,46 @@ export default memo((props: Props) => {
             <Ordenado
               lang={lang}
               que={name}
-              columnas={ordenar}
+              columnas={order}
               onOrden={(ordenado) => {
-                ultimaBusqueda.current = {
-                  ...ultimaBusqueda.current,
+                lastFilter.current = {
+                  ...lastFilter.current,
                   ordenado,
                   pagina: 1,
                 }
-                llamar({
+                call({
                   method: 'GET',
-                  params: ultimaBusqueda.current,
+                  params: lastFilter.current,
                   url,
                 })
               }}
             />
             <Button
-              disabled={!!editar}
+              disabled={!!editObj}
               color="primary"
               variant="outlined"
-              className={clases.nuevoBtn}
-              onClick={() => setEditar({})}>
+              className={classes.nuevoBtn}
+              onClick={() => setEditObj({})}>
               {`${lang?.add || 'Agregar nuev'}${
                 gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''
               } ${name}`}
             </Button>
           </div>
         </div>
-        {filtros && (
+        {filters && (
           <Collapse in={toolbar} timeout="auto" unmountOnExit>
             <Formulario
               accept={lang?.filter || 'Filtrar'}
-              fields={filtros}
+              fields={filters}
               onSubmit={(filtros) => {
-                ultimaBusqueda.current = {
-                  ...ultimaBusqueda.current,
+                lastFilter.current = {
+                  ...lastFilter.current,
                   filtros,
                   pagina: 1,
                 }
-                llamar({
+                call({
                   method: 'GET',
-                  params: ultimaBusqueda.current,
+                  params: lastFilter.current,
                   url,
                 })
               }}
@@ -254,33 +249,33 @@ export default memo((props: Props) => {
           </Collapse>
         )}
       </Collapse>
-      <Divider className={clases.divisor} />
-      {cargando && <LinearProgress />}
-      <Collapse in={!editar} timeout="auto" unmountOnExit>
-        <div className={clases.items}>
+      <Divider className={classes.divisor} />
+      {loading && <LinearProgress />}
+      <Collapse in={!editObj} timeout="auto" unmountOnExit>
+        <div className={classes.items}>
           {width &&
-            listado.map((e: any) => (
+            list.map((e: any) => (
               <Fragment key={e._id}>
                 {renderItem({
                   ...e,
-                  onEditar: () => onEditar(e),
-                  onBorrar: () => onBorrar(e),
+                  onEdit: () => onEditCall(e),
+                  onDelete: () => onDeleteCall(e),
                   ancho: (width - 320) / (columns || 3),
                 })}
               </Fragment>
             ))}
         </div>
-        {!cargando && paginado.hasNextPage && (
+        {!loading && paginated.hasNextPage && (
           <div
-            className={clases.verMas}
+            className={classes.verMas}
             onClick={() => {
-              ultimaBusqueda.current = {
-                ...ultimaBusqueda.current,
-                pagina: paginado.nextPage,
+              lastFilter.current = {
+                ...lastFilter.current,
+                pagina: paginated.nextPage,
               }
-              llamar({
+              call({
                 method: 'GET',
-                params: ultimaBusqueda.current,
+                params: lastFilter.current,
                 url,
               })
             }}>
@@ -290,20 +285,20 @@ export default memo((props: Props) => {
           </div>
         )}
       </Collapse>
-      <Collapse in={!!editar} timeout="auto" unmountOnExit>
+      <Collapse in={!!editObj} timeout="auto" unmountOnExit>
         <CenteredCard
-          onClose={() => setEditar(null)}
+          onClose={() => setEditObj(null)}
           title={`${
-            editando
+            editing
               ? lang?.edit || 'Editar '
               : lang?.new || `Nuev${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
           } ${name}`}
           subtitle={description}>
           <Formulario
-            intials={editar}
-            loading={cargando}
-            accept={editando ? lang?.edit || 'Editar' : lang?.add || 'Agregar'}
-            fields={camposSinFiltros}
+            intials={editObj}
+            loading={loading}
+            accept={editing ? lang?.edit || 'Editar' : lang?.add || 'Agregar'}
+            fields={fieldsWithoutFilters}
             onSubmit={(vals) => {
               let data = vals
               if (isFormData) {
@@ -313,7 +308,7 @@ export default memo((props: Props) => {
                 })
               }
 
-              llamar({
+              call({
                 method: 'POST',
                 data,
                 url,
@@ -327,13 +322,13 @@ export default memo((props: Props) => {
         title={cartel?.titulo || ''}
         content={cartel?.contenido || ''}
         onClose={cartel.onCerrar}
-        loading={cargando}
+        loading={loading}
       />
     </div>
   )
 })
 
-const useClases = makeStyles((tema) => ({
+const useClasses = makeStyles((tema) => ({
   contenedor: {
     width: '85%',
     margin: '0 auto',

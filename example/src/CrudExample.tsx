@@ -13,7 +13,7 @@ interface Categoria extends CrudProps {
   normativas: { nombre: string }[]
 }
 
-const ItemCategoria = ({ nombre, onBorrar, onEditar }: Categoria) => {
+const ItemCategoria = ({ nombre, onDelete, onEdit }: Categoria) => {
   return (
     <Card
       style={{
@@ -27,8 +27,8 @@ const ItemCategoria = ({ nombre, onBorrar, onEditar }: Categoria) => {
         <p>Nombre: {nombre}</p>
       </CardContent>
       <CardActions>
-        <Button onClick={onBorrar}>Borrar</Button>
-        <Button onClick={onEditar}>Editar</Button>
+        <Button onClick={onDelete}>Borrar</Button>
+        <Button onClick={onEdit}>Editar</Button>
       </CardActions>
     </Card>
   )
@@ -100,7 +100,7 @@ export default () => {
         ]}
         description="Crud example"
         name="Camiseta"
-        url="http://localhost:5050/api/categoria"
+        url="http://localhost:5050/api/pedidos"
         renderItem={(props: Categoria) => <ItemCategoria {...props} />}
         onError={(err) => console.log(err)}
       />
