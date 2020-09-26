@@ -7,7 +7,7 @@ import AlSelect, { AlSelectProps } from './AlSelect'
 import AlImagen, { AlImagenProps } from './AlImagen'
 import AlAutocomplete, { AlAutocompleteProps } from './AlAutocomplete'
 import AlSwitch, { AlSwitchProps } from './AlSwitch'
-import AlMultiple, { AlMultipleProps } from './AlMultiple'
+import AlMultiple, { AlMultipleProps, valDefault } from './AlMultiple'
 import { Types } from './Types'
 import AlCustom, { AlCustomProps } from './AlCustom'
 
@@ -42,7 +42,7 @@ export interface Props {
 
 export const createFields = (props: () => CamposProps[]) => props()
 
-const generarDefault = (item: TodosProps): any => {
+export const generateDefault = (item: TodosProps): any => {
   if (item.filter) {
     if (item.type === Types.Autocomplete) {
       if (item.multiple) return []
@@ -64,25 +64,7 @@ const generarDefault = (item: TodosProps): any => {
       return null
     }
     case Types.Multiple:
-      const objDefault = item.configuration.reduce(
-        (acc, it) => ({ ...acc, [it.id]: '' }),
-        {},
-      )
-
-      return [
-        objDefault
-        // { nombre: 'uno 1', cantidad: 250 },
-        // { nombre: 'Dos 2', cantidad: 125 },
-        // Object.keys(item.configuration).reduce(
-        //   (acc, it) => ({
-        //     ...acc,
-        //     [it]: generarDefault(item.configuration[it] as TodosProps),
-        //   }),
-        //   {},
-        // ),
-      ]
-    case Types.Number:
-      return 0
+      return [valDefault(item.configuration)]
     case Types.Image:
       return null
     default:
@@ -92,22 +74,21 @@ const generarDefault = (item: TodosProps): any => {
 
 export default memo((props: Props) => {
   const { fields, onSubmit, accept, loading, intials, noValidate } = props
-  const clases = useClases()
+  const classes = useClases()
 
   const renderInput = useCallback(
-    (campo: TodosProps, valores: any) => {
+    (campo: TodosProps, values: any) => {
       const { depends } = campo
-      const ocultar = depends && depends(valores) === false
-
+      const hidden = depends && depends(values) === false
       switch (campo.type) {
         case Types.Input:
         case Types.Email:
         case Types.Multiline:
         case Types.Number:
         case Types.Phone:
-          return <AlInput key={campo.id} {...campo} loading={loading} hide={ocultar} />
+          return <AlInput key={campo.id} {...campo} loading={loading} hide={hidden} />
         case Types.Options:
-          return <AlSelect key={campo.id} {...campo} loading={loading} hide={ocultar} />
+          return <AlSelect key={campo.id} {...campo} loading={loading} hide={hidden} />
         case Types.Image:
           return <AlImagen key={campo.id} {...campo} loading={loading} />
         case Types.Autocomplete:
@@ -115,7 +96,7 @@ export default memo((props: Props) => {
         case Types.Switch:
           return <AlSwitch key={campo.id} {...campo} loading={loading} />
         case Types.Multiple:
-          return <AlMultiple key={campo.id} {...campo} loading={loading} />
+          return <AlMultiple key={campo.id} {...campo} loading={loading} hide={hidden} />
         case Types.Custom:
           return <AlCustom key={campo.id} {...campo} loading={loading} />
         default:
@@ -130,9 +111,9 @@ export default memo((props: Props) => {
     [fields],
   )
 
-  const porDefecto = useMemo(
+  const defaultValues = useMemo(
     () =>
-      fields.flat().reduce((acc, it) => ({ ...acc, [it.id]: generarDefault(it) }), {}),
+      fields.flat().reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it) }), {}),
     [fields],
   )
 
@@ -140,28 +121,28 @@ export default memo((props: Props) => {
     <Formik
       // enableReinitialize={!onSubmit}
       enableReinitialize
-      initialValues={Object.keys(intials || {}).length > 0 ? intials : porDefecto}
+      initialValues={Object.keys(intials || {}).length > 0 ? intials : defaultValues}
       validationSchema={noValidate ? null : Yup.object().shape(valSchema)}
       onSubmit={(vals, helpers) => {
         if (onSubmit) onSubmit(vals, helpers)
       }}>
       {({ submitForm, values }) => (
-        <div className={clases.contenedor}>
-          {fields.map((campo, index) => {
-            if (Array.isArray(campo)) {
+        <div className={classes.container}>
+          {fields.map((field, index) => {
+            if (Array.isArray(field)) {
               return (
-                <div key={`${campo[0].id}-row-${index}`} className={clases.horizontal}>
-                  {campo.map((e) => renderInput(e, values))}
+                <div key={`${field[0].id}-row-${index}`} className={classes.horizontal}>
+                  {field.map((e) => renderInput(e, values))}
                 </div>
               )
             }
-            return renderInput(campo, values)
+            return renderInput(field, values)
           })}
           {accept && (
             <Button
               disabled={loading}
               onClick={submitForm}
-              className={clases.boton}
+              className={classes.btn}
               color="primary"
               endIcon={loading && <CircularProgress size={16} />}
               variant="outlined">
@@ -175,12 +156,12 @@ export default memo((props: Props) => {
 })
 
 const useClases = makeStyles((tema) => ({
-  contenedor: {
+  container: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
   },
-  boton: {
+  btn: {
     marginTop: tema.spacing(2),
     marginBottom: tema.spacing(2),
     alignSelf: 'center',

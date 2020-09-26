@@ -1,18 +1,26 @@
-import { IconButton, makeStyles, Paper, TextField, Typography } from '@material-ui/core'
-import { useField, FieldArray } from 'formik'
-import React, { memo, useEffect, useMemo } from 'react'
+import { IconButton, makeStyles, Paper, Typography } from '@material-ui/core'
+import { useField } from 'formik'
+import React, { memo, useMemo } from 'react'
 import { FaPlus, FaTrash } from 'react-icons/fa'
 import BaseInput from './BaseInput'
-import AlInput, { InputsTypes } from './AlInput'
+import AlInput from './AlInput'
 import { Types, ComunesProps } from './Types'
+import { generateDefault, TodosProps } from '.'
+import AlSelect from './AlSelect'
+import AlImagen from './AlImagen'
+import AlAutocomplete from './AlAutocomplete'
+import AlSwitch from './AlSwitch'
+import AlCustom from './AlCustom'
 
-type ConfProps = { type: InputsTypes; title: string; id: string }[]
 type ValuesProps = { [key: string]: any }
 
 export interface AlMultipleProps extends ComunesProps {
   type: Types.Multiple
-  configuration: ConfProps
+  configuration: TodosProps[]
 }
+
+export const valDefault = (conf: TodosProps[]) =>
+  conf.flat().reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it) }), {})
 
 export default memo((props: AlMultipleProps) => {
   const { id, title, grow, hide, configuration } = props
@@ -26,26 +34,36 @@ export default memo((props: AlMultipleProps) => {
       <Paper elevation={0}>
         <div className={classes.headerContainer}>
           <Typography variant="body1">{`${title} (${valFinal?.length})`}</Typography>
-          <IconButton
-            onClick={() =>
-              setValue([
-                ...valFinal,
-                configuration.reduce((acc, it) => ({ ...acc, [it.id]: '' }), {}),
-              ])
-            }>
+          <IconButton onClick={() => setValue([...valFinal, valDefault(configuration)])}>
             <FaPlus />
           </IconButton>
         </div>
         {valFinal.map((_, index) => (
           <div key={index} className={classes.horizontal}>
-            {configuration.map((col, i) => (
-              <AlInput
-                id={`${id}.${index}.${col.id}`}
-                key={i}
-                type={col.type}
-                title={col.title}
-              />
-            ))}
+            {configuration.flat().map(({ id: colId, ...etc }) => {
+              switch (etc.type) {
+                case Types.Input:
+                case Types.Email:
+                case Types.Multiline:
+                case Types.Number:
+                case Types.Phone:
+                  return <AlInput id={`${id}.${index}.${colId}`} key={colId} {...etc} />
+                case Types.Options:
+                  return <AlSelect id={`${id}.${index}.${colId}`} key={colId} {...etc} />
+                case Types.Image:
+                  return <AlImagen id={`${id}.${index}.${colId}`} key={colId} {...etc} />
+                case Types.Autocomplete:
+                  return (
+                    <AlAutocomplete id={`${id}.${index}.${colId}`} key={colId} {...etc} />
+                  )
+                case Types.Switch:
+                  return <AlSwitch id={`${id}.${index}.${colId}`} key={colId} {...etc} />
+                case Types.Custom:
+                  return <AlCustom id={`${id}.${index}.${colId}`} key={colId} {...etc} />
+                default:
+                  return null
+              }
+            })}
             <IconButton onClick={() => setValue(valFinal.filter((_, i) => i !== index))}>
               <FaTrash />
             </IconButton>

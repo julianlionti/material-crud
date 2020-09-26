@@ -10,7 +10,7 @@ export default ({ field, props }: CustomComponentProps) => {
       fullWidth
       value={value}
       onChange={({ target: { value } }) => setValue(value)}
-      title={'Titlo custom'}
+      label={'Titlo custom'}
     />
   )
 }
