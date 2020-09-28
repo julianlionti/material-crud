@@ -1,5 +1,6 @@
 import { useReducer, useRef, useCallback, useEffect } from 'react'
 import axios, { AxiosRequestConfig, AxiosError } from 'axios'
+import { useUser } from '../components/User'
 // import { useSnackbar } from 'notistack'
 
 export interface Error {
@@ -38,17 +39,14 @@ const reducer = (estado: Estado, accion: Estado): Estado => ({
 
 export const llamarWS = async <T extends any>(
   config: AxiosRequestConfig,
-  usuario?: any | null,
+  headers?: any | null,
 ) => {
   let respuesta: undefined | T
   let error: undefined | ErrorRespuesta
 
   try {
     let final = config
-    if (usuario) {
-      const headers = {
-        Authorization: usuario.token,
-      }
+    if (headers) {
       final = {
         ...final,
         headers: { ...config.headers, ...headers },
@@ -74,36 +72,36 @@ export default <T extends any>(props?: Props): Respuesta<T> => {
   const alIniciarRef = useRef(false)
   const llamando = useRef(false)
   const [state, dispatch] = useReducer(reducer, inicial)
+  const { headers } = useUser()
 
   const { error } = state
   useEffect(() => {
     if (onError && error) {
       if (error.error) {
         onError(error.error)
-        // enqueueSnackbar(`${error.error.mensaje} (${error.error.codigo})`, {
-        //   variant: 'error',
-        // })
       }
       if (error.errores) {
         error.errores!!.forEach((err) => {
           onError(err)
-          // enqueueSnackbar(`${err.mensaje} (${err.codigo})`, { variant: 'error' })
         })
       }
 
       dispatch({ error: undefined })
     }
-  }, [error])
+  }, [error, onError])
 
-  const llamar = useCallback(async (config: AxiosRequestConfig) => {
-    if (!llamando.current) {
-      llamando.current = true
-      dispatch({ cargando: true, error: undefined, respuesta: undefined })
-      const { error, respuesta } = await llamarWS(config)
-      dispatch({ cargando: false, respuesta, error })
-      llamando.current = false
-    }
-  }, [])
+  const llamar = useCallback(
+    async (config: AxiosRequestConfig) => {
+      if (!llamando.current) {
+        llamando.current = true
+        dispatch({ cargando: true, error: undefined, respuesta: undefined })
+        const { error, respuesta } = await llamarWS(config, headers)
+        dispatch({ cargando: false, respuesta, error })
+        llamando.current = false
+      }
+    },
+    [headers],
+  )
 
   useEffect(() => {
     if (!alIniciarRef.current && alIniciar) {

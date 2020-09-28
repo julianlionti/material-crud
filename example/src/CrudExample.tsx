@@ -103,6 +103,20 @@ export default () => {
         url="http://localhost:5050/api/categoria"
         renderItem={(props: Categoria) => <ItemCategoria {...props} />}
         onError={(err) => console.log(err)}
+        response={{
+          list: {
+            data: 'data',
+            items: 'docs',
+            page: 'page',
+            hasNextPage: 'hasNextPage',
+            nextPage: 'nextPage',
+            totalDocs: 'totalDocs',
+            totalPages: 'totalPages',
+          },
+          new: 'item',
+          edit: { item: 'item', id: '_id' },
+          delete: { item: 'borrado', id: '_id' },
+        }}
       />
     </ABMProvider>
   )

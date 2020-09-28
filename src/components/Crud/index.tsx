@@ -50,6 +50,20 @@ interface Props {
   onError?: (err: Error) => void
   Left?: ReactNode
   lang?: Translations
+  response?: {
+    list: {
+      data: string
+      items: string
+      page?: string
+      hasNextPage?: string
+      nextPage?: string
+      totalDocs?: string
+      totalPages?: string
+    }
+    new: string
+    edit: { item: string; id: string }
+    delete: { item: string; id: string }
+  }
 }
 
 interface Paginado {
@@ -77,6 +91,7 @@ export default memo((props: Props) => {
     onError,
     Left,
     lang,
+    response,
   } = props
 
   const llamado = useRef(false)
@@ -97,24 +112,56 @@ export default memo((props: Props) => {
   const clases = useClases({ titleSize })
 
   const editando = editar ? Object.keys(editar!!).length > 0 : false
-  const { borrado, item, _id, data } = respuesta || {}
+  // const { borrado, item, _id, data } = respuesta || {}
+  const { deleted, item, edited, data } = useMemo(() => {
+    if (!respuesta) return {}
+    if (!response) {
+      const { borrado, item, _id, data } = respuesta
+      return {
+        deleted: { item: borrado, id: _id },
+        item,
+        edited: {
+          item,
+          id: _id,
+        },
+        data,
+      }
+    }
+
+    return {
+      data: respuesta[response.list.data],
+      deleted: {
+        item: respuesta[response.delete.item],
+        id: respuesta[response.delete.id],
+      },
+      edited: {
+        item: respuesta[response.edit.item],
+        id: respuesta[response.edit.id],
+      },
+      item: respuesta[response.new],
+    }
+  }, [response, respuesta])
+
+  console.log(deleted, item, edited, data)
+
   useEffect(() => {
-    if (item && !_id) {
+    if (item) {
       agregar([item])
       onFinished && onFinished('new', gender)
       setEditar(null)
-    } else if (item && _id) {
-      editarABM({ id: _id, item: { ...item, editado: true } })
+    } else if (edited) {
+      editarABM({ id: edited.id, item: { ...edited.item, editado: true } })
       onFinished && onFinished('update', gender)
       setEditar(null)
-    } else if (borrado) {
-      editarABM({ id: _id, item: { ...borrado, borrado: true } })
+    } else if (deleted) {
+      editarABM({ id: deleted.id, item: { ...deleted.item, borrado: true } })
       onFinished && onFinished('delete', gender)
       setCartel({ visible: false })
     }
-  }, [item, _id, agregar, editarABM, borrado, borrar, gender, onFinished])
+  }, [item, edited, deleted, onFinished, setCartel, agregar, editarABM, gender])
 
-  const { docs, page } = data || {}
+  const docs = data && data[response?.list.items || 'docs']
+  const page = data && data[response?.list.page || 'page']
   useEffect(() => {
     if (docs) {
       setPaginado(data)
@@ -124,7 +171,7 @@ export default memo((props: Props) => {
         agregar(docs)
       }
     }
-  }, [agregar, data, docs, page, paginado, reemplazar])
+  }, [agregar, data, docs, page, paginado, reemplazar, response])
 
   useEffect(() => {
     if (!llamado.current) {
