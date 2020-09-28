@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react'
 
-import Crud, { ABM as CrudProps } from './components/Crud'
+import Crud, { CRUD as CrudProps } from './components/Crud'
 import Form, { createFields } from './components/Form'
 import { Types } from './components/Form/Types'
 
@@ -9,7 +9,7 @@ import Dialog from './components/UI/Dialog'
 import { createTranslation } from './translate'
 
 import { ABMProvider, useABM } from './utils/ABMContext'
-import useAxios, { llamarWS } from './utils/useAxios'
+import useAxios, { callWs } from './utils/useAxios'
 import useWindowSize from './utils/useWindowSize'
 import { CustomComponentProps } from './components/Form/AlCustom'
 
@@ -21,7 +21,7 @@ export {
   ABMProvider,
   useABM,
   useAxios,
-  llamarWS,
+  callWs,
   useWindowSize,
   Types,
   createFields,

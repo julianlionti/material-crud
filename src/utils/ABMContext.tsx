@@ -8,13 +8,13 @@ import React, {
   SetStateAction,
 } from 'react'
 
-type Contexto<T = any> = [T[], Dispatch<SetStateAction<T[]>>]
+type Context<T = any> = [T[], Dispatch<SetStateAction<T[]>>]
 
-const ABMContext = createContext<Contexto>([[], () => {}])
+const ABMContext = createContext<Context>([[], () => {}])
 
 export const ABMProvider = ({ children }: { children: ReactNode }) => {
-  const estado = useState<any>([])
-  return <ABMContext.Provider value={estado}>{children}</ABMContext.Provider>
+  const status = useState<any>([])
+  return <ABMContext.Provider value={status}>{children}</ABMContext.Provider>
 }
 
 export interface UseProps<T> {
@@ -23,54 +23,54 @@ export interface UseProps<T> {
 
 export const useABM = <T extends object>(props: UseProps<T>) => {
   const key = props.id || '_id'
-  const [listado, setListado] = useContext(ABMContext) as Contexto<T>
+  const [list, setList] = useContext(ABMContext) as Context<T>
 
-  const agregar = useCallback(
+  const add = useCallback(
     (items: T[]) => {
-      const llave = key as any
-      setListado((actual) => {
+      const anyKey = key as any
+      setList((acc) => {
         return [
-          ...actual,
+          ...acc,
           ...items.filter(
             (it: any) =>
-              !actual.some((ac: any) => {
-                return ac[llave] === it[llave]
+              !acc.some((ac: any) => {
+                return ac[anyKey] === it[anyKey]
               }),
           ),
         ]
       })
     },
-    [key, setListado],
+    [key, setList],
   )
 
-  const editar = useCallback(
+  const edit = useCallback(
     ({ id, item }: { id: string; item: T }) => {
-      const llave = key as any
-      setListado((actual) => {
-        const index = actual.findIndex((e: any) => e[llave] === id)
-        return actual.map((e, i) => {
+      const anyKey = key as any
+      setList((acc) => {
+        const index = acc.findIndex((e: any) => e[anyKey] === id)
+        return acc.map((e, i) => {
           if (i === index) return item
           else return e
         })
       })
     },
-    [key, setListado],
+    [key, setList],
   )
 
-  const borrar = useCallback(
+  const deleteCall = useCallback(
     (id: string) => {
-      const llave = key as any
-      setListado((actual) => actual.filter((e: any) => e[llave] !== id))
+      const anyKey = key as any
+      setList((acc) => acc.filter((e: any) => e[anyKey] !== id))
     },
-    [key, setListado],
+    [key, setList],
   )
 
-  const reemplazar = useCallback(
+  const replace = useCallback(
     (items: T[]) => {
-      setListado(items)
+      setList(items)
     },
-    [setListado],
+    [setList],
   )
 
-  return { listado, agregar, editar, borrar, reemplazar }
+  return { list, add, edit, deleteCall, replace }
 }
