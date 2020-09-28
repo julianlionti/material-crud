@@ -1,5 +1,6 @@
 import { useReducer, useRef, useCallback, useEffect } from 'react'
 import axios, { AxiosRequestConfig, AxiosError } from 'axios'
+import { useUser } from '../components/User'
 // import { useSnackbar } from 'notistack'
 
 export interface Error {
@@ -38,17 +39,14 @@ const reducer = (status: Status, action: Status): Status => ({
 
 export const callWs = async <T extends any>(
   config: AxiosRequestConfig,
-  user?: any | null,
+  headers?: any | null,
 ) => {
   let response: undefined | T
   let error: undefined | ErrorResponse
 
   try {
     let final = config
-    if (user) {
-      const headers = {
-        Authorization: user.token,
-      }
+    if (headers) {
       final = {
         ...final,
         headers: { ...config.headers, ...headers },
@@ -74,20 +72,17 @@ export default <T extends any>(props?: Props): Response<T> => {
   const onInitRef = useRef(false)
   const calling = useRef(false)
   const [state, dispatch] = useReducer(reducer, initial)
+  const { headers } = useUser()
 
   const { error } = state
   useEffect(() => {
     if (onError && error) {
       if (error.error) {
         onError(error.error)
-        // enqueueSnackbar(`${error.error.mensaje} (${error.error.codigo})`, {
-        //   variant: 'error',
-        // })
       }
       if (error.errors) {
         error.errors!!.forEach((err) => {
           onError(err)
-          // enqueueSnackbar(`${err.mensaje} (${err.codigo})`, { variant: 'error' })
         })
       }
 
@@ -99,7 +94,7 @@ export default <T extends any>(props?: Props): Response<T> => {
     if (!calling.current) {
       calling.current = true
       dispatch({ loading: true, error: undefined, response: undefined })
-      const { error, response } = await callWs(config)
+      const { error, response } = await callWs(config, headers)
       dispatch({ loading: false, response, error })
       calling.current = false
     }

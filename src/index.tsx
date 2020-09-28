@@ -13,6 +13,8 @@ import useAxios, { callWs } from './utils/useAxios'
 import useWindowSize from './utils/useWindowSize'
 import { CustomComponentProps } from './components/Form/AlCustom'
 
+import { UserProvider, useUser, Configuration } from './components/User'
+
 export {
   Crud,
   CenteredCard,
@@ -28,4 +30,7 @@ export {
   createTranslation,
   CrudProps,
   CustomComponentProps,
+  UserProvider,
+  useUser,
+  Configuration as UserConfiguration,
 }

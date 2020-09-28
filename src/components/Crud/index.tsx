@@ -3,7 +3,6 @@ import React, {
   useEffect,
   useRef,
   ReactNode,
-  Fragment,
   useCallback,
   memo,
   useMemo,
@@ -16,7 +15,7 @@ import {
   Button,
   LinearProgress,
 } from '@material-ui/core'
-import { FaFilter, FaArrowLeft } from 'react-icons/fa'
+import { FaFilter } from 'react-icons/fa'
 import Formulario, { CamposProps } from '../Form'
 import useAxios, { Error } from '../../utils/useAxios'
 import { useABM } from '../../utils/ABMContext'
@@ -26,6 +25,7 @@ import useWindowSize from '../../utils/useWindowSize'
 import { serialize } from 'object-to-formdata'
 import { Translations } from '../../translate'
 import CenteredCard from '../UI/CenteredCard'
+import AnimatedItem from '../UI/AnimatedItem'
 
 export interface CRUD {
   onEdit?: () => void
@@ -50,6 +50,20 @@ interface Props {
   onError?: (err: Error) => void
   Left?: ReactNode
   lang?: Translations
+  response?: {
+    list: {
+      data: string
+      items: string
+      page?: string
+      hasNextPage?: string
+      nextPage?: string
+      totalDocs?: string
+      totalPages?: string
+    }
+    new: string
+    edit: { item: string; id: string }
+    delete: { item: string; id: string }
+  }
 }
 
 interface Paged {
@@ -77,12 +91,13 @@ export default memo((props: Props) => {
     onError,
     Left,
     lang,
+    response,
   } = props
 
   const called = useRef(false)
 
   const { list, add, edit: editABM, replace, deleteCall: deleteABM } = useABM<any>({})
-  const { loading, response, call } = useAxios<any>({ onError })
+  const { loading, response: responseWS, call } = useAxios<any>({ onError })
 
   // const { enqueueSnackbar } = useSnackbar()
 
@@ -95,24 +110,54 @@ export default memo((props: Props) => {
   const classes = useClasses({ titleSize })
 
   const editing = editObj ? Object.keys(editObj!!).length > 0 : false
-  const { borrado, item, _id, data } = response || {}
+  // const { borrado, item, _id, data } = respuesta || {}
+  const { deleted, item, edited, data } = useMemo(() => {
+    if (!responseWS) return {}
+    if (!response) {
+      const { borrado, item, _id, data } = responseWS
+      return {
+        deleted: { item: borrado, id: _id },
+        item,
+        edited: {
+          item,
+          id: _id,
+        },
+        data,
+      }
+    }
+
+    return {
+      data: responseWS[response.list.data],
+      deleted: {
+        item: responseWS[response.delete.item],
+        id: responseWS[response.delete.id],
+      },
+      edited: {
+        item: responseWS[response.edit.item],
+        id: responseWS[response.edit.id],
+      },
+      item: responseWS[response.new],
+    }
+  }, [response, responseWS])
+
   useEffect(() => {
-    if (item && !_id) {
+    if (item && !edited?.id) {
       add([item])
       onFinished && onFinished('new', gender)
       setEditObj(null)
-    } else if (item && _id) {
-      editABM({ id: _id, item: { ...item, editado: true } })
+    } else if (edited && edited?.item) {
+      editABM({ id: edited.id, item: { ...edited.item, edited: true } })
       onFinished && onFinished('update', gender)
       setEditObj(null)
-    } else if (borrado) {
-      editABM({ id: _id, item: { ...borrado, borrado: true } })
+    } else if (deleted && deleted.item) {
+      editABM({ id: deleted.id, item: { ...deleted.item, deleted: true } })
       onFinished && onFinished('delete', gender)
       setCartel({ visible: false })
     }
-  }, [item, _id, add, editABM, borrado, deleteABM, gender, onFinished])
+  }, [item, edited, deleted, onFinished, setCartel, add, editABM, gender])
 
-  const { docs, page } = data || {}
+  const docs = data && data[response?.list.items || 'docs']
+  const page = data && data[response?.list.page || 'page']
   useEffect(() => {
     if (docs) {
       setPaginated(data)
@@ -255,14 +300,14 @@ export default memo((props: Props) => {
         <div className={classes.items}>
           {width &&
             list.map((e: any) => (
-              <Fragment key={e._id}>
+              <AnimatedItem key={e._id} edited={e.edited} deleted={e.deleted}>
                 {renderItem({
                   ...e,
                   onEdit: () => onEditCall(e),
                   onDelete: () => onDeleteCall(e),
                   ancho: (width - 320) / (columns || 3),
                 })}
-              </Fragment>
+              </AnimatedItem>
             ))}
         </div>
         {!loading && paginated.hasNextPage && (

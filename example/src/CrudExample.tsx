@@ -2,7 +2,14 @@ import React, { useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Types, Crud, CrudProps, ABMProvider } from 'material-crud'
 import { FaArrowLeft } from 'react-icons/fa'
-import { Button, Card, CardActions, CardContent, IconButton } from '@material-ui/core'
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  IconButton,
+  makeStyles,
+} from '@material-ui/core'
 import { english } from './lang'
 import CustomField from './extra/CustomField'
 
@@ -15,14 +22,7 @@ interface Categoria extends CrudProps {
 
 const ItemCategoria = ({ nombre, onDelete, onEdit }: Categoria) => {
   return (
-    <Card
-      style={{
-        flex: 1,
-        minWidth: 260,
-        maxWidth: 260,
-        height: 150,
-        margin: 8,
-      }}>
+    <Card style={{ flex: 1, minWidth: 260, maxWidth: 260, height: 150, margin: 8 }}>
       <CardContent>
         <p>Nombre: {nombre}</p>
       </CardContent>
@@ -103,6 +103,20 @@ export default () => {
         url="http://localhost:5050/api/categoria"
         renderItem={(props: Categoria) => <ItemCategoria {...props} />}
         onError={(err) => console.log(err)}
+        response={{
+          list: {
+            data: 'data',
+            items: 'docs',
+            page: 'page',
+            hasNextPage: 'hasNextPage',
+            nextPage: 'nextPage',
+            totalDocs: 'totalDocs',
+            totalPages: 'totalPages',
+          },
+          new: 'item',
+          edit: { item: 'item', id: '_id' },
+          delete: { item: 'borrado', id: '_id' },
+        }}
       />
     </ABMProvider>
   )

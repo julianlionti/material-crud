@@ -30,13 +30,13 @@ export const useABM = <T extends object>(props: UseProps<T>) => {
       const anyKey = key as any
       setList((acc) => {
         return [
-          ...acc,
           ...items.filter(
             (it: any) =>
               !acc.some((ac: any) => {
                 return ac[anyKey] === it[anyKey]
               }),
           ),
+          ...acc,
         ]
       })
     },
