@@ -30,13 +30,13 @@ export const useABM = <T extends object>(props: UseProps<T>) => {
       const llave = key as any
       setListado((actual) => {
         return [
-          ...actual,
           ...items.filter(
             (it: any) =>
               !actual.some((ac: any) => {
                 return ac[llave] === it[llave]
               }),
           ),
+          ...actual,
         ]
       })
     },

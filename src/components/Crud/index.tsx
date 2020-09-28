@@ -26,6 +26,7 @@ import useWindowSize from '../../utils/useWindowSize'
 import { serialize } from 'object-to-formdata'
 import { Translations } from '../../translate'
 import CenteredCard from '../UI/CenteredCard'
+import AnimatedItem from '../UI/AnimatedItem'
 
 export interface ABM {
   onEditar?: () => void
@@ -142,19 +143,17 @@ export default memo((props: Props) => {
     }
   }, [response, respuesta])
 
-  console.log(deleted, item, edited, data)
-
   useEffect(() => {
-    if (item) {
+    if (item && !edited?.id) {
       agregar([item])
       onFinished && onFinished('new', gender)
       setEditar(null)
-    } else if (edited) {
-      editarABM({ id: edited.id, item: { ...edited.item, editado: true } })
+    } else if (edited && edited?.item) {
+      editarABM({ id: edited.id, item: { ...edited.item, edited: true } })
       onFinished && onFinished('update', gender)
       setEditar(null)
-    } else if (deleted) {
-      editarABM({ id: deleted.id, item: { ...deleted.item, borrado: true } })
+    } else if (deleted && deleted.item) {
+      editarABM({ id: deleted.id, item: { ...deleted.item, deleted: true } })
       onFinished && onFinished('delete', gender)
       setCartel({ visible: false })
     }
@@ -307,14 +306,14 @@ export default memo((props: Props) => {
         <div className={clases.items}>
           {width &&
             listado.map((e: any) => (
-              <Fragment key={e._id}>
+              <AnimatedItem key={e._id} edited={e.edited} deleted={e.deleted}>
                 {renderItem({
                   ...e,
                   onEditar: () => onEditar(e),
                   onBorrar: () => onBorrar(e),
                   ancho: (width - 320) / (columns || 3),
                 })}
-              </Fragment>
+              </AnimatedItem>
             ))}
         </div>
         {!cargando && paginado.hasNextPage && (

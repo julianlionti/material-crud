@@ -70,12 +70,10 @@
     "react-icons": "^3.11.0",
     "react-scripts": "^3.4.1",
     "typescript": "^3.7.5",
-    "yup": "^0.29.3"
+    "yup": "^0.29.3",
+    "formik": "^2.1.5"
   },
   "files": [
     "dist"
-  ],
-  "dependencies": {
-    "formik": "^2.1.5"
-  }
+  ]
 }

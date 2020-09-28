@@ -2,7 +2,14 @@ import React, { useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Types, Crud, CrudProps, ABMProvider } from 'material-crud'
 import { FaArrowLeft } from 'react-icons/fa'
-import { Button, Card, CardActions, CardContent, IconButton } from '@material-ui/core'
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  IconButton,
+  makeStyles,
+} from '@material-ui/core'
 import { english } from './lang'
 import CustomField from './extra/CustomField'
 
@@ -14,15 +21,9 @@ interface Categoria extends CrudProps {
 }
 
 const ItemCategoria = ({ nombre, onBorrar, onEditar }: Categoria) => {
+  const classes = useClasses()
   return (
-    <Card
-      style={{
-        flex: 1,
-        minWidth: 260,
-        maxWidth: 260,
-        height: 150,
-        margin: 8,
-      }}>
+    <Card className={`${classes.item}`}>
       <CardContent>
         <p>Nombre: {nombre}</p>
       </CardContent>
@@ -33,6 +34,33 @@ const ItemCategoria = ({ nombre, onBorrar, onEditar }: Categoria) => {
     </Card>
   )
 }
+
+const useClasses = makeStyles((theme) => ({
+  item: {
+    flex: 1,
+    minWidth: 260,
+    maxWidth: 260,
+    height: 150,
+    margin: 8,
+    '&:hover': {
+      animation: '$shake 0.5s',
+      animationIterationCount: 'infinite',
+    },
+  },
+  '@keyframes shake': {
+    '0%': { transform: 'translate(1px, 1px) rotate(0deg)' },
+    '10%': { transform: 'translate(-1px, -2px) rotate(-1deg)' },
+    '20%': { transform: 'translate(-3px, 0px) rotate(1deg)' },
+    '30%': { transform: 'translate(3px, 2px) rotate(0deg)' },
+    '40%': { transform: 'translate(1px, -1px) rotate(1deg)' },
+    '50%': { transform: 'translate(-1px, 2px) rotate(-1deg)' },
+    '60%': { transform: 'translate(-3px, 1px) rotate(0deg)' },
+    '70%': { transform: 'translate(3px, 1px) rotate(-1deg)' },
+    '80%': { transform: 'translate(-1px, -1px) rotate(1deg)' },
+    '90%': { transform: 'translate(1px, 2px) rotate(0deg)' },
+    '100%': { transform: 'translate(1px, -2px) rotate(-1deg)' },
+  },
+}))
 
 export default () => {
   const history = useHistory()
