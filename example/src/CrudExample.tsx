@@ -20,30 +20,19 @@ interface Categoria extends CrudProps {
   normativas: { nombre: string }[]
 }
 
-const ItemCategoria = ({ nombre, onBorrar, onEditar }: Categoria) => {
-  const classes = useClasses()
+const ItemCategoria = ({ nombre, onDelete, onEdit }: Categoria) => {
   return (
-    <Card className={`${classes.item}`}>
+    <Card style={{ flex: 1, minWidth: 260, maxWidth: 260, height: 150, margin: 8 }}>
       <CardContent>
         <p>Nombre: {nombre}</p>
       </CardContent>
       <CardActions>
-        <Button onClick={onBorrar}>Borrar</Button>
-        <Button onClick={onEditar}>Editar</Button>
+        <Button onClick={onDelete}>Borrar</Button>
+        <Button onClick={onEdit}>Editar</Button>
       </CardActions>
     </Card>
   )
 }
-
-const useClasses = makeStyles((theme) => ({
-  item: {
-    flex: 1,
-    minWidth: 260,
-    maxWidth: 260,
-    height: 150,
-    margin: 8,
-  },
-}))
 
 export default () => {
   const history = useHistory()
