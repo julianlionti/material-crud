@@ -100,7 +100,7 @@ export default () => {
         ]}
         description="Crud example"
         name="Camiseta"
-        url="http://localhost:5050/api/categoria"
+        url="http://localhost:5050/api/pedidos"
         renderItem={(props: Categoria) => <ItemCategoria {...props} />}
         onError={(err) => console.log(err)}
         response={{
