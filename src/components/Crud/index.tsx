@@ -35,6 +35,29 @@ export interface CRUD {
   widthAbm: number
 }
 
+interface Pagination {
+  hasNextPage?: boolean
+  nextPage?: number
+  page: number
+  totalDocs?: number
+  totalPages?: number
+}
+
+interface ListConfiguration {
+  data: string
+  items: string
+  page?: string
+  hasNextPage?: string
+  nextPage?: string
+  totalDocs?: string
+  totalPages?: string
+}
+
+interface OnFlyResponse extends Pagination {
+  items: any[]
+}
+type ListOnFlyConfiguration = (data: any) => OnFlyResponse
+
 interface Props {
   url?: string
   name: string
@@ -51,27 +74,12 @@ interface Props {
   Left?: ReactNode
   lang?: Translations
   response?: {
-    list: {
-      data: string
-      items: string
-      page?: string
-      hasNextPage?: string
-      nextPage?: string
-      totalDocs?: string
-      totalPages?: string
-    }
+    list: ListConfiguration | ListOnFlyConfiguration
     new: string
     edit: { item: string; id: string }
     delete: { item: string; id: string }
   }
-}
-
-interface Paged {
-  hasNextPage?: boolean
-  nextPage?: number
-  page: number
-  totalDocs?: number
-  totalPages?: number
+  itemId?: 'id' | '_id' | string
 }
 
 export default memo((props: Props) => {
@@ -92,16 +100,16 @@ export default memo((props: Props) => {
     Left,
     lang,
     response,
+    itemId,
   } = props
 
+  const itId = itemId || '_id'
   const called = useRef(false)
 
-  const { list, add, edit: editABM, replace, deleteCall: deleteABM } = useABM<any>({})
+  const { list, add, edit: editABM, replace } = useABM<any>({ id: itId })
   const { loading, response: responseWS, call } = useAxios<any>({ onError })
 
-  // const { enqueueSnackbar } = useSnackbar()
-
-  const [paginated, setPaginated] = useState<Paged>({ page: 1 })
+  const [paginated, setPaginated] = useState<Pagination>({ page: 1 })
   const [cartel, setCartel] = useState<CartelState>({ visible: false })
   const [toolbar, setToolbar] = useState(false)
   const [editObj, setEditObj] = useState<object | null>(null)
@@ -111,10 +119,10 @@ export default memo((props: Props) => {
 
   const editing = editObj ? Object.keys(editObj!!).length > 0 : false
   // const { borrado, item, _id, data } = respuesta || {}
-  const { deleted, item, edited, data } = useMemo(() => {
+  const { deleted, item, edited } = useMemo(() => {
     if (!responseWS) return {}
     if (!response) {
-      const { borrado, item, _id, data } = responseWS
+      const { borrado, item, _id } = responseWS
       return {
         deleted: { item: borrado, id: _id },
         item,
@@ -122,12 +130,10 @@ export default memo((props: Props) => {
           item,
           id: _id,
         },
-        data,
       }
     }
 
     return {
-      data: responseWS[response.list.data],
       deleted: {
         item: responseWS[response.delete.item],
         id: responseWS[response.delete.id],
@@ -156,11 +162,28 @@ export default memo((props: Props) => {
     }
   }, [item, edited, deleted, onFinished, setCartel, add, editABM, gender])
 
-  const docs = data && data[response?.list.items || 'docs']
-  const page = data && data[response?.list.page || 'page']
+  const { data, docs, page } = useMemo(() => {
+    if (!responseWS) return {}
+    if (typeof response?.list === 'function') {
+      const { items, ...data } = response.list(responseWS)
+      return {
+        docs: items,
+        data,
+        page: data.page,
+      }
+    } else {
+      const data = responseWS[response?.list.data || 'data'] || { page: 1 }
+      return {
+        data,
+        docs: data[response?.list.items || 'docs'],
+        page: data[response?.list.page || 'page'],
+      }
+    }
+  }, [responseWS, response])
+
   useEffect(() => {
     if (docs) {
-      setPaginated(data)
+      setPaginated(data!!)
       if (page === 1) {
         replace(docs)
       } else {
@@ -186,14 +209,14 @@ export default memo((props: Props) => {
         titulo: `${lang?.delete || 'Borrar'} ${name}`,
         onCerrar: (aceptado: boolean) => {
           if (aceptado) {
-            call({ method: 'DELETE', data: { id: it._id }, url })
+            call({ method: 'DELETE', data: { id: it[itId] }, url })
           } else {
             setCartel({ visible: false })
           }
         },
       })
     },
-    [call, name, url, lang],
+    [call, name, url, lang, itId],
   )
 
   const filters = useMemo(() => {
@@ -300,7 +323,7 @@ export default memo((props: Props) => {
         <div className={classes.items}>
           {width &&
             list.map((e: any) => (
-              <AnimatedItem key={e._id} edited={e.edited} deleted={e.deleted}>
+              <AnimatedItem key={e[itId]} edited={e.edited} deleted={e.deleted}>
                 {renderItem({
                   ...e,
                   onEdit: () => onEditCall(e),
