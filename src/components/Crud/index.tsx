@@ -199,6 +199,8 @@ export default memo((props: Props) => {
     }
   }, [add, data, docs, page, paginated, replace])
 
+  console.log(docs, list)
+
   useEffect(() => {
     if (!called.current) {
       call({ method: 'GET', url })

@@ -117,7 +117,7 @@ export default () => {
         interaction={{
           page: 'page',
           perPage: 'perPage',
-          filters: 'filters',
+          filter: 'filter',
           sort: 'sort',
         }}
         itemId="id"
