@@ -1,17 +1,9 @@
 import React, { useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
-import { Types, Crud, CrudProps, ABMProvider } from 'material-crud'
+import { Types, Crud, CrudProps, CrudProvider } from 'material-crud'
 import { FaArrowLeft } from 'react-icons/fa'
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  IconButton,
-  makeStyles,
-} from '@material-ui/core'
+import { Button, Card, CardActions, CardContent, IconButton } from '@material-ui/core'
 import { english } from './lang'
-import CustomField from './extra/CustomField'
 
 interface Categoria extends CrudProps {
   id: string
@@ -46,7 +38,7 @@ export default () => {
   }, [])
 
   return (
-    <ABMProvider>
+    <CrudProvider>
       <Crud
         Left={
           <IconButton color="inherit" onClick={() => history.push('/')}>
@@ -122,6 +114,6 @@ export default () => {
         }}
         itemId="id"
       />
-    </ABMProvider>
+    </CrudProvider>
   )
 }

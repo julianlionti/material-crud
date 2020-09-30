@@ -50,6 +50,14 @@ License
 MIT
 
 
-**Free Software, Hell Yeah!**
+### Troubleshooting
 
-[![Donate](https://i.ibb.co/3stYnvP/bud.png)](https://www.paypal.com/donate/?cmd=_s-xclick&hosted_button_id=RXFBVZSHL5QLG&source=url)
+If the list appears empty check that you include your CRUD component inside de CRUDProvider 
+
+```js
+<CrudProvider>
+  <Crud />
+</CrudProvider>
+OR
+$ yarn add @material-ui/core @material-ui/lab axios formik react-icons moment yup
+```
