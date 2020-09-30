@@ -189,7 +189,6 @@ export default memo((props: Props) => {
   }, [responseWS, response])
 
   useEffect(() => {
-    console.log(docs, data)
     if (docs) {
       setPaginated(data!!)
       if (page === 1) {
@@ -249,6 +248,8 @@ export default memo((props: Props) => {
       }),
     [fields],
   )
+
+  console.log(list, width)
 
   const order = useMemo(() => fields.flat().filter((e) => e.sort), [fields])
   return (
