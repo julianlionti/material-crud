@@ -189,6 +189,7 @@ export default memo((props: Props) => {
   }, [responseWS, response])
 
   useEffect(() => {
+    console.log(docs, data)
     if (docs) {
       setPaginated(data!!)
       if (page === 1) {
@@ -198,8 +199,6 @@ export default memo((props: Props) => {
       }
     }
   }, [add, data, docs, page, paginated, replace])
-
-  console.log(docs, list)
 
   useEffect(() => {
     if (!called.current) {
