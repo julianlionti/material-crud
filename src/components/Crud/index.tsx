@@ -336,7 +336,7 @@ export default memo((props: Props) => {
                   ...e,
                   onEdit: () => onEditCall(e),
                   onDelete: () => onDeleteCall(e),
-                  colWidth: (width - 320) / (columns || 3),
+                  cardWidth: (width - 320) / (columns || 3),
                 })}
               </AnimatedItem>
             ))}
