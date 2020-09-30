@@ -14,17 +14,21 @@ import { english } from './lang'
 import CustomField from './extra/CustomField'
 
 interface Categoria extends CrudProps {
-  nombre: string
-  descripcion: string
+  id: string
+  type: string
+  creation_date: string
+  options: { name: string; value: string }[]
   requiereNormativa?: boolean
   normativas: { nombre: string }[]
 }
 
-const ItemCategoria = ({ nombre, onDelete, onEdit }: Categoria) => {
+const ItemCategoria = ({ id, type, creation_date, onDelete, onEdit }: Categoria) => {
   return (
     <Card style={{ flex: 1, minWidth: 260, maxWidth: 260, height: 150, margin: 8 }}>
       <CardContent>
-        <p>Nombre: {nombre}</p>
+        <p>ID: {id}</p>
+        <p>Type: {type}</p>
+        <p>Creation Date: {creation_date}</p>
       </CardContent>
       <CardActions>
         <Button onClick={onDelete}>Borrar</Button>
@@ -51,11 +55,6 @@ export default () => {
         }
         lang={english}
         fields={[
-          {
-            id: 'custom',
-            type: Types.Custom,
-            component: (props) => <CustomField {...props} />,
-          },
           {
             id: 'nombre',
             title: 'Nombre',
@@ -101,22 +100,21 @@ export default () => {
         description="Crud example"
         name="Camiseta"
         url="http://localhost:5050/api/pedidos"
-        renderItem={(props: Categoria) => <ItemCategoria {...props} />}
+        // renderItem={(props: Categoria) => <ItemCategoria {...props} />}
         onError={(err) => console.log(err)}
         response={{
-          list: {
-            data: 'data',
-            items: 'docs',
-            page: 'page',
-            hasNextPage: 'hasNextPage',
-            nextPage: 'nextPage',
-            totalDocs: 'totalDocs',
-            totalPages: 'totalPages',
-          },
+          list: (response) => ({
+            items: response,
+            page: 1,
+            hasNextPage: false,
+            totalDocs: 0,
+            totalPages: 1,
+          }),
           new: 'item',
           edit: { item: 'item', id: '_id' },
           delete: { item: 'borrado', id: '_id' },
         }}
+        itemId="id"
       />
     </ABMProvider>
   )
