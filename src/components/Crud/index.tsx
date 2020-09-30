@@ -249,8 +249,6 @@ export default memo((props: Props) => {
     [fields],
   )
 
-  console.log(list, width)
-
   const order = useMemo(() => fields.flat().filter((e) => e.sort), [fields])
   return (
     <div className={classes.contenedor}>
