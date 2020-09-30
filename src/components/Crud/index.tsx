@@ -32,7 +32,7 @@ export interface CRUD {
   onDelete?: () => void
   edited?: boolean
   deleted?: boolean
-  widthAbm: number
+  cardWidth: number
 }
 
 interface Pagination {
