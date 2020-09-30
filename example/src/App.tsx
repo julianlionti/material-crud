@@ -3,6 +3,7 @@ import { BrowserRouter, Switch, Route, Link } from 'react-router-dom'
 import FormExample from './FormExample'
 import CrudExample from './CrudExample'
 import { UserProvider, UserConfiguration } from 'material-crud'
+import Prueba from './Prueba'
 
 const App = () => {
   const user = {
@@ -17,7 +18,7 @@ const App = () => {
       Authorization: user.token,
     },
   }
-  
+
   return (
     <UserProvider intial={intial}>
       <BrowserRouter>
