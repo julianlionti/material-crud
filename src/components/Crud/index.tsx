@@ -79,6 +79,12 @@ interface Props {
     edit: { item: string; id: string }
     delete: { item: string; id: string }
   }
+  interaction?: {
+    filter: string
+    sort: string
+    page: string
+    perPage: string
+  }
   itemId?: 'id' | '_id' | string
 }
 
@@ -101,6 +107,7 @@ export default memo((props: Props) => {
     lang,
     response,
     itemId,
+    interaction,
   } = props
 
   const itId = itemId || '_id'
@@ -273,8 +280,9 @@ export default memo((props: Props) => {
               onOrden={(ordenado) => {
                 lastFilter.current = {
                   ...lastFilter.current,
-                  ordenado,
-                  pagina: 1,
+                  [interaction?.sort || 'sort']: ordenado,
+                  [interaction?.page || 'page']: 1,
+                  [interaction?.perPage || 'perPage']: 10,
                 }
                 call({
                   method: 'GET',
@@ -303,8 +311,8 @@ export default memo((props: Props) => {
               onSubmit={(filtros) => {
                 lastFilter.current = {
                   ...lastFilter.current,
-                  filtros,
-                  pagina: 1,
+                  [interaction?.filter || 'filter']: filtros,
+                  [interaction?.page || 'page']: 1,
                 }
                 call({
                   method: 'GET',
@@ -339,7 +347,7 @@ export default memo((props: Props) => {
             onClick={() => {
               lastFilter.current = {
                 ...lastFilter.current,
-                pagina: paginated.nextPage,
+                [interaction?.page || 'page']: paginated.nextPage,
               }
               call({
                 method: 'GET',

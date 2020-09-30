@@ -114,6 +114,12 @@ export default () => {
           edit: { item: 'item', id: '_id' },
           delete: { item: 'borrado', id: '_id' },
         }}
+        interaction={{
+          page: 'page',
+          perPage: 'perPage',
+          filters: 'filters',
+          sort: 'sort',
+        }}
         itemId="id"
       />
     </ABMProvider>
