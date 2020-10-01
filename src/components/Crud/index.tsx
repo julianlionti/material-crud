@@ -177,18 +177,16 @@ export default memo((props: Props) => {
 
   const { data, docs, page } = useMemo(() => {
     if (!responseWS) return {}
-    if (
-      typeof response?.list === 'function' &&
-      !deleted?.item &&
-      !edited?.item &&
-      !item
-    ) {
-      const { items, ...data } = response.list(responseWS)
-      return {
-        docs: items,
-        data,
-        page: data.page,
+    if (typeof response?.list === 'function') {
+      if (!deleted?.item && !edited?.item && !item) {
+        const { items, ...data } = response.list(responseWS)
+        return {
+          docs: items,
+          data,
+          page: data.page,
+        }
       }
+      return {}
     } else {
       const data = responseWS[response?.list.data || 'data'] || { page: 1 }
       return {
@@ -197,7 +195,7 @@ export default memo((props: Props) => {
         page: data[response?.list.page || 'page'],
       }
     }
-  }, [responseWS, response])
+  }, [responseWS, response, deleted, edited, item])
 
   useEffect(() => {
     if (docs) {
