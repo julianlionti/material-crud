@@ -177,7 +177,12 @@ export default memo((props: Props) => {
 
   const { data, docs, page } = useMemo(() => {
     if (!responseWS) return {}
-    if (typeof response?.list === 'function') {
+    if (
+      typeof response?.list === 'function' &&
+      !deleted?.item &&
+      !edited?.item &&
+      !item
+    ) {
       const { items, ...data } = response.list(responseWS)
       return {
         docs: items,
