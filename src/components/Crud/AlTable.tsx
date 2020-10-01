@@ -84,7 +84,7 @@ export default memo(
                   key="edit"
                   width={(width * 20) / 100}
                   className={classes.flexContainer}
-                  headerRenderer={({}) => (
+                  headerRenderer={() => (
                     <TableCell
                       variant="head"
                       component="div"
@@ -99,26 +99,24 @@ export default memo(
                       component="div"
                       className={clsx(classes.tableCell, classes.flexContainer)}
                       align="right">
-                      {
-                        <div>
-                          {deleteRow && (
-                            <IconButton
-                              aria-label="delete"
-                              size="small"
-                              onClick={() => onDelete && onDelete(rowData)}>
-                              <FaTrash />
-                            </IconButton>
-                          )}
-                          {edit && (
-                            <IconButton
-                              aria-label="edit"
-                              size="small"
-                              onClick={() => onEdit && onEdit(rowData)}>
-                              <FaEdit />
-                            </IconButton>
-                          )}
-                        </div>
-                      }
+                      <div>
+                        {deleteRow && (
+                          <IconButton
+                            aria-label="delete"
+                            size="small"
+                            onClick={() => onDelete && onDelete(rowData)}>
+                            <FaTrash />
+                          </IconButton>
+                        )}
+                        {edit && (
+                          <IconButton
+                            aria-label="edit"
+                            size="small"
+                            onClick={() => onEdit && onEdit(rowData)}>
+                            <FaEdit />
+                          </IconButton>
+                        )}
+                      </div>
                     </TableCell>
                   )}
                   dataKey=""
