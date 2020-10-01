@@ -21,9 +21,9 @@ export interface TableProps {
   headerHeight?: number
   rowHeight?: number
   edit?: boolean
-  onEdit: (row: any) => void
+  onEdit?: (row: any) => void
   deleteRow?: boolean
-  onDelete: (row: any) => void
+  onDelete?: (row: any) => void
 }
 
 export default memo(
@@ -104,7 +104,9 @@ export default memo(
                           <IconButton
                             aria-label="delete"
                             size="small"
-                            onClick={() => onDelete(rowData)}>
+                            onClick={() => {
+                              if (onDelete) onDelete(rowData)
+                            }}>
                             <FaTrash />
                           </IconButton>
                         )}
@@ -112,7 +114,9 @@ export default memo(
                           <IconButton
                             aria-label="edit"
                             size="small"
-                            onClick={() => onEdit(rowData)}>
+                            onClick={() => {
+                              if (onEdit) onEdit(rowData)
+                            }}>
                             <FaEdit />
                           </IconButton>
                         )}
