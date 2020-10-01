@@ -33,10 +33,6 @@ const ItemCategoria = ({ id, type, creation_date, onDelete, onEdit }: Categoria)
 export default () => {
   const history = useHistory()
 
-  useEffect(() => {
-    return () => {}
-  }, [])
-
   return (
     <CrudProvider>
       <Crud
@@ -50,38 +46,24 @@ export default () => {
             { id: 'username', title: 'Usuario', width: 20 },
             { id: 'name', title: 'Nombre', width: 20 },
             { id: 'surname', title: 'Apellido', width: 20 },
-            { id: 'phone', title: 'Teléfono', width: 20, numeric: true },
+            { id: 'phone', title: 'Teléfono', width: 20 },
             { id: 'email', title: 'Mail', width: 20 },
             {
-              id: 'acciones',
-              title: 'Acciones',
+              id: 'custom',
+              title: 'Custom',
               width: 20,
-              component: (rowData: any) => (
-                <div>
-                  <IconButton
-                    aria-label="delete"
-                    size="small"
-                    onClick={() => console.log(rowData)}>
-                    <FaTrash />
-                  </IconButton>
-                  <IconButton
-                    aria-label="edit"
-                    size="small"
-                    onClick={() => console.log(rowData)}>
-                    <FaEdit />
-                  </IconButton>
-                </div>
-              ),
-              align: 'right',
+              component: (rowData: any) => <span>CUSTOM</span>,
             },
           ],
           height: 400,
-          // onRowClick: (row) => console.log(row),
+          deleteRow: true,
+          edit: true,
+          onDelete: (fila) => console.log(fila),
         }}
         lang={english}
         fields={[
           {
-            id: 'nombre',
+            id: 'username',
             title: 'Nombre',
             placeholder: 'Nombre de la categoría',
             type: Types.Input,
@@ -89,8 +71,8 @@ export default () => {
             sort: true,
           },
           {
-            id: 'descripcion',
-            title: 'Descripción',
+            id: 'surname',
+            title: 'Apellido',
             placeholder: 'Descripción de la categoría',
             type: Types.Multiline,
             filter: true,

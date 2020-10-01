@@ -347,7 +347,16 @@ export default memo((props: Props) => {
       <Divider className={classes.divisor} />
       {loading && <LinearProgress />}
       <Collapse in={!editObj} timeout="auto" unmountOnExit>
-        {(table && !viewCards && <AlTable {...table} rows={list} />) ||
+        {(table && !viewCards && (
+          <AlTable
+            {...table}
+            rows={list}
+            onEdit={(rowData) => (table.onEdit && table.onEdit(rowData)) || onEditCall}
+            onDelete={(rowData) =>
+              (table.onDelete && table.onDelete(rowData)) || onDeleteCall
+            }
+          />
+        )) ||
           (renderItem && (
             <div className={classes.items}>
               {width &&
