@@ -351,10 +351,16 @@ export default memo((props: Props) => {
           <AlTable
             {...table}
             rows={list}
-            onEdit={(rowData) => (table.onEdit && table.onEdit(rowData)) || onEditCall}
-            onDelete={(rowData) =>
-              (table.onDelete && table.onDelete(rowData)) || onDeleteCall
-            }
+            onEdit={(rowData) => {
+              const { onEdit } = table
+              if (onEdit) onEdit(rowData)
+              else onEditCall(rowData)
+            }}
+            onDelete={(rowData) => {
+              const { onDelete } = table
+              if (onDelete) onDelete(rowData)
+              else onDeleteCall(rowData)
+            }}
           />
         )) ||
           (renderItem && (
