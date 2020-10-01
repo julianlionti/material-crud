@@ -36,7 +36,7 @@ export const useUser = <T extends any>() => {
   const [configuration, setConfiguration] = useContext(UserContext) as Contexto<T>
 
   const setUser = useCallback(
-    (user: T) => setConfiguration((conf) => ({ ...conf, user })),
+    (user: T | null) => setConfiguration((conf) => ({ ...conf, user })),
     [setConfiguration],
   )
 

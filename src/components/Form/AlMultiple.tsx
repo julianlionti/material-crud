@@ -23,7 +23,7 @@ export const valDefault = (conf: TodosProps[]) =>
   conf.flat().reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it) }), {})
 
 export default memo((props: AlMultipleProps) => {
-  const { id, title, grow, hide, configuration } = props
+  const { id, title, grow, hide, configuration, loading } = props
   const [{ value }, { error }, { setValue }] = useField<ValuesProps[]>(id)
   const classes = useClasses()
 
@@ -34,7 +34,9 @@ export default memo((props: AlMultipleProps) => {
       <Paper elevation={0}>
         <div className={classes.headerContainer}>
           <Typography variant="body1">{`${title} (${valFinal?.length})`}</Typography>
-          <IconButton onClick={() => setValue([...valFinal, valDefault(configuration)])}>
+          <IconButton
+            disabled={loading}
+            onClick={() => setValue([...valFinal, valDefault(configuration)])}>
             <FaPlus />
           </IconButton>
         </div>
@@ -47,24 +49,66 @@ export default memo((props: AlMultipleProps) => {
                 case Types.Multiline:
                 case Types.Number:
                 case Types.Phone:
-                  return <AlInput id={`${id}.${index}.${colId}`} key={colId} {...etc} />
+                  return (
+                    <AlInput
+                      loading={loading}
+                      id={`${id}.${index}.${colId}`}
+                      key={colId}
+                      {...etc}
+                    />
+                  )
                 case Types.Options:
-                  return <AlSelect id={`${id}.${index}.${colId}`} key={colId} {...etc} />
+                  return (
+                    <AlSelect
+                      loading={loading}
+                      id={`${id}.${index}.${colId}`}
+                      key={colId}
+                      {...etc}
+                    />
+                  )
                 case Types.Image:
-                  return <AlImagen id={`${id}.${index}.${colId}`} key={colId} {...etc} />
+                  return (
+                    <AlImagen
+                      loading={loading}
+                      id={`${id}.${index}.${colId}`}
+                      key={colId}
+                      {...etc}
+                    />
+                  )
                 case Types.Autocomplete:
                   return (
-                    <AlAutocomplete id={`${id}.${index}.${colId}`} key={colId} {...etc} />
+                    <AlAutocomplete
+                      loading={loading}
+                      id={`${id}.${index}.${colId}`}
+                      key={colId}
+                      {...etc}
+                    />
                   )
                 case Types.Switch:
-                  return <AlSwitch id={`${id}.${index}.${colId}`} key={colId} {...etc} />
+                  return (
+                    <AlSwitch
+                      loading={loading}
+                      id={`${id}.${index}.${colId}`}
+                      key={colId}
+                      {...etc}
+                    />
+                  )
                 case Types.Custom:
-                  return <AlCustom id={`${id}.${index}.${colId}`} key={colId} {...etc} />
+                  return (
+                    <AlCustom
+                      loading={loading}
+                      id={`${id}.${index}.${colId}`}
+                      key={colId}
+                      {...etc}
+                    />
+                  )
                 default:
                   return null
               }
             })}
-            <IconButton onClick={() => setValue(valFinal.filter((_, i) => i !== index))}>
+            <IconButton
+              disabled={loading}
+              onClick={() => setValue(valFinal.filter((_, i) => i !== index))}>
               <FaTrash />
             </IconButton>
           </div>

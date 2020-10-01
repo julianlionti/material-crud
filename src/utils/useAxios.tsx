@@ -88,17 +88,20 @@ export default <T extends any>(props?: Props): Response<T> => {
 
       dispatch({ error: undefined })
     }
-  }, [error])
+  }, [error, onError])
 
-  const call = useCallback(async (config: AxiosRequestConfig) => {
-    if (!calling.current) {
-      calling.current = true
-      dispatch({ loading: true, error: undefined, response: undefined })
-      const { error, response } = await callWs(config, headers)
-      dispatch({ loading: false, response, error })
-      calling.current = false
-    }
-  }, [])
+  const call = useCallback(
+    async (config: AxiosRequestConfig) => {
+      if (!calling.current) {
+        calling.current = true
+        dispatch({ loading: true, error: undefined, response: undefined })
+        const { error, response } = await callWs(config, headers)
+        dispatch({ loading: false, response, error })
+        calling.current = false
+      }
+    },
+    [headers],
+  )
 
   useEffect(() => {
     if (!onInitRef.current && onInit) {

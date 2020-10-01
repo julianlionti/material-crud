@@ -13,7 +13,7 @@
   },
   "scripts": {
     "build": "microbundle-crl --format modern,cjs",
-    "start": "microbundle-crl --no-compress watch --format modern,cjs",
+    "start": "microbundle-crl --no-compress --format modern,cjs",
     "prepare": "run-s build",
     "test": "run-s test:unit test:lint test:build",
     "test:build": "run-s build",
@@ -60,6 +60,7 @@
     "eslint-plugin-react": "^7.17.0",
     "eslint-plugin-react-hooks": "^4.1.2",
     "eslint-plugin-standard": "^4.0.1",
+    "formik": "^2.1.5",
     "gh-pages": "^2.2.0",
     "microbundle-crl": "^0.13.10",
     "npm-run-all": "^4.1.5",
@@ -70,10 +71,17 @@
     "react-icons": "^3.11.0",
     "react-scripts": "^3.4.1",
     "typescript": "^3.7.5",
-    "yup": "^0.29.3",
-    "formik": "^2.1.5"
+    "yup": "^0.29.3"
   },
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "@types/react-virtualized": "^9.21.10",
+    "@types/react-virtualized-auto-sizer": "^1.0.0",
+    "@types/react-window": "^1.8.2",
+    "react-virtualized": "^9.22.2",
+    "react-virtualized-auto-sizer": "^1.0.2",
+    "react-window": "^1.8.5"
+  }
 }

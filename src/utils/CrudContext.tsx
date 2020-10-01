@@ -12,7 +12,7 @@ type Context<T = any> = [T[], Dispatch<SetStateAction<T[]>>]
 
 const ABMContext = createContext<Context>([[], () => {}])
 
-export const ABMProvider = ({ children }: { children: ReactNode }) => {
+export const CrudProvider = ({ children }: { children: ReactNode }) => {
   const status = useState<any>([])
   return <ABMContext.Provider value={status}>{children}</ABMContext.Provider>
 }

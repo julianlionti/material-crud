@@ -1,17 +1,9 @@
 import React, { useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
-import { Types, Crud, CrudProps, ABMProvider } from 'material-crud'
-import { FaArrowLeft } from 'react-icons/fa'
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  IconButton,
-  makeStyles,
-} from '@material-ui/core'
+import { Types, Crud, CrudProps, CrudProvider } from 'material-crud'
+import { FaArrowLeft, FaEdit, FaTrash } from 'react-icons/fa'
+import { Button, Card, CardActions, CardContent, IconButton } from '@material-ui/core'
 import { english } from './lang'
-import CustomField from './extra/CustomField'
 
 interface Categoria extends CrudProps {
   id: string
@@ -41,22 +33,37 @@ const ItemCategoria = ({ id, type, creation_date, onDelete, onEdit }: Categoria)
 export default () => {
   const history = useHistory()
 
-  useEffect(() => {
-    return () => {}
-  }, [])
-
   return (
-    <ABMProvider>
+    <CrudProvider>
       <Crud
         Left={
           <IconButton color="inherit" onClick={() => history.push('/')}>
             <FaArrowLeft />
           </IconButton>
         }
+        table={{
+          columns: [
+            { id: 'username', title: 'Usuario', width: 20 },
+            { id: 'name', title: 'Nombre', width: 20 },
+            { id: 'surname', title: 'Apellido', width: 20 },
+            { id: 'phone', title: 'Teléfono', width: 20 },
+            { id: 'email', title: 'Mail', width: 20 },
+            {
+              id: 'custom',
+              title: 'Custom',
+              width: 20,
+              component: (rowData: any) => <span>CUSTOM</span>,
+            },
+          ],
+          height: 400,
+          deleteRow: true,
+          edit: true,
+          onDelete: (fila) => console.log(fila),
+        }}
         lang={english}
         fields={[
           {
-            id: 'nombre',
+            id: 'username',
             title: 'Nombre',
             placeholder: 'Nombre de la categoría',
             type: Types.Input,
@@ -64,8 +71,8 @@ export default () => {
             sort: true,
           },
           {
-            id: 'descripcion',
-            title: 'Descripción',
+            id: 'surname',
+            title: 'Apellido',
             placeholder: 'Descripción de la categoría',
             type: Types.Multiline,
             filter: true,
@@ -99,12 +106,12 @@ export default () => {
         ]}
         description="Crud example"
         name="Camiseta"
-        url="http://localhost:5000/c2"
-        renderItem={(props) => <ItemCategoria {...props} />}
+        url="http://localhost:5050/api/user"
+        renderItem={(props: Categoria) => <ItemCategoria {...props} />}
         onError={(err) => console.log(err)}
         response={{
           list: (response) => ({
-            items: response,
+            items: response.data.docs,
             page: 1,
             hasNextPage: false,
             totalDocs: 0,
@@ -114,8 +121,14 @@ export default () => {
           edit: { item: 'item', id: '_id' },
           delete: { item: 'borrado', id: '_id' },
         }}
+        interaction={{
+          page: 'page',
+          perPage: 'perPage',
+          filter: 'filter',
+          sort: 'sort',
+        }}
         itemId="id"
       />
-    </ABMProvider>
+    </CrudProvider>
   )
 }
