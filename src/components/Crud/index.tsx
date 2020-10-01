@@ -14,6 +14,8 @@ import {
   makeStyles,
   Button,
   LinearProgress,
+  FormControlLabel,
+  Switch,
 } from '@material-ui/core'
 import { FaFilter } from 'react-icons/fa'
 import Formulario, { CamposProps } from '../Form'
@@ -26,6 +28,7 @@ import { serialize } from 'object-to-formdata'
 import { Translations } from '../../translate'
 import CenteredCard from '../UI/CenteredCard'
 import AnimatedItem from '../UI/AnimatedItem'
+import AlTable, { ColumnProps, TableProps } from '../Crud/AlTable'
 
 export interface CRUD {
   onEdit?: () => void
@@ -65,9 +68,10 @@ interface Props {
   gender?: 'M' | 'F'
   description: string
   fields: CamposProps[]
-  renderItem: (vals: any) => ReactNode
-  columns?: number
-  columnsFilters?: number
+  table?: TableProps
+  renderItem?: (vals: any) => ReactNode
+  cardsPerRow?: number
+  filtersPerRow?: number
   isFormData?: boolean
   onFinished?: (what: 'new' | 'add' | 'update' | 'delete', genero?: 'M' | 'F') => void
   onError?: (err: Error) => void
@@ -96,9 +100,10 @@ export default memo((props: Props) => {
     gender,
     description,
     fields,
+    table,
     renderItem,
-    columns,
-    columnsFilters,
+    cardsPerRow,
+    filtersPerRow,
     isFormData,
     onFinished,
     titleSize,
@@ -120,6 +125,7 @@ export default memo((props: Props) => {
   const [cartel, setCartel] = useState<CartelState>({ visible: false })
   const [toolbar, setToolbar] = useState(false)
   const [editObj, setEditObj] = useState<object | null>(null)
+  const [viewCards, setViewCards] = useState(false)
 
   const { width } = useWindowSize()
   const classes = useClasses({ titleSize })
@@ -231,11 +237,11 @@ export default memo((props: Props) => {
       .flat()
       .filter((e) => e.filter)
       .map(({ grow, ...etc }) => etc)
-    const columnas = columnsFilters || 3
+    const columnas = filtersPerRow || 3
     return new Array(Math.ceil(items.length / columnas))
       .fill(null)
       .map((_) => items.splice(0, columnas))
-  }, [columnsFilters, fields])
+  }, [filtersPerRow, fields])
 
   const fieldsWithoutFilters = useMemo(
     () =>
@@ -261,6 +267,19 @@ export default memo((props: Props) => {
             } ${name}`}</Typography>
           </div>
           <div>
+            {table && renderItem && (
+              <FormControlLabel
+                control={
+                  <Switch
+                    onChange={() => setViewCards(!viewCards)}
+                    value={viewCards}
+                    color="primary"
+                  />
+                }
+                label="Show cards"
+                labelPlacement="start"
+              />
+            )}
             {Object.keys(filters || {}).length > 0 && (
               <Button
                 color="primary"
@@ -328,19 +347,22 @@ export default memo((props: Props) => {
       <Divider className={classes.divisor} />
       {loading && <LinearProgress />}
       <Collapse in={!editObj} timeout="auto" unmountOnExit>
-        <div className={classes.items}>
-          {width &&
-            list.map((e: any) => (
-              <AnimatedItem key={e[itId]} edited={e.edited} deleted={e.deleted}>
-                {renderItem({
-                  ...e,
-                  onEdit: () => onEditCall(e),
-                  onDelete: () => onDeleteCall(e),
-                  cardWidth: (width - 320) / (columns || 3),
-                })}
-              </AnimatedItem>
-            ))}
-        </div>
+        {(table && !viewCards && <AlTable {...table} rows={list} />) ||
+          (renderItem && (
+            <div className={classes.items}>
+              {width &&
+                list.map((e: any) => (
+                  <AnimatedItem key={e[itId]} edited={e.edited} deleted={e.deleted}>
+                    {renderItem({
+                      ...e,
+                      onEdit: () => onEditCall(e),
+                      onDelete: () => onDeleteCall(e),
+                      cardWidth: (width - 320) / (cardsPerRow || 3),
+                    })}
+                  </AnimatedItem>
+                ))}
+            </div>
+          ))}
         {!loading && paginated.hasNextPage && (
           <div
             className={classes.verMas}

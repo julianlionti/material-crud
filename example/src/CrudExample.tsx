@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Types, Crud, CrudProps, CrudProvider } from 'material-crud'
-import { FaArrowLeft } from 'react-icons/fa'
+import { FaArrowLeft, FaEdit, FaTrash } from 'react-icons/fa'
 import { Button, Card, CardActions, CardContent, IconButton } from '@material-ui/core'
 import { english } from './lang'
 
@@ -45,6 +45,39 @@ export default () => {
             <FaArrowLeft />
           </IconButton>
         }
+        table={{
+          columns: [
+            { id: 'username', title: 'Usuario', width: 20 },
+            { id: 'name', title: 'Nombre', width: 20 },
+            { id: 'surname', title: 'Apellido', width: 20 },
+            { id: 'phone', title: 'Teléfono', width: 20, numeric: true },
+            { id: 'email', title: 'Mail', width: 20 },
+            {
+              id: 'acciones',
+              title: 'Acciones',
+              width: 20,
+              component: (rowData: any) => (
+                <div>
+                  <IconButton
+                    aria-label="delete"
+                    size="small"
+                    onClick={() => console.log(rowData)}>
+                    <FaTrash />
+                  </IconButton>
+                  <IconButton
+                    aria-label="edit"
+                    size="small"
+                    onClick={() => console.log(rowData)}>
+                    <FaEdit />
+                  </IconButton>
+                </div>
+              ),
+              align: 'right',
+            },
+          ],
+          height: 400,
+          // onRowClick: (row) => console.log(row),
+        }}
         lang={english}
         fields={[
           {
@@ -91,12 +124,12 @@ export default () => {
         ]}
         description="Crud example"
         name="Camiseta"
-        url="http://localhost:5000/c2"
-        renderItem={(props) => <ItemCategoria {...props} />}
+        url="http://localhost:5050/api/user"
+        renderItem={(props: Categoria) => <ItemCategoria {...props} />}
         onError={(err) => console.log(err)}
         response={{
           list: (response) => ({
-            items: response,
+            items: response.data.docs,
             page: 1,
             hasNextPage: false,
             totalDocs: 0,
