@@ -214,7 +214,6 @@ export default memo((props: CrudProps) => {
       const it = item
       setCartel({
         visible: true,
-        // contenido: itemName ? `¿Estás segure de borrar el ${it.nombre}? Esta accion no se puede deshacer?`,
         contenido:
           itemName && lang?.delExplanation
             ? lang.delExplanation(it[itemName])
@@ -277,7 +276,7 @@ export default memo((props: CrudProps) => {
                     color="primary"
                   />
                 }
-                label="Show cards"
+                label={lang.showCards || 'Cartas'}
                 labelPlacement="start"
               />
             )}

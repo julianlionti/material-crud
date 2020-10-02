@@ -1,5 +1,5 @@
 import { makeStyles, MenuItem, Select, Typography } from '@material-ui/core'
-import React from 'react'
+import React, { memo } from 'react'
 import Pagination from '@material-ui/lab/Pagination'
 import { PaginationProps } from './AlTable'
 import { useLang } from '../../utils/CrudContext'
@@ -11,12 +11,10 @@ interface Props extends PaginationProps {
 
 const perPageList = [5, 10, 15, 50, 100, 500, 1000]
 
-export default (props: Props) => {
+export default memo((props: Props) => {
   const { width, page, limit, onChange, totalDocs, totalPages } = props
   const lang = useLang()
   const classes = useClasses()
-
-  console.log(lang)
 
   return (
     <div style={{ width: width - 10 }} className={classes.pagContainer}>
@@ -46,7 +44,7 @@ export default (props: Props) => {
       />
     </div>
   )
-}
+})
 
 const useClasses = makeStyles((theme) => ({
   pagContainer: {

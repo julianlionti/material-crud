@@ -1,4 +1,5 @@
 export interface Translations {
+  showCards: string
   listOf: string
   new: string
   edit: string
@@ -30,6 +31,7 @@ export interface Translations {
 
 // Con la propiedad género se cambian las O por las A
 const translations: Translations = {
+  showCards: 'Cartas',
   listOf: 'Listado de',
   new: 'Agregar nuevo',
   edit: 'Editar',
