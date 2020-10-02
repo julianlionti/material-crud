@@ -17,10 +17,10 @@ export interface AlSelectProps extends ComunesProps {
 }
 
 export default memo((props: AlSelectProps) => {
-  const { id, title, placeholder, validate, filter, grow, options, loading, hide } = props
+  const { id, title, placeholder, validate, list, grow, options, loading, hide } = props
   const [{ value }, { error, touched }, { setValue }] = useField<string>(id)
 
-  const finalTitle = `${title} ${!filter && validate ? '*' : ''}`
+  const finalTitle = `${title} ${!list?.filter && validate ? '*' : ''}`
 
   return (
     <BaseInput grow={grow} ocultar={hide}>

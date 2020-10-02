@@ -21,6 +21,7 @@ import {
 } from 'react-icons/fa'
 import BaseInput from './BaseInput'
 import { Types, ComunesProps } from './Types'
+import { useLang } from '../../utils/CrudContext'
 
 type FiltroTipo =
   | 'empiezaCon'
@@ -112,13 +113,13 @@ export default memo((props: AlInputProps) => {
     max,
     willSubmit,
     loading,
-    filter,
+    list,
     readonly,
     fullWidth,
     help,
     hide,
   } = props
-
+  const lang = useLang()
   const [anchorFilter, setAnchorFilter] = useState<HTMLElement | null>(null)
   const [{ value }, { error, touched }, { setValue }] = useField<string | Filtro>(id)
   const formik = useFormikContext()
@@ -127,7 +128,7 @@ export default memo((props: AlInputProps) => {
   const valMax = validate?.describe().tests.find((e) => e.name === 'max')?.params.max
 
   const finalTitle = useMemo<string>(() => {
-    if (filter) {
+    if (list?.filter) {
       return title!!
     } else {
       const valor = value as string
@@ -135,14 +136,14 @@ export default memo((props: AlInputProps) => {
         mandatory ? '*' : ''
       }`
     }
-  }, [filter, mandatory, title, valMax, value])
+  }, [list, mandatory, title, valMax, value])
 
   const finalValue = useMemo(() => {
-    if (filter) {
+    if (list?.filter) {
       return (value as Filtro).valor
     }
     return value as string
-  }, [filter, value])
+  }, [list, value])
 
   const filterType = useMemo(() => {
     switch (type) {
@@ -164,15 +165,15 @@ export default memo((props: AlInputProps) => {
           disabled={loading || readonly}
           id={id}
           startAdornment={
-            filter && (
-              <Tooltip title="Definir TIPO de filtro">
+            list?.filter && (
+              <Tooltip title={lang?.tooltips.defineFilter || 'Definir TIPO de filtro'}>
                 <IconButton onClick={(e) => setAnchorFilter(e.currentTarget)}>
                   {filterType.find((e) => e.id === (value as Filtro).filtro)?.icono}
                 </IconButton>
               </Tooltip>
             )
           }
-          multiline={!filter && type === Types.Multiline}
+          multiline={!list?.filter && type === Types.Multiline}
           rows={type === Types.Multiline ? 4 : undefined}
           value={finalValue}
           onChange={({ target }) => {
@@ -198,7 +199,7 @@ export default memo((props: AlInputProps) => {
         {((touched && error) || help) && (
           <FormHelperText id={id}>{(touched && error) || help}</FormHelperText>
         )}
-        {filter && (
+        {list?.filter && (
           <Menu anchorEl={anchorFilter} open={!!anchorFilter}>
             {filterType.map((e) => (
               <MenuItem

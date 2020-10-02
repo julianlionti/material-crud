@@ -1,4 +1,6 @@
+import { ReactNode } from 'react'
 import * as Yup from 'yup'
+import { ColumnProps } from '../Crud/CustomCell'
 
 export enum Types {
   Input,
@@ -23,14 +25,20 @@ export interface OpcionesProps {
 
 export interface ComunesProps {
   id: string
-  title?: string
+  title: string
   validate?: Yup.Schema<any>
   grow?: number
   help?: string
   loading?: boolean
-  filter?: boolean
-  sort?: boolean
   readonly?: boolean
   depends?: (props: any) => boolean
   hide?: boolean
+  list?: ColumnProps
+}
+
+export interface Interactions {
+  filter?: string
+  sort?: string
+  page: string
+  perPage: string
 }

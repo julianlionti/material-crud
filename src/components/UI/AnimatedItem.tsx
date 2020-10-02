@@ -13,7 +13,7 @@ export default memo(({ children, edited, deleted }: Props) => {
   return (
     <Collapse
       className={`${edited ? classes.edited : ''}`}
-      timeout={1000}
+      timeout="auto"
       in={!deleted}
       unmountOnExit>
       {children}
