@@ -258,13 +258,18 @@ export default memo((props: CrudProps) => {
 
   const fieldsWithoutFilters = useMemo(
     () =>
-      fields.map((cam) => {
-        if (Array.isArray(cam)) {
-          return cam.map(({ list, ...etc }) => etc)
-        }
-        const { list, ...etc } = cam
-        return etc
-      }),
+      fields
+        .filter((e) => {
+          if (!Array.isArray(e)) return e.edit !== false
+          return true
+        })
+        .map((cam) => {
+          if (Array.isArray(cam)) {
+            return cam.filter((e) => e.edit !== false).map(({ list, ...etc }) => etc)
+          }
+          const { list, ...etc } = cam
+          return etc
+        }),
     [fields],
   )
 
