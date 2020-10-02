@@ -61,7 +61,7 @@ export interface CrudProps {
   cardsPerRow?: number
   filtersPerRow?: number
   isFormData?: boolean
-  onFinished?: (what: 'new' | 'add' | 'update' | 'delete', genero?: 'M' | 'F') => void
+  onFinished?: (what: 'new' | 'update' | 'delete', genero?: 'M' | 'F') => void
   onError?: (err: Error) => void
   Left?: ReactNode
   response?: {
