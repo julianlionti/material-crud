@@ -23,7 +23,7 @@ interface Props extends Partial<TableCellProps> {
   children?: ReactNode
 }
 
-export default ({ cellData, children, rowHeight, col }: Props) => {
+export default ({ cellData, children, rowHeight, col, rowData }: Props) => {
   const classes = useClasses({ rowHeight, align: col?.align })
 
   const renderContent = useCallback(() => {
@@ -41,7 +41,7 @@ export default ({ cellData, children, rowHeight, col }: Props) => {
 
   return (
     <TableCell component="div" variant="body" className={classes.cellContainer}>
-      {children || renderContent()}
+      {(col?.component && col.component(rowData)) || children || renderContent()}
     </TableCell>
   )
 }
