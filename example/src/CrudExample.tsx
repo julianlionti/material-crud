@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useHistory } from 'react-router-dom'
-import { Types, Crud, CrudProps, CrudProvider } from 'material-crud'
-import { FaArrowLeft, FaEdit, FaTrash } from 'react-icons/fa'
+import { Types, Crud, CrudItem } from 'material-crud'
+import { FaArrowLeft } from 'react-icons/fa'
 import { Button, Card, CardActions, CardContent, IconButton } from '@material-ui/core'
-import { english } from './lang'
 
-interface Categoria extends CrudProps {
+interface Categoria extends CrudItem {
   id: string
   type: string
   creation_date: string
@@ -34,106 +33,103 @@ export default () => {
   const history = useHistory()
 
   return (
-    <CrudProvider>
-      <Crud
-        Left={
-          <IconButton color="inherit" onClick={() => history.push('/')}>
-            <FaArrowLeft />
-          </IconButton>
-        }
-        // table={{
-        //   columns: [
-        //     { id: 'username', title: 'Usuario', width: 20 },
-        //     { id: 'name', title: 'Nombre', width: 20 },
-        //     { id: 'surname', title: 'Apellido', width: 20 },
-        //     { id: 'phone', title: 'Teléfono', width: 20 },
-        //     { id: 'email', title: 'Mail', width: 20 },
-        //     {
-        //       id: 'custom',
-        //       title: 'Custom',
-        //       width: 20,
-        //       component: (rowData: any) => <span>CUSTOM</span>,
-        //     },
-        //   ],
-        //   height: 400,
-        //   deleteRow: true,
-        //   edit: true,
-        // }}
-        lang={english}
-        fields={[
-          {
-            id: 'username',
-            title: 'Nombre',
-            placeholder: 'Nombre de la categoría',
-            type: Types.Input,
-            list: {
-              width: 20,
-              filter: true,
-              sort: true,
+    <Crud
+      Left={
+        <IconButton color="inherit" onClick={() => history.push('/')}>
+          <FaArrowLeft />
+        </IconButton>
+      }
+      // table={{
+      //   columns: [
+      //     { id: 'username', title: 'Usuario', width: 20 },
+      //     { id: 'name', title: 'Nombre', width: 20 },
+      //     { id: 'surname', title: 'Apellido', width: 20 },
+      //     { id: 'phone', title: 'Teléfono', width: 20 },
+      //     { id: 'email', title: 'Mail', width: 20 },
+      //     {
+      //       id: 'custom',
+      //       title: 'Custom',
+      //       width: 20,
+      //       component: (rowData: any) => <span>CUSTOM</span>,
+      //     },
+      //   ],
+      //   height: 400,
+      //   deleteRow: true,
+      //   edit: true,
+      // }}
+      fields={[
+        {
+          id: 'username',
+          title: 'Nombre',
+          placeholder: 'Nombre de la categoría',
+          type: Types.Input,
+          list: {
+            width: 20,
+            filter: true,
+            sort: true,
+          },
+        },
+        {
+          id: 'surname',
+          title: 'Apellido',
+          placeholder: 'Descripción de la categoría',
+          type: Types.Multiline,
+          list: {
+            width: 80,
+            filter: true,
+            sort: true,
+          },
+        },
+        {
+          id: 'requiereNormativa',
+          type: Types.Switch,
+          title: 'Requiere normativa',
+        },
+        {
+          id: 'normativas',
+          type: Types.Multiple,
+          title: 'Normativas necesarias',
+          depends: ({ requiereNormativa }: Categoria) => requiereNormativa === true,
+          configuration: [
+            { type: Types.Input, title: 'Nombre', id: 'prueba' },
+            {
+              type: Types.Options,
+              title: 'Tipo',
+              id: 'tipo',
+              options: [
+                { id: '1', title: 'Empire' },
+                { id: '2', title: 'OTRO' },
+              ],
+              placeholder: 'Select one',
             },
-          },
-          {
-            id: 'surname',
-            title: 'Apellido',
-            placeholder: 'Descripción de la categoría',
-            type: Types.Multiline,
-            list: {
-              width: 80,
-              filter: true,
-              sort: true,
-            },
-          },
-          {
-            id: 'requiereNormativa',
-            type: Types.Switch,
-            title: 'Requiere normativa',
-          },
-          {
-            id: 'normativas',
-            type: Types.Multiple,
-            title: 'Normativas necesarias',
-            depends: ({ requiereNormativa }: Categoria) => requiereNormativa === true,
-            configuration: [
-              { type: Types.Input, title: 'Nombre', id: 'prueba' },
-              {
-                type: Types.Options,
-                title: 'Tipo',
-                id: 'tipo',
-                options: [
-                  { id: '1', title: 'Empire' },
-                  { id: '2', title: 'OTRO' },
-                ],
-                placeholder: 'Select one',
-              },
-              { type: Types.Number, title: 'Cantidad', id: 'cantidad' },
-            ],
-          },
-        ]}
-        description="Crud example"
-        name="Camiseta"
-        url="http://localhost:5050/api/user"
-        renderItem={(props: Categoria) => <ItemCategoria {...props} />}
-        onError={(err) => console.log(err)}
-        response={{
-          list: (response) => ({
-            items: response.data.docs,
-            page: 1,
-            hasNextPage: false,
-            totalDocs: 0,
-            totalPages: 1,
-          }),
-          new: 'item',
-          edit: { item: 'item', id: '_id' },
-          delete: { item: 'borrado', id: '_id' },
-        }}
-        interaction={{
-          page: 'page',
-          perPage: 'perPage',
-          filter: 'filter',
-          sort: 'sort',
-        }}
-        itemId="id"
-      />
-    </CrudProvider>
+            { type: Types.Number, title: 'Cantidad', id: 'cantidad' },
+          ],
+        },
+      ]}
+      description="Crud example"
+      name="Camiseta"
+      url="http://localhost:5050/api/user"
+      renderItem={(props: Categoria) => <ItemCategoria {...props} />}
+      onError={(err) => console.log(err)}
+      response={{
+        list: (response) => ({
+          items: response.data.docs,
+          page: 1,
+          hasNextPage: false,
+          totalDocs: 0,
+          totalPages: 1,
+        }),
+        new: 'item',
+        edit: { item: 'item', id: '_id' },
+        delete: { item: 'borrado', id: '_id' },
+      }}
+      interaction={{
+        page: 'page',
+        perPage: 'perPage',
+        filter: 'filter',
+        sort: 'sort',
+      }}
+      itemId="id"
+    />
   )
 }

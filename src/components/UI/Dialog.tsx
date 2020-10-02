@@ -12,6 +12,7 @@ import {
 } from '@material-ui/core'
 import { TransitionProps } from '@material-ui/core/transitions'
 import { grey } from '@material-ui/core/colors'
+import { useLang } from '../../utils/CrudContext'
 
 export interface CartelState {
   visible: boolean
@@ -36,6 +37,7 @@ export const Transition = forwardRef(
 )
 
 export default memo(({ show, onClose, title, content, loading }: Props) => {
+  const lang = useLang()
   const clases = useClases()
   return (
     <Dialog open={show} TransitionComponent={Transition}>
@@ -52,7 +54,7 @@ export default memo(({ show, onClose, title, content, loading }: Props) => {
             if (onClose) onClose(false)
           }}
           color="primary">
-          Cancel
+          {lang?.dialog?.cancel || 'Cancelar'}
         </Button>
         <Button
           onClick={() => {
@@ -60,7 +62,7 @@ export default memo(({ show, onClose, title, content, loading }: Props) => {
           }}
           color="primary"
           autoFocus>
-          Accept
+          {lang?.dialog?.accept || 'Accept'}
         </Button>
       </DialogActions>
     </Dialog>

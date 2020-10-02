@@ -5,6 +5,7 @@ import { TextField, Checkbox, Paper, makeStyles } from '@material-ui/core'
 import { FaRegCheckSquare, FaRegSquare } from 'react-icons/fa'
 import BaseInput from './BaseInput'
 import { OpcionesProps, Types, ComunesProps } from './Types'
+import { useLang } from '../../utils/CrudContext'
 
 export interface AlAutocompleteProps extends ComunesProps {
   type: Types.Autocomplete
@@ -33,6 +34,7 @@ export default memo((props: AlAutocompleteProps) => {
     validate,
     list,
   } = props
+  const lang = useLang()
   const warnRef = useRef(false)
   const [{ value }, { error, touched }, { setValue, setTouched }] = useField<
     OpcionesProps[] | OpcionesProps
@@ -74,11 +76,11 @@ export default memo((props: AlAutocompleteProps) => {
   return (
     <BaseInput grow={grow}>
       <Autocomplete
-        loadingText="Cargando..."
+        loadingText={lang?.loading || 'Cargando...'}
         loading={loading}
         options={options}
         value={valores}
-        noOptionsText="Sin opciones"
+        noOptionsText={lang?.noOptions || 'Sin opciones'}
         onChange={(_, vals) => {
           if (multiple) setValue(vals as OpcionesProps[])
           setValue(vals as OpcionesProps)

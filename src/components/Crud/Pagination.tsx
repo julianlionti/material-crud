@@ -2,6 +2,7 @@ import { makeStyles, MenuItem, Select, Typography } from '@material-ui/core'
 import React from 'react'
 import Pagination from '@material-ui/lab/Pagination'
 import { PaginationProps } from './AlTable'
+import { useLang } from '../../utils/CrudContext'
 
 interface Props extends PaginationProps {
   width: number
@@ -12,13 +13,13 @@ const perPageList = [5, 10, 15, 50, 100, 500, 1000]
 
 export default (props: Props) => {
   const { width, page, limit, onChange, totalDocs, totalPages } = props
+  const lang = useLang()
   const classes = useClasses()
 
-  console.log(page, limit)
   return (
     <div style={{ width: width - 10 }} className={classes.pagContainer}>
-      <Typography>Total de registros {totalDocs} - </Typography>
-      <Typography> Registros por página:</Typography>
+      <Typography>{`${lang?.pagination?.totalCount} ${totalDocs} - `}</Typography>
+      <Typography>{` ${lang?.pagination?.rowsPerPage}:`}</Typography>
       <Select
         className={classes.perPage}
         value={limit}
@@ -36,10 +37,7 @@ export default (props: Props) => {
         className={classes.pagination}
         count={totalPages}
         page={page}
-        onChange={(e, p) => {
-          console.log(p)
-          onChange(p, limit!!)
-        }}
+        onChange={(e, p) => onChange(p, limit!!)}
         siblingCount={1}
         showFirstButton
         showLastButton

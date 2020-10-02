@@ -10,6 +10,7 @@ import {
 import { TodosProps } from '../Form'
 import { Types } from '../Form/Types'
 import { Translations } from '../../translate'
+import { useLang } from '../../utils/CrudContext'
 
 export interface SortProps {
   [key: string]: 1 | -1 | 0
@@ -19,12 +20,12 @@ interface Props {
   que: string
   columnas: TodosProps[]
   onOrden: (orden: SortProps) => void
-  lang?: Translations
 }
 
 const icono = 22
 export default (props: Props) => {
-  const { columnas, onOrden, lang } = props
+  const { columnas, onOrden } = props
+  const lang = useLang()
   const [anchorOrdenar, setAnchorOrdenar] = useState<HTMLElement | null>(null)
   const [ordenado, setOrdenado] = useState<SortProps>({})
 

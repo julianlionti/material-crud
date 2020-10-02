@@ -2,6 +2,7 @@ import React from 'react'
 import * as Yup from 'yup'
 
 import { Crud, createFields, Types, useWindowSize, CrudProvider } from 'material-crud'
+import { english } from './lang'
 
 const campos = createFields(() => [
   {
@@ -62,11 +63,11 @@ const campos = createFields(() => [
 export default () => {
   const { height } = useWindowSize()
   return (
-    <CrudProvider>
+    <CrudProvider lang={english}>
       <Crud
         url={'http://localhost:5050/api/categoria'}
-        gender="F"
-        name="Categoria"
+        // gender="F"
+        name="Category"
         fields={campos}
         description={'Los productos tendrán asociada una o más categorías.'}
         table={{
@@ -74,7 +75,6 @@ export default () => {
           height: height - 100,
           edit: true,
           deleteRow: true,
-          actionsLabel: 'Actions',
         }}
         response={{
           list: ({ data }) => {
@@ -93,6 +93,7 @@ export default () => {
           perPage: 'porPagina',
           sort: 'ordenado',
         }}
+        itemName="nombre"
         onError={(err) => console.log(err)}
       />
     </CrudProvider>

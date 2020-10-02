@@ -20,16 +20,16 @@ import {
 import { FaFilter } from 'react-icons/fa'
 import Formulario, { CamposProps } from '../Form'
 import useAxios, { Error } from '../../utils/useAxios'
-import { useABM } from '../../utils/CrudContext'
+import { useABM } from '../../utils/DataContext'
 import Dialog, { CartelState } from '../UI/Dialog'
 import Ordenado from './Sort'
 import useWindowSize from '../../utils/useWindowSize'
 import { serialize } from 'object-to-formdata'
-import { Translations } from '../../translate'
 import CenteredCard from '../UI/CenteredCard'
 import AnimatedItem from '../UI/AnimatedItem'
 import AlTable, { PaginationProps, TableProps } from '../Crud/AlTable'
 import { Interactions } from '../Form/Types'
+import { useLang } from '../../utils/CrudContext'
 
 export interface CRUD {
   onEdit?: () => void
@@ -49,7 +49,7 @@ interface OnFlyResponse extends PaginationProps {
 }
 type ListOnFlyConfiguration = (data: any) => OnFlyResponse
 
-interface Props {
+export interface CrudProps {
   url?: string
   name: string
   titleSize?: number
@@ -64,7 +64,6 @@ interface Props {
   onFinished?: (what: 'new' | 'add' | 'update' | 'delete', genero?: 'M' | 'F') => void
   onError?: (err: Error) => void
   Left?: ReactNode
-  lang?: Translations
   response?: {
     list: ListConfiguration | ListOnFlyConfiguration
     new: string
@@ -73,16 +72,10 @@ interface Props {
   }
   interaction?: Interactions
   itemId?: 'id' | '_id' | string
+  itemName?: string // PAra borrar
 }
 
-type GetDataProps = {
-  page: number
-  perPage: number
-  filters?: any
-  sort?: any
-}
-
-export default memo((props: Props) => {
+export default memo((props: CrudProps) => {
   const lastFilter = useRef<any>({})
   const {
     url,
@@ -99,12 +92,13 @@ export default memo((props: Props) => {
     titleSize,
     onError,
     Left,
-    lang,
     response,
     itemId,
+    itemName,
     interaction,
   } = props
 
+  const lang = useLang()
   const itId = itemId || '_id'
   const called = useRef(false)
 
@@ -220,7 +214,11 @@ export default memo((props: Props) => {
       const it = item
       setCartel({
         visible: true,
-        contenido: `¿Estás segure de borrar el ${it.nombre}? Esta accion no se puede deshacer?`,
+        // contenido: itemName ? `¿Estás segure de borrar el ${it.nombre}? Esta accion no se puede deshacer?`,
+        contenido:
+          itemName && lang?.delExplanation
+            ? lang.delExplanation(it[itemName])
+            : "Para setear este texto es necesario incluir el 'itemName' y 'lang'",
         titulo: `${lang?.delete || 'Borrar'} ${name}`,
         onCerrar: (aceptado: boolean) => {
           if (aceptado) {
@@ -231,7 +229,7 @@ export default memo((props: Props) => {
         },
       })
     },
-    [call, name, url, lang, itId],
+    [call, name, url, lang, itId, itemName],
   )
 
   const filters = useMemo(() => {
@@ -297,7 +295,6 @@ export default memo((props: Props) => {
             )}
             {!table && (
               <Ordenado
-                lang={lang}
                 que={name}
                 columnas={order}
                 onOrden={(ordenado) => {
@@ -367,7 +364,6 @@ export default memo((props: Props) => {
               })
             }}
             onChangePagination={(page, perPage) => {
-              console.log({ ...interactions, page, perPage })
               call({
                 method: 'GET',
                 url,

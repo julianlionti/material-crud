@@ -11,6 +11,7 @@ import { useField } from 'formik'
 import { red } from '@material-ui/core/colors'
 import BaseInput from './BaseInput'
 import { Types, ComunesProps } from './Types'
+import { useLang } from '../../utils/CrudContext'
 
 export interface AlImagenProps extends ComunesProps {
   type: Types.Image
@@ -18,6 +19,7 @@ export interface AlImagenProps extends ComunesProps {
 }
 
 export default memo((props: AlImagenProps) => {
+  const lang = useLang()
   const { id, loading, grow, baseURL } = props
   const [base64, setBase64] = useState<string | null>(null)
   const [{ value }, { error }, { setValue, setTouched }] = useField<string | File | null>(
@@ -43,8 +45,10 @@ export default memo((props: AlImagenProps) => {
         <div className={clases.contenedor}>
           {subiendo && <CircularProgress />}
           <Typography variant="body1">
-            Haga <i>click</i> en la <i>{value === '' ? 'camara' : 'imagen'}</i> para
-            {value === '' ? ' subir una imagen.' : ' editarla '}
+            {value === ''
+              ? lang?.inputs?.image.new ||
+                'Haga click en la camara para subir una iamgen:'
+              : lang?.inputs?.image.edit || 'Haga click en la imagen para editarla'}
           </Typography>
           <label htmlFor={camaraId}>
             <IconButton

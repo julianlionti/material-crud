@@ -1,6 +1,6 @@
 import { useReducer, useRef, useCallback, useEffect } from 'react'
 import axios, { AxiosRequestConfig, AxiosError } from 'axios'
-import { useUser } from '../components/User'
+import { useUser } from './CrudContext'
 // import { useSnackbar } from 'notistack'
 
 export interface Error {

@@ -21,6 +21,7 @@ import {
 } from 'react-icons/fa'
 import BaseInput from './BaseInput'
 import { Types, ComunesProps } from './Types'
+import { useLang } from '../../utils/CrudContext'
 
 type FiltroTipo =
   | 'empiezaCon'
@@ -118,7 +119,7 @@ export default memo((props: AlInputProps) => {
     help,
     hide,
   } = props
-
+  const lang = useLang()
   const [anchorFilter, setAnchorFilter] = useState<HTMLElement | null>(null)
   const [{ value }, { error, touched }, { setValue }] = useField<string | Filtro>(id)
   const formik = useFormikContext()
@@ -165,7 +166,7 @@ export default memo((props: AlInputProps) => {
           id={id}
           startAdornment={
             list?.filter && (
-              <Tooltip title="Definir TIPO de filtro">
+              <Tooltip title={lang?.tooltips.defineFilter || 'Definir TIPO de filtro'}>
                 <IconButton onClick={(e) => setAnchorFilter(e.currentTarget)}>
                   {filterType.find((e) => e.id === (value as Filtro).filtro)?.icono}
                 </IconButton>

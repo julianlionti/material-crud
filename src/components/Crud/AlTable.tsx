@@ -1,4 +1,4 @@
-import React, { memo, ReactNode, useCallback } from 'react'
+import React, { memo } from 'react'
 import {
   Collapse,
   IconButton,
@@ -10,11 +10,11 @@ import 'react-virtualized/styles.css'
 import { Table, Column, AutoSizer, RowMouseEventHandlerParams } from 'react-virtualized'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { CamposProps } from '../Form'
-import { ComunesProps, Types } from '../Form/Types'
 import CustomHeader from './CustomHeader'
 import CustomCell, { FieldAndColProps } from './CustomCell'
 import Pagination from './Pagination'
 import { SortProps } from './Sort'
+import { useLang } from '../../utils/CrudContext'
 
 export interface PaginationProps {
   hasNextPage?: boolean
@@ -35,7 +35,7 @@ export interface TableProps {
   onEdit?: (row: any) => void
   deleteRow?: boolean
   onDelete?: (row: any) => void
-  actionsLabel?: string
+  // actionsLabel?: string
 }
 
 interface Props extends TableProps {
@@ -62,13 +62,13 @@ export default memo((props: Props) => {
     onEdit,
     rowHeight,
     headerHeight,
-    actionsLabel,
     headerClassName,
     pagination,
     onChangePagination,
     loading,
     onSort,
   } = props
+  const lang = useLang()
   const classes = useClasses({ height })
 
   const finalColumns = columns!
@@ -127,7 +127,7 @@ export default memo((props: Props) => {
               <Column
                 headerRenderer={(props) => (
                   <CustomHeader
-                    col={{ title: actionsLabel || 'CRUD', align: 'flex-end' }}
+                    col={{ title: lang?.crudCol || 'CRUD', align: 'flex-end' }}
                     {...props}
                   />
                 )}

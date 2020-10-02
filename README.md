@@ -48,16 +48,3 @@ License
 ----
 
 MIT
-
-
-### Troubleshooting
-
-If the list appears empty check that you include your CRUD component inside de CRUDProvider 
-
-```js
-<CrudProvider>
-  <Crud />
-</CrudProvider>
-OR
-$ yarn add @material-ui/core @material-ui/lab axios formik react-icons moment yup
-```

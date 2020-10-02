@@ -44,6 +44,7 @@
     "@types/react": "^16.9.27",
     "@types/react-dom": "^16.9.7",
     "@types/react-icons": "^3.0.0",
+    "@types/react-virtualized": "^9.21.10",
     "@types/yup": "^0.29.7",
     "@typescript-eslint/eslint-plugin": "^2.26.0",
     "@typescript-eslint/parser": "^2.26.0",
@@ -78,12 +79,6 @@
     "dist"
   ],
   "dependencies": {
-    "@types/react-virtualized": "^9.21.10",
-    "@types/react-virtualized-auto-sizer": "^1.0.0",
-    "@types/react-window": "^1.8.2",
-    "clsx": "^1.1.1",
-    "react-virtualized": "^9.22.2",
-    "react-virtualized-auto-sizer": "^1.0.2",
-    "react-window": "^1.8.5"
+    "react-virtualized": "^9.22.2"
   }
 }
