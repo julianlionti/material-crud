@@ -5,17 +5,19 @@ import CrudExample from './CrudExample'
 import { CrudProvider } from 'material-crud'
 import Prueba from './Prueba'
 import TableExample from './TableExample'
+import { english } from './lang'
 
 const App = () => {
   const user = {
     id: 'sadasd',
     name: 'tano',
     token:
-      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1ZjIzMTg5ODgzMWIzODIxNzRkYTllZjIiLCJpYXQiOjE2MDAyMTE2NjAsImV4cCI6MTYwMTUwNzY2MH0.uoBCflglqs_wTwchDKPNjyIkRkWTbLoqRbPikOYO4bk',
+      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1ZjIzMTg5ODgzMWIzODIxNzRkYTllZjIiLCJpYXQiOjE2MDE2NjAyOTYsImV4cCI6MTYwMjk1NjI5Nn0.lBT2plyNuYzOTjKgAKeQ4GKIkUlHBlhXh-2j-gPxCSQ',
   }
 
   return (
     <CrudProvider
+      lang={english}
       user={user}
       headers={{
         Authorization: user.token,

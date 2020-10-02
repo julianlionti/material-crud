@@ -63,39 +63,37 @@ const campos = createFields(() => [
 export default () => {
   const { height } = useWindowSize()
   return (
-    <CrudProvider lang={english}>
-      <Crud
-        url={'http://localhost:5050/api/categoria'}
-        // gender="F"
-        name="Category"
-        fields={campos}
-        description={'Los productos tendrán asociada una o más categorías.'}
-        table={{
-          columns: campos,
-          height: height - 100,
-          edit: true,
-          deleteRow: true,
-        }}
-        response={{
-          list: ({ data }) => {
-            console.log(data)
-            return {
-              items: data.docs,
-              ...data,
-            }
-          },
-          new: 'item',
-          edit: { id: '_id', item: 'item' },
-          delete: { id: '_id', item: 'borrado' },
-        }}
-        interaction={{
-          page: 'pagina',
-          perPage: 'porPagina',
-          sort: 'ordenado',
-        }}
-        itemName="nombre"
-        onError={(err) => console.log(err)}
-      />
-    </CrudProvider>
+    <Crud
+      url={'http://localhost:5050/api/categoria'}
+      // gender="F"
+      name="Category"
+      fields={campos}
+      description={'Los productos tendrán asociada una o más categorías.'}
+      table={{
+        columns: campos,
+        height: height - 100,
+        edit: true,
+        deleteRow: true,
+      }}
+      response={{
+        list: ({ data }) => {
+          console.log(data)
+          return {
+            items: data.docs,
+            ...data,
+          }
+        },
+        new: 'item',
+        edit: { id: '_id', item: 'item' },
+        delete: { id: '_id', item: 'borrado' },
+      }}
+      interaction={{
+        page: 'pagina',
+        perPage: 'porPagina',
+        sort: 'ordenado',
+      }}
+      itemName="nombre"
+      onError={(err) => console.log(err)}
+    />
   )
 }

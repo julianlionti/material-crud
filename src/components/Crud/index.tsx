@@ -102,7 +102,7 @@ export default memo((props: CrudProps) => {
   const itId = itemId || '_id'
   const called = useRef(false)
 
-  const { list, add, edit: editABM, replace } = useABM<any>({ id: itId })
+  const { list, add, edit: editABM, replace, deleteCall } = useABM<any>({ id: itId })
   const { loading, response: responseWS, call } = useAxios<any>({ onError })
 
   const [pagination, setPagination] = useState<PaginationProps>({ page: 1, limit: 10 })
@@ -153,11 +153,26 @@ export default memo((props: CrudProps) => {
       onFinished && onFinished('update', gender)
       setEditObj(null)
     } else if (deleted && deleted.item) {
-      editABM({ id: deleted.id, item: { ...deleted.item, deleted: true } })
+      if (table) {
+        deleteCall(deleted.id)
+      } else {
+        editABM({ id: deleted.id, item: { ...deleted.item, deleted: true } })
+      }
       onFinished && onFinished('delete', gender)
       setCartel({ visible: false })
     }
-  }, [item, edited, deleted, onFinished, setCartel, add, editABM, gender])
+  }, [
+    item,
+    edited,
+    deleted,
+    onFinished,
+    setCartel,
+    add,
+    editABM,
+    gender,
+    table,
+    deleteCall,
+  ])
 
   const { data, docs, page } = useMemo(() => {
     if (!responseWS) return {}

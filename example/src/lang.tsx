@@ -1,6 +1,7 @@
 import { createTranslation } from 'material-crud'
 
 export const english = createTranslation({
+  showCards: 'Show cards',
   add: 'Add',
   close: 'Close',
   delExplanation: (name) => `You are going to delete ${name}!! Are you sure?!`,
