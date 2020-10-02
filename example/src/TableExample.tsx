@@ -34,6 +34,7 @@ const campos = createFields(() => [
     title: 'Requiere normativa',
     list: {
       width: 30,
+      sort: true,
       align: 'center',
     },
   },
@@ -90,6 +91,7 @@ export default () => {
         interaction={{
           page: 'pagina',
           perPage: 'porPagina',
+          sort: 'ordenado',
         }}
         onError={(err) => console.log(err)}
       />

@@ -11,14 +11,14 @@ import { TodosProps } from '../Form'
 import { Types } from '../Form/Types'
 import { Translations } from '../../translate'
 
-export interface Ordenado {
+export interface SortProps {
   [key: string]: 1 | -1 | 0
 }
 
 interface Props {
   que: string
   columnas: TodosProps[]
-  onOrden: (orden: Ordenado) => void
+  onOrden: (orden: SortProps) => void
   lang?: Translations
 }
 
@@ -26,7 +26,7 @@ const icono = 22
 export default (props: Props) => {
   const { columnas, onOrden, lang } = props
   const [anchorOrdenar, setAnchorOrdenar] = useState<HTMLElement | null>(null)
-  const [ordenado, setOrdenado] = useState<Ordenado>({})
+  const [ordenado, setOrdenado] = useState<SortProps>({})
 
   const renderIcono = useCallback(
     ({ id, type }: TodosProps) => {
@@ -68,7 +68,7 @@ export default (props: Props) => {
             key={e.id}
             onClick={() =>
               setOrdenado((orden) => {
-                const final: Ordenado = {
+                const final: SortProps = {
                   ...orden,
                   [e.id]: orden[e.id] === undefined ? 1 : orden[e.id] === 1 ? -1 : 0,
                 }

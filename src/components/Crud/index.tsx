@@ -22,7 +22,7 @@ import Formulario, { CamposProps } from '../Form'
 import useAxios, { Error } from '../../utils/useAxios'
 import { useABM } from '../../utils/CrudContext'
 import Dialog, { CartelState } from '../UI/Dialog'
-import Ordenado from './Ordenado'
+import Ordenado from './Sort'
 import useWindowSize from '../../utils/useWindowSize'
 import { serialize } from 'object-to-formdata'
 import { Translations } from '../../translate'
@@ -73,6 +73,13 @@ interface Props {
   }
   interaction?: Interactions
   itemId?: 'id' | '_id' | string
+}
+
+type GetDataProps = {
+  page: number
+  perPage: number
+  filters?: any
+  sort?: any
 }
 
 export default memo((props: Props) => {
@@ -183,13 +190,13 @@ export default memo((props: Props) => {
   useEffect(() => {
     if (docs) {
       setPagination(data!!)
-      if (page === 1) {
+      if (page === 1 || table) {
         replace(docs)
       } else {
         add(docs)
       }
     }
-  }, [add, data, docs, page, setPagination, replace])
+  }, [add, data, docs, page, setPagination, replace, table])
 
   const interactions = useMemo(
     () => ({
@@ -288,22 +295,24 @@ export default memo((props: Props) => {
                 }`}
               </Button>
             )}
-            <Ordenado
-              lang={lang}
-              que={name}
-              columnas={order}
-              onOrden={(ordenado) => {
-                lastFilter.current = {
-                  ...lastFilter.current,
-                  [interaction?.sort || 'sort']: ordenado,
-                }
-                call({
-                  method: 'GET',
-                  params: lastFilter.current,
-                  url,
-                })
-              }}
-            />
+            {!table && (
+              <Ordenado
+                lang={lang}
+                que={name}
+                columnas={order}
+                onOrden={(ordenado) => {
+                  lastFilter.current = {
+                    ...lastFilter.current,
+                    [interaction?.sort || 'sort']: ordenado,
+                  }
+                  call({
+                    method: 'GET',
+                    params: { ...interactions, ...lastFilter.current },
+                    url,
+                  })
+                }}
+              />
+            )}
             <Button
               disabled={!!editObj}
               color="primary"
@@ -339,12 +348,36 @@ export default memo((props: Props) => {
         )}
       </Collapse>
       <Divider className={classes.divisor} />
-      {loading && <LinearProgress />}
+      {loading && !table && <LinearProgress />}
       <Collapse in={!editObj} timeout="auto" unmountOnExit>
         {(table && !viewCards && (
           <AlTable
+            loading={loading}
             {...table}
             pagination={pagination}
+            onSort={(newSort) => {
+              lastFilter.current = {
+                ...lastFilter.current,
+                [interaction?.sort || 'sort']: newSort,
+              }
+              call({
+                method: 'GET',
+                params: { ...interactions, ...lastFilter.current },
+                url,
+              })
+            }}
+            onChangePagination={(page, perPage) => {
+              console.log({ ...interactions, page, perPage })
+              call({
+                method: 'GET',
+                url,
+                params: {
+                  ...interactions,
+                  [interaction?.page || 'page']: page,
+                  [interaction?.perPage || 'perPage']: perPage,
+                },
+              })
+            }}
             columns={table.columns || fields}
             rows={list}
             onEdit={(rowData) => {

@@ -1,5 +1,11 @@
 import React, { memo, ReactNode, useCallback } from 'react'
-import { IconButton, makeStyles, Paper } from '@material-ui/core'
+import {
+  Collapse,
+  IconButton,
+  LinearProgress,
+  makeStyles,
+  Paper,
+} from '@material-ui/core'
 import 'react-virtualized/styles.css'
 import { Table, Column, AutoSizer, RowMouseEventHandlerParams } from 'react-virtualized'
 import { FaEdit, FaTrash } from 'react-icons/fa'
@@ -8,6 +14,7 @@ import { ComunesProps, Types } from '../Form/Types'
 import CustomHeader from './CustomHeader'
 import CustomCell, { FieldAndColProps } from './CustomCell'
 import Pagination from './Pagination'
+import { SortProps } from './Sort'
 
 export interface PaginationProps {
   hasNextPage?: boolean
@@ -32,12 +39,15 @@ export interface TableProps {
 }
 
 interface Props extends TableProps {
+  loading?: boolean
   columns: CamposProps[]
   rows: any[]
   onEdit: (row: any) => void
   onDelete: (row: any) => void
   headerClassName?: string
   pagination: PaginationProps
+  onChangePagination: (page: number, perPage: number) => void
+  onSort: (sort: SortProps) => void
 }
 
 export default memo((props: Props) => {
@@ -55,6 +65,9 @@ export default memo((props: Props) => {
     actionsLabel,
     headerClassName,
     pagination,
+    onChangePagination,
+    loading,
+    onSort,
   } = props
   const classes = useClasses({ height })
 
@@ -67,6 +80,9 @@ export default memo((props: Props) => {
 
   return (
     <Paper elevation={5} className={classes.container}>
+      <Collapse timeout="auto" in={loading} unmountOnExit>
+        <LinearProgress />
+      </Collapse>
       <AutoSizer>
         {({ height, width }) => (
           <div>
@@ -92,7 +108,9 @@ export default memo((props: Props) => {
               )}>
               {finalColumns.map((col, index) => (
                 <Column
-                  headerRenderer={(props) => <CustomHeader col={col} {...props} />}
+                  headerRenderer={(props) => (
+                    <CustomHeader onSort={onSort} col={col} {...props} />
+                  )}
                   cellRenderer={(props) => (
                     <CustomCell col={col} rowHeight={finalRowHeith} {...props} />
                   )}
@@ -134,12 +152,7 @@ export default memo((props: Props) => {
                 dataKey=""
               />
             </Table>
-            <Pagination
-              width={width}
-              onChagePage={() => {}}
-              onChagePerPage={() => {}}
-              {...pagination}
-            />
+            <Pagination width={width} onChange={onChangePagination} {...pagination} />
           </div>
         )}
       </AutoSizer>
