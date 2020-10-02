@@ -276,7 +276,7 @@ export default memo((props: CrudProps) => {
                     color="primary"
                   />
                 }
-                label={lang.showCards || 'Cartas'}
+                label={lang?.showCards || 'Cartas'}
                 labelPlacement="start"
               />
             )}
