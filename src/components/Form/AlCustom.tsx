@@ -10,9 +10,11 @@ export interface CustomComponentProps {
   field: [FieldInputProps<any>, FieldMetaProps<any>, FieldHelperProps<any>]
 }
 
-export interface AlCustomProps extends ComunesProps {
+type NoTitle = Omit<ComunesProps, 'title'>
+export interface AlCustomProps extends NoTitle {
   type: Types.Custom
   component: (props: CustomComponentProps) => ReactNode
+  title?: string
 }
 
 export default memo((props: AlCustomProps) => {

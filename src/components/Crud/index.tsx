@@ -28,7 +28,8 @@ import { serialize } from 'object-to-formdata'
 import { Translations } from '../../translate'
 import CenteredCard from '../UI/CenteredCard'
 import AnimatedItem from '../UI/AnimatedItem'
-import AlTable, { ColumnProps, TableProps } from '../Crud/AlTable'
+import AlTable, { PaginationProps, TableProps } from '../Crud/AlTable'
+import { Interactions } from '../Form/Types'
 
 export interface CRUD {
   onEdit?: () => void
@@ -38,25 +39,12 @@ export interface CRUD {
   cardWidth: number
 }
 
-interface Pagination {
-  hasNextPage?: boolean
-  nextPage?: number
-  page: number
-  totalDocs?: number
-  totalPages?: number
-}
-
-interface ListConfiguration {
+interface ListConfiguration extends PaginationProps {
   data: string
   items: string
-  page?: string
-  hasNextPage?: string
-  nextPage?: string
-  totalDocs?: string
-  totalPages?: string
 }
 
-interface OnFlyResponse extends Pagination {
+interface OnFlyResponse extends PaginationProps {
   items: any[]
 }
 type ListOnFlyConfiguration = (data: any) => OnFlyResponse
@@ -83,12 +71,7 @@ interface Props {
     edit: { item: string; id: string }
     delete: { item: string; id: string }
   }
-  interaction?: {
-    filter: string
-    sort: string
-    page: string
-    perPage: string
-  }
+  interaction?: Interactions
   itemId?: 'id' | '_id' | string
 }
 
@@ -121,7 +104,7 @@ export default memo((props: Props) => {
   const { list, add, edit: editABM, replace } = useABM<any>({ id: itId })
   const { loading, response: responseWS, call } = useAxios<any>({ onError })
 
-  const [paginated, setPaginated] = useState<Pagination>({ page: 1 })
+  const [pagination, setPagination] = useState<PaginationProps>({ page: 1, limit: 10 })
   const [cartel, setCartel] = useState<CartelState>({ visible: false })
   const [toolbar, setToolbar] = useState(false)
   const [editObj, setEditObj] = useState<object | null>(null)
@@ -179,7 +162,7 @@ export default memo((props: Props) => {
     if (!responseWS) return {}
     if (typeof response?.list === 'function') {
       if (!deleted?.item && !edited?.item && !item) {
-        const { items, ...data } = response.list(responseWS)
+        const { items, ...data } = response.list(responseWS) as any
         return {
           docs: items,
           data,
@@ -199,21 +182,30 @@ export default memo((props: Props) => {
 
   useEffect(() => {
     if (docs) {
-      setPaginated(data!!)
+      setPagination(data!!)
       if (page === 1) {
         replace(docs)
       } else {
         add(docs)
       }
     }
-  }, [add, data, docs, page, paginated, replace])
+  }, [add, data, docs, page, setPagination, replace])
+
+  const interactions = useMemo(
+    () => ({
+      [interaction?.page || 'page']: pagination.page,
+      [interaction?.perPage || 'perPage']: pagination.limit,
+      ...lastFilter.current,
+    }),
+    [interaction, pagination],
+  )
 
   useEffect(() => {
     if (!called.current) {
-      call({ method: 'GET', url })
+      call({ method: 'GET', url, params: interactions })
       called.current = true
     }
-  }, [call, url])
+  }, [call, url, interactions])
 
   const onEditCall = useCallback((item) => setEditObj(item), [])
   const onDeleteCall = useCallback(
@@ -238,7 +230,7 @@ export default memo((props: Props) => {
   const filters = useMemo(() => {
     const items = fields
       .flat()
-      .filter((e) => e.filter)
+      .filter((e) => e.list?.filter)
       .map(({ grow, ...etc }) => etc)
     const columnas = filtersPerRow || 3
     return new Array(Math.ceil(items.length / columnas))
@@ -250,15 +242,16 @@ export default memo((props: Props) => {
     () =>
       fields.map((cam) => {
         if (Array.isArray(cam)) {
-          return cam.map(({ filter, ...etc }) => etc)
+          return cam.map(({ list, ...etc }) => etc)
         }
-        const { filter, ...etc } = cam
+        const { list, ...etc } = cam
         return etc
       }),
     [fields],
   )
 
-  const order = useMemo(() => fields.flat().filter((e) => e.sort), [fields])
+  const order = useMemo(() => fields.flat().filter((e) => e.list?.sort), [fields])
+
   return (
     <div className={classes.contenedor}>
       <Collapse in={!editObj} timeout="auto" unmountOnExit>
@@ -303,8 +296,6 @@ export default memo((props: Props) => {
                 lastFilter.current = {
                   ...lastFilter.current,
                   [interaction?.sort || 'sort']: ordenado,
-                  [interaction?.page || 'page']: 1,
-                  [interaction?.perPage || 'perPage']: 10,
                 }
                 call({
                   method: 'GET',
@@ -353,6 +344,8 @@ export default memo((props: Props) => {
         {(table && !viewCards && (
           <AlTable
             {...table}
+            pagination={pagination}
+            columns={table.columns || fields}
             rows={list}
             onEdit={(rowData) => {
               const { onEdit } = table
@@ -381,13 +374,13 @@ export default memo((props: Props) => {
                 ))}
             </div>
           ))}
-        {!loading && paginated.hasNextPage && (
+        {!loading && pagination.hasNextPage && !table && (
           <div
             className={classes.verMas}
             onClick={() => {
               lastFilter.current = {
                 ...lastFilter.current,
-                [interaction?.page || 'page']: paginated.nextPage,
+                [interaction?.page || 'page']: pagination.nextPage,
               }
               call({
                 method: 'GET',
@@ -411,6 +404,7 @@ export default memo((props: Props) => {
           } ${name}`}
           subtitle={description}>
           <Formulario
+            interaction={interaction}
             intials={editObj}
             loading={loading}
             accept={editing ? lang?.edit || 'Editar' : lang?.add || 'Agregar'}

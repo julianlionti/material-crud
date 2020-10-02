@@ -14,6 +14,7 @@
   "scripts": {
     "build": "microbundle-crl --format modern,cjs",
     "start": "microbundle-crl --no-compress --format modern,cjs",
+    "dev": "microbundle-crl --no-compress watch --format modern,cjs",
     "prepare": "run-s build",
     "test": "run-s test:unit test:lint test:build",
     "test:build": "run-s build",
@@ -80,6 +81,7 @@
     "@types/react-virtualized": "^9.21.10",
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.2",
+    "clsx": "^1.1.1",
     "react-virtualized": "^9.22.2",
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.8.5"

@@ -31,7 +31,7 @@ export default memo((props: AlAutocompleteProps) => {
     renderAggregate,
     grow,
     validate,
-    filter,
+    list,
   } = props
   const warnRef = useRef(false)
   const [{ value }, { error, touched }, { setValue, setTouched }] = useField<
@@ -69,7 +69,7 @@ export default memo((props: AlAutocompleteProps) => {
     [value],
   )
 
-  const finalTitle = `${title} ${!filter && validate ? '*' : ''}`
+  const finalTitle = `${title} ${!list?.filter && validate ? '*' : ''}`
 
   return (
     <BaseInput grow={grow}>

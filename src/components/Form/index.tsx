@@ -8,7 +8,7 @@ import AlImagen, { AlImagenProps } from './AlImagen'
 import AlAutocomplete, { AlAutocompleteProps } from './AlAutocomplete'
 import AlSwitch, { AlSwitchProps } from './AlSwitch'
 import AlMultiple, { AlMultipleProps, valDefault } from './AlMultiple'
-import { Types } from './Types'
+import { Interactions, Types } from './Types'
 import AlCustom, { AlCustomProps } from './AlCustom'
 
 Yup.setLocale({
@@ -38,22 +38,24 @@ export interface Props {
   loading?: boolean
   intials?: any
   noValidate?: boolean
+  interaction?: Interactions
 }
 
 export const createFields = (props: () => CamposProps[]) => props()
 
-export const generateDefault = (item: TodosProps): any => {
-  if (item.filter) {
+export const generateDefault = (item: TodosProps, interaction?: Interactions): any => {
+  if (item.list?.filter) {
+    const filter = interaction?.filter || 'filter'
     if (item.type === Types.Autocomplete) {
       if (item.multiple) return []
       else {
-        return { valor: [], filtro: 'igual' }
+        return { value: [], [filter]: 'igual' }
       }
     }
     if (item.type === Types.Number) {
-      return { valor: '', filtro: 'igual' }
+      return { value: '', [filter]: 'igual' }
     }
-    return { valor: '', filtro: 'empiezaCon' }
+    return { value: '', [filter]: 'empiezaCon' }
   }
   switch (item.type) {
     case Types.Switch: {
@@ -73,7 +75,7 @@ export const generateDefault = (item: TodosProps): any => {
 }
 
 export default memo((props: Props) => {
-  const { fields, onSubmit, accept, loading, intials, noValidate } = props
+  const { fields, onSubmit, accept, loading, intials, noValidate, interaction } = props
   const classes = useClases()
 
   const renderInput = useCallback(
@@ -113,8 +115,10 @@ export default memo((props: Props) => {
 
   const defaultValues = useMemo(
     () =>
-      fields.flat().reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it) }), {}),
-    [fields],
+      fields
+        .flat()
+        .reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it, interaction) }), {}),
+    [fields, interaction],
   )
 
   return (

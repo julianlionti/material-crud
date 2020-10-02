@@ -39,7 +39,7 @@ export default memo((props: AlImagenProps) => {
 
   return (
     <BaseInput grow={grow}>
-      <Collapse in={!subiendo}>
+      <Collapse in={!subiendo} timeout="auto">
         <div className={clases.contenedor}>
           {subiendo && <CircularProgress />}
           <Typography variant="body1">

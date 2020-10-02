@@ -12,7 +12,7 @@ interface Props {
 export default memo(({ children, grow, fullWidth, centrado, ocultar }: Props) => {
   const clases = useClases({ grow, fullWidth, centrado })
   return (
-    <Collapse className={clases.input} in={!ocultar} unmountOnExit>
+    <Collapse className={clases.input} in={!ocultar} unmountOnExit timeout="auto">
       {children}
     </Collapse>
   )

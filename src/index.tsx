@@ -12,7 +12,7 @@ import useWindowSize from './utils/useWindowSize'
 import { CustomComponentProps } from './components/Form/AlCustom'
 
 import { UserProvider, useUser, Configuration } from './components/User'
-import AlTable, { ColumnProps, TableProps } from './components/Crud/AlTable'
+import AlTable, { TableProps } from './components/Crud/AlTable'
 
 export {
   Crud,
@@ -32,7 +32,6 @@ export {
   UserProvider,
   useUser,
   Configuration as UserConfiguration,
-  ColumnProps,
   TableProps,
   AlTable as CrudTable,
 }

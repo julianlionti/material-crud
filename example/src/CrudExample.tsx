@@ -41,25 +41,24 @@ export default () => {
             <FaArrowLeft />
           </IconButton>
         }
-        table={{
-          columns: [
-            { id: 'username', title: 'Usuario', width: 20 },
-            { id: 'name', title: 'Nombre', width: 20 },
-            { id: 'surname', title: 'Apellido', width: 20 },
-            { id: 'phone', title: 'Teléfono', width: 20 },
-            { id: 'email', title: 'Mail', width: 20 },
-            {
-              id: 'custom',
-              title: 'Custom',
-              width: 20,
-              component: (rowData: any) => <span>CUSTOM</span>,
-            },
-          ],
-          height: 400,
-          deleteRow: true,
-          edit: true,
-          onDelete: (fila) => console.log(fila),
-        }}
+        // table={{
+        //   columns: [
+        //     { id: 'username', title: 'Usuario', width: 20 },
+        //     { id: 'name', title: 'Nombre', width: 20 },
+        //     { id: 'surname', title: 'Apellido', width: 20 },
+        //     { id: 'phone', title: 'Teléfono', width: 20 },
+        //     { id: 'email', title: 'Mail', width: 20 },
+        //     {
+        //       id: 'custom',
+        //       title: 'Custom',
+        //       width: 20,
+        //       component: (rowData: any) => <span>CUSTOM</span>,
+        //     },
+        //   ],
+        //   height: 400,
+        //   deleteRow: true,
+        //   edit: true,
+        // }}
         lang={english}
         fields={[
           {
@@ -67,16 +66,22 @@ export default () => {
             title: 'Nombre',
             placeholder: 'Nombre de la categoría',
             type: Types.Input,
-            filter: true,
-            sort: true,
+            list: {
+              width: 20,
+              filter: true,
+              sort: true,
+            },
           },
           {
             id: 'surname',
             title: 'Apellido',
             placeholder: 'Descripción de la categoría',
             type: Types.Multiline,
-            filter: true,
-            sort: true,
+            list: {
+              width: 80,
+              filter: true,
+              sort: true,
+            },
           },
           {
             id: 'requiereNormativa',

@@ -1,247 +1,283 @@
-import React, { forwardRef, memo, PropsWithChildren } from 'react'
-import { makeStyles, Paper, TableCell } from '@material-ui/core'
+import React, { useCallback, useEffect } from 'react'
+import {
+  CssBaseline,
+  IconButton,
+  makeStyles,
+  Paper,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Divider,
+  Typography,
+  Select,
+  MenuItem,
+} from '@material-ui/core'
 import 'react-virtualized/styles.css'
-import { Table, Column, AutoSizer } from 'react-virtualized'
-import clsx from 'clsx'
+import {
+  Table,
+  Column,
+  AutoSizer,
+  TableCellProps,
+  TableCellRenderer,
+  TableHeaderProps,
+} from 'react-virtualized'
+import { createFields, Types, useAxios } from 'material-crud'
+import { FaCheck, FaEdit, FaTimes, FaTrash } from 'react-icons/fa'
+import { TodosProps } from '../../dist/components/Form'
+import Pagination from '@material-ui/lab/Pagination'
 
-const columns = [
-  { id: 'username', title: 'Usuario', width: 20 },
-  { id: 'name', title: 'Nombre', width: 20 },
-  { id: 'surname', title: 'Apellido', width: 20 },
-  { id: 'phone', title: 'Teléfono', width: 20, numeric: true },
-  { id: 'email', title: 'Mail', width: 20 },
-]
+const columns = createFields(() => [
+  { id: 'nombre', title: 'Usuario', type: Types.Input, list: { width: 20 } },
+  { id: 'descripcion', title: 'Nombre', type: Types.Input, list: { width: 20 } },
+  {
+    id: 'requiereNormativa',
+    title: 'Requiere Normativas',
+    type: Types.Switch,
+    list: { width: 20 },
+  },
+  {
+    id: 'normativas',
+    type: Types.Multiple,
+    title: 'Normativas necesarias',
+    configuration: [
+      {
+        id: 'normativa',
+        type: Types.Input,
+        title: 'Normativa necesaria',
+        placeholder: 'Nombre de la normativa vigente',
+      },
+    ],
+    list: { width: 20 },
+  },
+])
 
-const rows = [
-  {
-    _id: '5f7393ca664482820078188b',
-    username: 'eldelapaz',
-    name: 'Elizabeth',
-    surname: 'Delapaz',
-    phone: '521.612.466',
-    email: 'eldelapaz@gmail.com',
-    admin: false,
-    active: false,
-    createdAt: '2020-09-29T20:06:34.587Z',
-    updatedAt: '2020-09-29T20:06:35.441Z',
-    __v: 0,
-  },
-  {
-    _id: '5f7393ca664482820078188c',
-    username: 'irfrías',
-    name: 'Irene',
-    surname: 'Frías',
-    phone: '5299-828-877',
-    email: 'irfrías@gmail.com',
-    admin: false,
-    active: true,
-    createdAt: '2020-09-29T20:06:34.587Z',
-    updatedAt: '2020-09-29T20:06:35.441Z',
-    __v: 0,
-  },
-  {
-    _id: '5f7393ca664482820078188d',
-    username: 'vigarcía',
-    name: 'Vicente',
-    surname: 'García',
-    phone: '529353267',
-    email: 'vigarcía@gmail.com',
-    admin: true,
-    active: false,
-    createdAt: '2020-09-29T20:06:34.587Z',
-    updatedAt: '2020-09-29T20:06:35.442Z',
-    __v: 0,
-  },
-  {
-    _id: '5f7393ca664482820078188e',
-    username: 'naleón',
-    name: 'Natalia',
-    surname: 'León',
-    phone: '562 747 723',
-    email: 'naleón@gmail.com',
-    admin: false,
-    active: false,
-    createdAt: '2020-09-29T20:06:34.587Z',
-    updatedAt: '2020-09-29T20:06:35.442Z',
-    __v: 0,
-  },
-  {
-    _id: '5f7393ca664482820078188a',
-    username: 'macordero',
-    name: 'Marisol',
-    surname: 'Cordero',
-    phone: '557.111.395',
-    email: 'macordero@gmail.com',
-    admin: true,
-    active: false,
-    createdAt: '2020-09-29T20:06:34.586Z',
-    updatedAt: '2020-09-29T20:06:35.438Z',
-    __v: 0,
-  },
-  {
-    _id: '5f7393ca664482820078188a',
-    username: 'macordero',
-    name: 'Marisol',
-    surname: 'Cordero',
-    phone: '557.111.395',
-    email: 'macordero@gmail.com',
-    admin: true,
-    active: false,
-    createdAt: '2020-09-29T20:06:34.586Z',
-    updatedAt: '2020-09-29T20:06:35.438Z',
-    __v: 0,
-  },
-  {
-    _id: '5f7393ca664482820078188a',
-    username: 'macordero',
-    name: 'Marisol',
-    surname: 'Cordero',
-    phone: '557.111.395',
-    email: 'macordero@gmail.com',
-    admin: true,
-    active: false,
-    createdAt: '2020-09-29T20:06:34.586Z',
-    updatedAt: '2020-09-29T20:06:35.438Z',
-    __v: 0,
-  },
-  {
-    _id: '5f7393ca664482820078188a',
-    username: 'macordero',
-    name: 'Marisol',
-    surname: 'Cordero',
-    phone: '557.111.395',
-    email: 'macordero@gmail.com',
-    admin: true,
-    active: false,
-    createdAt: '2020-09-29T20:06:34.586Z',
-    updatedAt: '2020-09-29T20:06:35.438Z',
-    __v: 0,
-  },
-  {
-    _id: '5f7393ca664482820078188a',
-    username: 'macordero',
-    name: 'Marisol',
-    surname: 'Cordero',
-    phone: '557.111.395',
-    email: 'macordero@gmail.com',
-    admin: true,
-    active: false,
-    createdAt: '2020-09-29T20:06:34.586Z',
-    updatedAt: '2020-09-29T20:06:35.438Z',
-    __v: 0,
-  },
-  {
-    _id: '5f7393ca664482820078188a',
-    username: 'macordero',
-    name: 'Marisol',
-    surname: 'Cordero',
-    phone: '557.111.395',
-    email: 'macordero@gmail.com',
-    admin: true,
-    active: false,
-    createdAt: '2020-09-29T20:06:34.586Z',
-    updatedAt: '2020-09-29T20:06:35.438Z',
-    __v: 0,
-  },
-  {
-    _id: '5f7393ca664482820078188a',
-    username: 'macordero',
-    name: 'Marisol',
-    surname: 'Cordero',
-    phone: '557.111.395',
-    email: 'macordero@gmail.com',
-    admin: true,
-    active: false,
-    createdAt: '2020-09-29T20:06:34.586Z',
-    updatedAt: '2020-09-29T20:06:35.438Z',
-    __v: 0,
-  },
-  {
-    _id: '5f7393ca664482820078188a',
-    username: 'macordero',
-    name: 'Marisol',
-    surname: 'Cordero',
-    phone: '557.111.395',
-    email: 'macordero@gmail.com',
-    admin: true,
-    active: false,
-    createdAt: '2020-09-29T20:06:34.586Z',
-    updatedAt: '2020-09-29T20:06:35.438Z',
-    __v: 0,
-  },
-]
-
-export default () => {
+const Header = ({
+  title,
+  className,
+}: TableHeaderProps & { title: string; className?: string }) => {
   const classes = useClasses()
+  return (
+    <TableCell component="div" variant="head" className={className}>
+      {title}
+    </TableCell>
+  )
+}
+
+const Cell = ({
+  cellData,
+  rowData,
+  rowHeight,
+  col,
+}: TableCellProps & { rowHeight: number; col: TodosProps }) => {
+  const classes = useClasses({ rowHeight })
+
+  const renderContent = useCallback(() => {
+    switch (col.type) {
+      case Types.Switch:
+        return cellData ? (
+          <FaCheck size={18} color="green" />
+        ) : (
+          <FaTimes size={18} color="red" />
+        )
+      default:
+        return String(cellData)
+    }
+  }, [cellData, col.type])
 
   return (
-    <AutoSizer disableHeight>
-      {({ width }) => (
-        <Table
-          height={500}
-          width={width}
-          rowGetter={({ index }) => rows[index]}
-          rowHeight={60}
-          headerHeight={60}
-          rowCount={rows.length}
-          headerClassName={classes.rowHeader}
-          rowClassName={clsx(classes.flexContainer, classes.row, classes.noClick)}>
-          {columns.map((col, index) => (
-            <Column
-              key={col.id}
-              width={(width * col.width) / 100}
-              headerRenderer={({ dataKey }) => (
-                <TableCell
-                  variant="head"
-                  component="div"
-                  className={clsx(classes.tableCell, classes.flexContainer)}
-                  align={columns[index].numeric || false ? 'right' : 'left'}>
-                  {dataKey}
-                </TableCell>
-              )}
-              cellRenderer={({ cellData, columnIndex, rowData }) => (
-                <TableCell
-                  variant="body"
-                  component="div"
-                  className={clsx(classes.tableCell, classes.flexContainer)}
-                  align={
-                    (columnIndex != null && columns[columnIndex].numeric) || false
-                      ? 'right'
-                      : 'left'
-                  }>
-                  {cellData}
-                </TableCell>
-              )}
-              dataKey={col.id}
-            />
-          ))}
-        </Table>
-      )}
-    </AutoSizer>
+    <TableCell component="div" variant="body" className={classes.cellContainer}>
+      {renderContent()}
+    </TableCell>
+  )
+}
+
+export default (props: any) => {
+  const {
+    onRowClick,
+    edit,
+    deleteRow,
+    onDelete,
+    onEdit,
+    rowHeight,
+    headerHeight,
+    actionsLabel,
+    headerClassName,
+  } = props
+  const { response, call } = useAxios<any>()
+  const { data } = response || {}
+  const { docs } = data || []
+
+  const classes = useClasses({ height: 500 })
+
+  useEffect(() => {
+    call({
+      url: 'http://localhost:5050/api/categoria',
+      params: { pagina: 1, porPagina: 5 },
+    })
+  })
+
+  const finalColumns = columns!
+    .flat()
+    .filter((e: any) => e.list)
+    .map((e: any) => ({ ...e, title: e.title || '', ...e.list!! }))
+
+  return (
+    <div>
+      <CssBaseline />
+      <div style={{ marginTop: 16 }}></div>
+      <Paper elevation={5} className={classes.container}>
+        <AutoSizer>
+          {({ height, width }) => (
+            <div>
+              <Table
+                // gridStyle={{outline:"none"}}
+                onRowClick={onRowClick}
+                rowGetter={({ index }) => docs[index]}
+                height={height - 50}
+                width={width}
+                headerHeight={headerHeight || 54}
+                rowCount={docs?.length || 0}
+                rowHeight={rowHeight || 48}
+                rowClassName={({ index }) =>
+                  index % 2 === 0 ? classes.tableRowHover : classes.tableRow
+                }
+                headerRowRenderer={({ className, style, columns }) => (
+                  <div
+                    className={`${className} ${headerClassName}`}
+                    role="row"
+                    style={style}>
+                    {columns}
+                  </div>
+                )}>
+                {finalColumns.map((col, index) => (
+                  <Column
+                    headerRenderer={(props) => <Header title={col.title} {...props} />}
+                    cellRenderer={(props) => (
+                      <Cell col={col} rowHeight={rowHeight} {...props} />
+                    )}
+                    dataKey={col.id}
+                    key={col.id}
+                    flexGrow={
+                      !edit && !deleteRow && finalColumns.length - 1 === index ? 1 : 0
+                    }
+                    width={
+                      col.width ? (width * col.width) / 100 : width / finalColumns.length
+                    }
+                  />
+                ))}
+                {(edit || deleteRow) && (
+                  <Column
+                    headerRenderer={(props) => (
+                      <Header
+                        className={`${classes.cellContainer} ${classes.right}`}
+                        title={actionsLabel || 'CRUD'}
+                        {...props}
+                      />
+                    )}
+                    width={(width * 10) / 100}
+                    flexGrow={1}
+                    cellRenderer={({ rowData }) => (
+                      <TableCell
+                        variant="body"
+                        component="div"
+                        className={`${classes.cellContainer} ${classes.right}`}>
+                        <div>
+                          {deleteRow && (
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                if (onDelete) onDelete(rowData)
+                              }}>
+                              <FaTrash />
+                            </IconButton>
+                          )}
+                          {edit && (
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                if (onEdit) onEdit(rowData)
+                              }}>
+                              <FaEdit />
+                            </IconButton>
+                          )}
+                        </div>
+                      </TableCell>
+                    )}
+                    dataKey=""
+                  />
+                )}
+              </Table>
+              <Divider variant="fullWidth" />
+              <div style={{ width: width - 10 }} className={classes.pagContainer}>
+                <Typography>Registros por página:</Typography>
+                <Select className={classes.perPage} value={5} onChange={() => {}}>
+                  <MenuItem value={5}>5</MenuItem>
+                  <MenuItem value={10}>10</MenuItem>
+                  <MenuItem value={15}>15</MenuItem>
+                  <MenuItem value={50}>50</MenuItem>
+                  <MenuItem value={100}>100</MenuItem>
+                  <MenuItem value={500}>500</MenuItem>
+                  <MenuItem value={1000}>1000</MenuItem>
+                  <MenuItem value={-1}>Todos</MenuItem>
+                </Select>
+                <Pagination
+                  color="primary"
+                  variant="outlined"
+                  className={classes.pagination}
+                  count={11}
+                  defaultPage={6}
+                  siblingCount={1}
+                  showFirstButton
+                  showLastButton
+                />
+              </div>
+            </div>
+          )}
+        </AutoSizer>
+      </Paper>
+    </div>
   )
 }
 
 const useClasses = makeStyles((theme) => ({
-  table: {
-    '& .ReactVirtualized__Table__headerRow': {
-      flip: false,
-      paddingRight: theme.direction === 'rtl' ? '0 !important' : undefined,
-    },
+  container: ({ height }: any) => ({
+    margin: 'auto',
+    width: '95%',
+    height,
+  }),
+  header: {
+    backgroundColor: 'red',
   },
-  tableCell: {
-    flex: 1,
-  },
-  flexContainer: {
+  cellContainer: ({ rowHeight }: any) => ({
     display: 'flex',
     alignItems: 'center',
-    boxSizing: 'border-box',
+    flex: 1,
+    height: rowHeight,
+  }),
+  tableRow: {},
+  tableRowHover: {
+    backgroundColor: theme.palette.grey[100],
   },
-  row: {},
-  rowHeader: {
-    margin: 0,
-    backgroundColor: 'lightblue',
+  right: {
+    justifyContent: 'flex-end',
   },
-  noClick: {
-    cursor: 'initial',
+  pagContainer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    height: 50,
+    flexDirection: 'row',
+    [theme.breakpoints.down('xs')]: {
+      flexDirection: 'column',
+      backgroundColor: 'red',
+    },
   },
+  perPage: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(2),
+    width: 80,
+    textAlign: 'center',
+  },
+  pagination: {},
 }))

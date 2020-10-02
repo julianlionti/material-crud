@@ -34,6 +34,7 @@ export default () => {
             id: 'custom',
             type: Types.Custom,
             component: (props) => <CustomField {...props} />,
+            title: '',
           },
         ]}
         accept={'Submit'}

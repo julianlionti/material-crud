@@ -112,7 +112,7 @@ export default memo((props: AlInputProps) => {
     max,
     willSubmit,
     loading,
-    filter,
+    list,
     readonly,
     fullWidth,
     help,
@@ -127,7 +127,7 @@ export default memo((props: AlInputProps) => {
   const valMax = validate?.describe().tests.find((e) => e.name === 'max')?.params.max
 
   const finalTitle = useMemo<string>(() => {
-    if (filter) {
+    if (list?.filter) {
       return title!!
     } else {
       const valor = value as string
@@ -135,14 +135,14 @@ export default memo((props: AlInputProps) => {
         mandatory ? '*' : ''
       }`
     }
-  }, [filter, mandatory, title, valMax, value])
+  }, [list, mandatory, title, valMax, value])
 
   const finalValue = useMemo(() => {
-    if (filter) {
+    if (list?.filter) {
       return (value as Filtro).valor
     }
     return value as string
-  }, [filter, value])
+  }, [list, value])
 
   const filterType = useMemo(() => {
     switch (type) {
@@ -164,7 +164,7 @@ export default memo((props: AlInputProps) => {
           disabled={loading || readonly}
           id={id}
           startAdornment={
-            filter && (
+            list?.filter && (
               <Tooltip title="Definir TIPO de filtro">
                 <IconButton onClick={(e) => setAnchorFilter(e.currentTarget)}>
                   {filterType.find((e) => e.id === (value as Filtro).filtro)?.icono}
@@ -172,7 +172,7 @@ export default memo((props: AlInputProps) => {
               </Tooltip>
             )
           }
-          multiline={!filter && type === Types.Multiline}
+          multiline={!list?.filter && type === Types.Multiline}
           rows={type === Types.Multiline ? 4 : undefined}
           value={finalValue}
           onChange={({ target }) => {
@@ -198,7 +198,7 @@ export default memo((props: AlInputProps) => {
         {((touched && error) || help) && (
           <FormHelperText id={id}>{(touched && error) || help}</FormHelperText>
         )}
-        {filter && (
+        {list?.filter && (
           <Menu anchorEl={anchorFilter} open={!!anchorFilter}>
             {filterType.map((e) => (
               <MenuItem
