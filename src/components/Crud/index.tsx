@@ -455,7 +455,7 @@ export default memo((props: CrudProps) => {
             accept={
               editing
                 ? lang?.edit || 'Editar'
-                : lang.add
+                : lang?.add
                 ? `${lang?.add || 'Agregar nuev'}${
                     gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''
                   } ${name}`
