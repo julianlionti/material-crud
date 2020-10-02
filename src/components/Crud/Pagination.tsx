@@ -16,6 +16,8 @@ export default (props: Props) => {
   const lang = useLang()
   const classes = useClasses()
 
+  console.log(lang)
+
   return (
     <div style={{ width: width - 10 }} className={classes.pagContainer}>
       <Typography>{`${lang?.pagination?.totalCount} ${totalDocs} - `}</Typography>
