@@ -115,7 +115,6 @@ export default memo((props: CrudProps) => {
   const classes = useClasses({ titleSize })
 
   const editing = editObj ? Object.keys(editObj!!).length > 0 : false
-  // const { borrado, item, _id, data } = respuesta || {}
   const { deleted, item, edited } = useMemo(() => {
     if (!responseWS) return {}
     if (!response) {
