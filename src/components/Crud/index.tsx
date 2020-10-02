@@ -443,14 +443,24 @@ export default memo((props: CrudProps) => {
           title={`${
             editing
               ? lang?.edit || 'Editar '
-              : lang?.new || `Nuev${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
+              : lang?.new
+              ? `${lang.new}${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
+              : `Nuev${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
           } ${name}`}
           subtitle={description}>
           <Formulario
             interaction={interaction}
             intials={editObj}
             loading={loading}
-            accept={editing ? lang?.edit || 'Editar' : lang?.add || 'Agregar'}
+            accept={
+              editing
+                ? lang?.edit || 'Editar'
+                : lang.add
+                ? `${lang?.add || 'Agregar nuev'}${
+                    gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''
+                  } ${name}`
+                : 'Agregar'
+            }
             fields={fieldsWithoutFilters}
             onSubmit={(vals) => {
               let data = vals
