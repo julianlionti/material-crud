@@ -15,6 +15,8 @@ import { CrudProvider, useUser, useLang } from './utils/CrudContext'
 import AlTable, { TableProps } from './components/Crud/AlTable'
 import Crud from './components/Crud/WithProvider'
 
+import { esAR } from './translate/es_ar'
+
 export {
   Crud,
   CenteredCard,
@@ -35,4 +37,5 @@ export {
   useLang,
   TableProps,
   AlTable as CrudTable,
+  esAR,
 }
