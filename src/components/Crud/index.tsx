@@ -475,10 +475,14 @@ export default memo((props: CrudProps) => {
                 })
               }
 
+              let finalURL = url
+              if (url?.slice(-1) !== '/') finalURL = finalURL + '/' + vals[itId]
+              console.log(finalURL)
+
               call({
                 method: 'POST',
                 data,
-                url,
+                url: finalURL,
               })
             }}
           />
