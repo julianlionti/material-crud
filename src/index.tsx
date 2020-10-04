@@ -7,7 +7,7 @@ import Dialog from './components/UI/Dialog'
 import { createTranslation } from './translate'
 
 import { DataProvider, useABM } from './utils/DataContext'
-import useAxios, { callWs } from './utils/useAxios'
+import useAxios, { callWs, useAxiosProps } from './utils/useAxios'
 import useWindowSize from './utils/useWindowSize'
 import { CustomComponentProps } from './components/Form/AlCustom'
 
@@ -38,4 +38,5 @@ export {
   TableProps,
   AlTable as CrudTable,
   esAR,
+  useAxiosProps,
 }
