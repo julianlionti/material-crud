@@ -59,80 +59,10 @@ export const useUser = <T extends any = any>() => {
     [setConfiguration],
   )
 
-  return { user: configuration.user, headers: configuration.headers, setUser, setHeaders }
+  return {
+    user: configuration.user as T,
+    headers: configuration.headers,
+    setUser,
+    setHeaders,
+  }
 }
-
-/* import React, {
-  createContext,
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from 'react'
-import { Translations } from '../../translate'
-
-export interface Configuration<T = any> {
-  user: null | T
-  headers: null | any
-}
-
-interface ProviderProps<T = any> {
-  children: ReactNode
-  intial?: Configuration
-  lang?: Translations
-  onUser?: (user: T | null) => void
-}
-
-interface ContextProps<T = any> {
-  configuration: [Configuration<T>, Dispatch<SetStateAction<Configuration<T>>>]
-  lang?: Translations
-  onUser?: (user: T | null) => void
-}
-
-const intialValue: ContextProps = {
-  configuration: [
-    {
-      user: null,
-      headers: null,
-    },
-    () => {},
-  ],
-}
-
-const UserContext = createContext<ContextProps>(intialValue)
-
-export const UserProvider = ({ children, intial, onUser, lang }: ProviderProps) => {
-  const configuration = useState<Configuration>(intial || intialValue)
-  return (
-    <UserContext.Provider value={{ configuration, onUser, lang }}>
-      {children}
-    </UserContext.Provider>
-  )
-}
-
-export const useUser = <T extends any>() => {
-  const [configuration, setConfiguration] = useContext(UserContext) as Contexto<T>
-
-  const setUser = useCallback(
-    (user: T | null) => setConfiguration((conf) => ({ ...conf, user })),
-    [setConfiguration],
-  )
-
-  const setHeaders = useCallback(
-    (headers: any) => setConfiguration((conf) => ({ ...conf, headers })),
-    [setConfiguration],
-  )
-
-  const { user, onUser } = configuration
-  useEffect(() => {
-    if (onUser) {
-      onUser(user)
-    }
-  }, [user, onUser])
-
-  return { user: configuration.user, headers: configuration.headers, setUser, setHeaders }
-}
-*/
