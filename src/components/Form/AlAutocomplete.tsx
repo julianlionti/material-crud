@@ -48,7 +48,7 @@ export default memo((props: AlAutocompleteProps) => {
       const valores = value as OpcionesProps[]
       return valores.map((e: any) => ({
         id: e.id,
-        titulo: e.nombre || e.titulo,
+        title: e.nombre || e.titulo,
         extras: e.extras,
       }))
     }
