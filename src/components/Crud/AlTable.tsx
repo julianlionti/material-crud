@@ -1,12 +1,18 @@
-import React, { memo } from 'react'
+import React, { memo, useCallback, useMemo, useState } from 'react'
 import {
+  Checkbox,
   Collapse,
   IconButton,
+  lighten,
   LinearProgress,
   makeStyles,
   Paper,
+  TableCell,
+  Tooltip,
+  Typography,
 } from '@material-ui/core'
 import 'react-virtualized/styles.css'
+import clsx from 'clsx'
 import { Table, Column, AutoSizer, RowMouseEventHandlerParams } from 'react-virtualized'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { CamposProps } from '../Form'
@@ -35,6 +41,7 @@ export interface TableProps {
   onEdit?: (row: any) => void
   deleteRow?: boolean
   onDelete?: (row: any) => void
+  hideSelecting?: boolean
   // actionsLabel?: string
 }
 
@@ -67,16 +74,45 @@ export default memo((props: Props) => {
     onChangePagination,
     loading,
     onSort,
+    hideSelecting,
   } = props
   const lang = useLang()
   const classes = useClasses({ height })
+  const [rowsSelected, setRowSelected] = useState<any[]>([])
 
-  const finalColumns = columns!
-    .flat()
-    .filter((e) => e.list)
-    .map((e): FieldAndColProps => ({ ...e, title: e.title || '', ...e.list!! }))
+  const finalColumns = useMemo(
+    () =>
+      columns!
+        .flat()
+        .filter((e) => e.list)
+        .map((e): FieldAndColProps => ({ ...e, title: e.title || '', ...e.list!! })),
+    [columns],
+  )
 
-  const finalRowHeith = rowHeight || 48
+  const finalRowHeight = useMemo(() => rowHeight || 48, [rowHeight])
+
+  const handleSelectRow = useCallback(
+    (item: any) => {
+      const selectedIndex = rowsSelected.indexOf(item)
+      let newSelected: object[] = []
+
+      if (selectedIndex === -1) {
+        newSelected = newSelected.concat(rowsSelected, item)
+      } else if (selectedIndex === 0) {
+        newSelected = newSelected.concat(rowsSelected.slice(1))
+      } else if (selectedIndex === rowsSelected.length - 1) {
+        newSelected = newSelected.concat(rowsSelected.slice(0, -1))
+      } else if (selectedIndex > 0) {
+        newSelected = newSelected.concat(
+          rowsSelected.slice(0, selectedIndex),
+          rowsSelected.slice(selectedIndex + 1),
+        )
+      }
+
+      setRowSelected(newSelected)
+    },
+    [rowsSelected],
+  )
 
   return (
     <Paper elevation={5} className={classes.container}>
@@ -86,6 +122,22 @@ export default memo((props: Props) => {
       <AutoSizer>
         {({ height, width }) => (
           <div>
+            {rowsSelected.length && (
+              <div className={`${rowsSelected.length ? classes.selected : {}}`}>
+                <Typography
+                  style={{ flex: '1 1 100%' }}
+                  color="inherit"
+                  variant="subtitle1"
+                  component="div">
+                  {rowsSelected.length} selected
+                </Typography>
+                <Tooltip title="Delete">
+                  <IconButton size="small" onClick={() => console.log(rowsSelected)}>
+                    <FaTrash />
+                  </IconButton>
+                </Tooltip>
+              </div>
+            )}
             <Table
               // gridStyle={{outline:"none"}}
               onRowClick={onRowClick}
@@ -94,9 +146,12 @@ export default memo((props: Props) => {
               width={width}
               headerHeight={headerHeight || 54}
               rowCount={rows?.length || 0}
-              rowHeight={finalRowHeith}
+              rowHeight={finalRowHeight}
               rowClassName={({ index }) =>
-                index % 2 === 0 ? classes.tableRowOdd : classes.tableRow
+                clsx(
+                  index % 2 === 0 ? classes.tableRowOdd : classes.tableRow,
+                  // rowsSelected[index] ? classes.selected : {},
+                )
               }
               headerRowRenderer={({ className, style, columns }) => (
                 <div
@@ -106,13 +161,46 @@ export default memo((props: Props) => {
                   {columns}
                 </div>
               )}>
+              {!hideSelecting && (
+                <Column
+                  headerRenderer={() => (
+                    <TableCell
+                      component="div"
+                      variant="head"
+                      style={{ display: 'contents' }}>
+                      <Checkbox
+                        indeterminate={
+                          rowsSelected.length > 0 && rowsSelected.length < rows.length
+                        }
+                        checked={rows.length > 0 && rowsSelected.length === rows.length}
+                        onChange={(e, checked) =>
+                          setRowSelected(checked ? rows.map((item) => item) : [])
+                        }
+                      />
+                    </TableCell>
+                  )}
+                  width={(width * 5) / 100}
+                  cellRenderer={({ rowData }) => (
+                    <TableCell
+                      component="div"
+                      variant="body"
+                      style={{ display: 'contents' }}>
+                      <Checkbox
+                        checked={rowsSelected.includes(rowData)}
+                        onChange={() => handleSelectRow(rowData)}
+                      />
+                    </TableCell>
+                  )}
+                  dataKey=""
+                />
+              )}
               {finalColumns.map((col, index) => (
                 <Column
                   headerRenderer={(props) => (
                     <CustomHeader onSort={onSort} col={col} {...props} />
                   )}
                   cellRenderer={(props) => (
-                    <CustomCell col={col} rowHeight={finalRowHeith} {...props} />
+                    <CustomCell col={col} rowHeight={finalRowHeight} {...props} />
                   )}
                   dataKey={col.id}
                   key={col.id}
@@ -134,17 +222,21 @@ export default memo((props: Props) => {
                 width={(width * 10) / 100}
                 flexGrow={1}
                 cellRenderer={({ rowData }) => (
-                  <CustomCell rowHeight={finalRowHeith}>
+                  <CustomCell rowHeight={finalRowHeight}>
                     <div>
                       {deleteRow && (
-                        <IconButton size="small" onClick={() => onDelete(rowData)}>
-                          <FaTrash />
-                        </IconButton>
+                        <Tooltip title="Delete">
+                          <IconButton size="small" onClick={() => onDelete(rowData)}>
+                            <FaTrash />
+                          </IconButton>
+                        </Tooltip>
                       )}
                       {edit && (
-                        <IconButton size="small" onClick={() => onEdit(rowData)}>
-                          <FaEdit />
-                        </IconButton>
+                        <Tooltip title="Edit">
+                          <IconButton size="small" onClick={() => onEdit(rowData)}>
+                            <FaEdit />
+                          </IconButton>
+                        </Tooltip>
                       )}
                     </div>
                   </CustomCell>
@@ -163,12 +255,17 @@ export default memo((props: Props) => {
 const useClasses = makeStyles((theme) => ({
   container: ({ height }: any) => ({
     margin: 'auto',
-    width: '95%',
+    width: '100%',
     height,
     minHeight: 250,
   }),
   tableRow: {},
   tableRowOdd: {
     backgroundColor: theme.palette.grey[100],
+  },
+  selected: {
+    color: theme.palette.secondary.main,
+    backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+    paddingLeft: theme.spacing(2),
   },
 }))

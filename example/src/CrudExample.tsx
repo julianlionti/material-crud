@@ -112,11 +112,11 @@ export default () => {
       renderItem={(props: Categoria) => <ItemCategoria {...props} />}
       onError={(err) => console.log(err)}
       response={{
-        list: (response) => ({
-          items: response.data.docs,
+        list: ({ data }) => ({
+          items: data.docs,
           page: 1,
           hasNextPage: false,
-          totalDocs: 0,
+          totalDocs: data.length,
           totalPages: 1,
         }),
         new: 'item',
@@ -129,7 +129,7 @@ export default () => {
         filter: 'filter',
         sort: 'sort',
       }}
-      itemId="id"
+      itemId="_id"
     />
   )
 }

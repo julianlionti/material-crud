@@ -1,5 +1,5 @@
 import { makeStyles, TableCell } from '@material-ui/core'
-import React, { ReactNode, useCallback } from 'react'
+import React, { memo, ReactNode, useCallback } from 'react'
 import { FaCheck, FaTimes } from 'react-icons/fa'
 import { TableCellProps } from 'react-virtualized'
 import { TodosProps } from '../Form'
@@ -23,7 +23,7 @@ interface Props extends Partial<TableCellProps> {
   children?: ReactNode
 }
 
-export default ({ cellData, children, rowHeight, col, rowData }: Props) => {
+export default memo(({ cellData, children, rowHeight, col, rowData }: Props) => {
   const classes = useClasses({ rowHeight, align: col?.align })
 
   const renderContent = useCallback(() => {
@@ -44,7 +44,7 @@ export default ({ cellData, children, rowHeight, col, rowData }: Props) => {
       {(col?.component && col.component(rowData)) || children || renderContent()}
     </TableCell>
   )
-}
+})
 
 const useClasses = makeStyles((theme) => ({
   cellContainer: ({ rowHeight, align }: any) => ({

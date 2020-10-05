@@ -6,78 +6,82 @@ import { english } from './lang'
 
 const campos = createFields(() => [
   {
-    id: 'nombre',
+    id: 'active',
+    title: 'Activo',
+    type: Types.Switch,
+    list: { width: 5 },
+  },
+  {
+    id: 'admin',
+    title: 'Admin',
+    type: Types.Switch,
+    list: { width: 5 },
+  },
+  {
+    id: 'name',
     title: 'Nombre',
-    placeholder: 'Nombre de la categoría',
     type: Types.Input,
     validate: Yup.string().required(),
-    list: {
-      width: 20,
-      filter: true,
-      sort: true,
-    },
+    list: { width: 20, filter: true, sort: true },
   },
   {
-    id: 'descripcion',
-    title: 'Descripción',
-    placeholder: 'Descripción de la categoría',
-    type: Types.Multiline,
-    validate: Yup.string().max(450),
-    list: {
-      width: 30,
-      filter: true,
-      sort: true,
-    },
+    id: 'surname',
+    title: 'Apellido',
+    type: Types.Input,
+    validate: Yup.string().required(),
+    list: { width: 20, filter: true, sort: true },
   },
   {
-    id: 'requiereNormativa',
-    type: Types.Switch,
-    title: 'Requiere normativa',
-    list: {
-      width: 30,
-      sort: true,
-      align: 'center',
-    },
+    id: 'email',
+    title: 'Mail',
+    type: Types.Email,
+    list: { width: 25, filter: true, sort: true },
   },
   {
-    id: 'normativas',
-    type: Types.Multiple,
-    title: 'Normativas necesarias',
-    depends: ({ requiereNormativa }: any) => requiereNormativa === true,
-    configuration: [
-      {
-        id: 'normativa',
-        type: Types.Input,
-        title: 'Normativa necesaria',
-        placeholder: 'Nombre de la normativa vigente',
-      },
-    ],
-    list: {
-      width: 30,
-      // filter: true,
-      sort: true,
-    },
+    id: 'phone',
+    title: 'Telefono',
+    type: Types.Phone,
+    list: { width: 25, filter: true, sort: true },
   },
+  // {
+  //   id: 'normativas',
+  //   type: Types.Multiple,
+  //   title: 'Normativas necesarias',
+  //   depends: ({ requiereNormativa }: any) => requiereNormativa === true,
+  //   configuration: [
+  //     {
+  //       id: 'normativa',
+  //       type: Types.Input,
+  //       title: 'Normativa necesaria',
+  //       placeholder: 'Nombre de la normativa vigente',
+  //     },
+  //   ],
+  //   list: {
+  //     width: 30,
+  //     // filter: true,
+  //     sort: true,
+  //   },
+  // },
 ])
 
 export default () => {
   const { height } = useWindowSize()
   return (
     <Crud
-      url={'http://localhost:5050/api/categoria'}
+      url="http://localhost:5050/api/user"
       // gender="F"
       name="Category"
       fields={campos}
-      description={'Los productos tendrán asociada una o más categorías.'}
+      description="Los productos tendrán asociada una o más categorías."
       table={{
         columns: campos,
-        height: height - 100,
+        height: height - 200,
         edit: true,
         deleteRow: true,
       }}
       response={{
         list: ({ data }) => {
-          console.log(data)
+          console.log(data.docs)
           return {
             items: data.docs,
             ...data,
@@ -92,8 +96,9 @@ export default () => {
         perPage: 'porPagina',
         sort: 'ordenado',
       }}
-      itemName="nombre"
+      itemName="username"
       onError={(err) => console.log(err)}
+      itemId="_id"
     />
   )
 }
