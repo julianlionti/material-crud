@@ -64,6 +64,7 @@ export interface CrudProps {
   onFinished?: (what: 'new' | 'update' | 'delete', genero?: 'M' | 'F') => void
   onError?: (err: Error) => void
   Left?: ReactNode
+  usePut?: boolean
   response?: {
     list: ListConfiguration | ListOnFlyConfiguration
     new: string
@@ -92,6 +93,7 @@ export default memo((props: CrudProps) => {
     titleSize,
     onError,
     Left,
+    usePut,
     response,
     itemId,
     itemName,
@@ -476,11 +478,10 @@ export default memo((props: CrudProps) => {
               }
 
               let finalURL = url
-              if (url?.slice(-1) !== '/') finalURL = finalURL + '/' + vals[itId]
-              console.log(finalURL)
+              if (usePut && url?.slice(-1) !== '/') finalURL = finalURL + '/' + vals[itId]
 
               call({
-                method: 'POST',
+                method: usePut ? 'PUT' : 'POST',
                 data,
                 url: finalURL,
               })
