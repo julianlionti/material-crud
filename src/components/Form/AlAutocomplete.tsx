@@ -43,17 +43,13 @@ export default memo((props: AlAutocompleteProps) => {
   // const err = wsError?.message.error?.mensaje || error
   const clases = useClases({ grow })
 
-  const valores = useMemo((): OpcionesProps[] | OpcionesProps => {
+  /* const valores = useMemo((): OpcionesProps[] | OpcionesProps => {
     if (multiple) {
       const valores = value as OpcionesProps[]
-      return valores.map((e: any) => ({
-        id: e.id,
-        title: e.nombre || e.titulo,
-        extras: e.extras,
-      }))
+      return valores
     }
     return value
-  }, [multiple, value])
+  }, [multiple, value]) */
 
   useEffect(() => {
     if (renderAggregate && !multiple && !warnRef.current) {
@@ -79,7 +75,7 @@ export default memo((props: AlAutocompleteProps) => {
         loadingText={lang?.loading || 'Cargando...'}
         loading={loading}
         options={options}
-        value={valores}
+        value={value}
         noOptionsText={lang?.noOptions || 'Sin opciones'}
         onChange={(_, vals) => {
           if (multiple) setValue(vals as OpcionesProps[])
@@ -115,10 +111,10 @@ export default memo((props: AlAutocompleteProps) => {
         multiple={multiple}
         fullWidth
       />
-      {renderAggregate && multiple && (valores as OpcionesProps[]).length > -1 && (
+      {renderAggregate && multiple && (value as OpcionesProps[]).length > -1 && (
         <Paper elevation={0} className={clases.agregado}>
           {renderAggregate({
-            values: valores as OpcionesProps[],
+            values: value as OpcionesProps[],
             setAggregate,
           })}
         </Paper>
