@@ -4,6 +4,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaEquals,
+  FaInbox,
   FaNotEqual,
 } from 'react-icons/fa'
 import { useLang } from './CrudContext'
@@ -12,7 +13,7 @@ export type FilterTypes =
   | 'startsWith'
   | 'equal'
   | 'different'
-  | 'contain'
+  | 'contains'
   | 'id'
   | 'array'
   | 'custom'
@@ -33,6 +34,8 @@ export interface FilterMenu {
 export interface FilterResponse {
   text?: FilterMenu[]
   numeric?: FilterMenu[]
+  autocomplete?: FilterMenu[]
+  select?: FilterMenu[]
 }
 
 const defIconSize = 16
@@ -71,6 +74,30 @@ export default (): FilterResponse => {
         id: 'lower',
         text: lang?.filterOptions?.lower || 'Lower',
         icon: <FaChevronLeft size={defIconSize} />,
+      },
+    ],
+    autocomplete: [
+      {
+        id: 'contains',
+        text: lang?.filterOptions?.equal || 'Contains',
+        icon: <FaInbox size={defIconSize} />,
+      },
+      {
+        id: 'different',
+        text: lang?.filterOptions?.different || 'Different',
+        icon: <FaNotEqual size={defIconSize} />,
+      },
+    ],
+    select: [
+      {
+        id: 'equal',
+        text: lang?.filterOptions?.equal || 'Equal',
+        icon: <FaEquals size={defIconSize} />,
+      },
+      {
+        id: 'different',
+        text: lang?.filterOptions?.different || 'Different',
+        icon: <FaNotEqual size={defIconSize} />,
       },
     ],
   }

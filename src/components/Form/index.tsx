@@ -49,9 +49,9 @@ export const generateDefault = (item: TodosProps): DefResponse => {
   if (item.list?.filter) {
     switch (item.type) {
       case Types.Autocomplete: {
-        if (item.multiple) return []
+        if (item.multiple) return { value: [], filter: 'contains' }
         else {
-          return { value: [], filter: 'equal' }
+          return { value: null, filter: 'equal' }
         }
       }
       case Types.Number: {
@@ -98,6 +98,7 @@ export default memo((props: Props) => {
           return <AlInput key={campo.id} {...campo} loading={loading} hide={hidden} />
         case Types.Options:
           return <AlSelect key={campo.id} {...campo} loading={loading} hide={hidden} />
+        case Types.File:
         case Types.Image:
           return <AlImagen key={campo.id} {...campo} loading={loading} />
         case Types.Autocomplete:

@@ -38,6 +38,10 @@ export const esAR = createTranslation({
       new: 'Haga click en la camara para subir una imagen.',
       edit: 'Haga click en la imagen para editarla.',
     },
+    file: {
+      new: 'Haga click en la Icono para subir un Archivo.',
+      edit: 'Haga click en el archivo para editarlo.',
+    },
   },
   dialog: {
     cancel: 'Cancelar',

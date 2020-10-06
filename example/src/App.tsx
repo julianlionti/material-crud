@@ -12,7 +12,7 @@ const App = () => {
     id: 'sadasd',
     name: 'tano',
     token:
-      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1ZjIzMTg5ODgzMWIzODIxNzRkYTllZjIiLCJpYXQiOjE2MDE2NjAyOTYsImV4cCI6MTYwMjk1NjI5Nn0.lBT2plyNuYzOTjKgAKeQ4GKIkUlHBlhXh-2j-gPxCSQ',
+      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1ZjQ0MGE1YjZhOTZhMTIyMjA3YTQ5MGIiLCJpYXQiOjE2MDE5MDYyMDksImV4cCI6MTYwMzIwMjIwOX0.CwmAou4P2Ni-nl0Senk-mVATKKo-4Wd_ynnQV_Zf1Vk',
   }
 
   return (

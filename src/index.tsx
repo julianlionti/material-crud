@@ -16,6 +16,7 @@ import AlTable, { TableProps } from './components/Crud/AlTable'
 import Crud from './components/Crud/WithProvider'
 
 import { esAR } from './translate/es_ar'
+import { enUS } from './translate/en_us'
 
 export {
   Crud,
@@ -37,6 +38,7 @@ export {
   useLang,
   TableProps,
   AlTable as CrudTable,
-  esAR,
   useAxiosProps,
+  esAR,
+  enUS,
 }

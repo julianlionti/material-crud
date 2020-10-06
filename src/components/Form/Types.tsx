@@ -10,6 +10,7 @@ export enum Types {
   Multiline,
   Options,
   Image,
+  File,
   Autocomplete,
   Switch,
   Multiple,

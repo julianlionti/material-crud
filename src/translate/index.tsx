@@ -32,6 +32,7 @@ export interface Translations {
   }
   inputs?: {
     image: { new: string; edit: string }
+    file: { new: string; edit: string }
   }
   dialog?: { cancel: string; accept: string }
 }
