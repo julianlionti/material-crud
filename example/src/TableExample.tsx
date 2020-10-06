@@ -64,21 +64,21 @@ export default memo(() => {
             width: 10,
           },
         },
+        // {
+        //   id: 'categorias',
+        //   type: Types.Options,
+        //   options: docs?.map((e: any) => ({ id: e._id, title: e.nombre })) || [],
+        //   placeholder: 'Seleccione una categoria',
+        //   title: 'Categorias',
+        //   list: {
+        //     list: true,
+        //     filter: true,
+        //   },
+        // },
         {
           id: 'categorias',
-          type: Types.Options,
-          options: docs?.map((e: any) => ({ id: e._id, title: e.nombre })) || [],
-          placeholder: 'Seleccione una categoria',
-          title: 'Categorias',
-          list: {
-            list: true,
-            filter: true,
-          },
-        },
-        /*{
-          id: 'categorias',
           type: Types.Autocomplete,
-          multiple: true,
+          // multiple: true,
           title: 'Categoría',
           placeholder: 'Seleccione una o más categorías',
           options: docs?.map((e: any) => ({ id: e._id, title: e.nombre })) || [],
@@ -107,7 +107,7 @@ export default memo(() => {
                 />
               )),
           },
-        },*/
+        },
       ]),
     [docs, call],
   )

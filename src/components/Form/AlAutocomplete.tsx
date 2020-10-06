@@ -86,12 +86,12 @@ export default memo((props: AlAutocompleteProps) => {
 
   const isFiltering = list?.filter
   const finalValue = useMemo(() => {
-    if (multiple && isFiltering) {
+    if (isFiltering) {
       return (value as AutoFilter).value
     } else {
       return value as AutoValue
     }
-  }, [multiple, isFiltering, value])
+  }, [isFiltering, value])
 
   return (
     <BaseInput grow={grow}>
@@ -102,14 +102,14 @@ export default memo((props: AlAutocompleteProps) => {
         value={finalValue}
         noOptionsText={lang?.noOptions || 'Sin opciones'}
         onChange={(_, vals) => {
-          if (multiple && isFiltering) {
+          if (isFiltering) {
             setValue({ filter: (value as AutoFilter).filter, value: vals })
           } else if (!isFiltering) setValue(vals)
         }}
         onInputChange={(_, texto) => {
           if (texto.length > 0) onChangeText(texto)
         }}
-        getOptionLabel={(e) => e.title || e.id}
+        getOptionLabel={(e) => e.title || e.id || ''}
         getOptionSelected={(option, value) => value?.id === option?.id}
         renderInput={({ InputProps, ...inputProps }) => (
           <TextField
