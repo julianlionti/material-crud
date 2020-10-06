@@ -1,8 +1,9 @@
 import React from 'react'
 import * as Yup from 'yup'
-
 import { Crud, createFields, Types, useWindowSize, CrudProvider } from 'material-crud'
 import { english } from './lang'
+import { IconButton, Tooltip } from '@material-ui/core'
+import { FaTrash } from 'react-icons/fa'
 
 const campos = createFields(() => [
   {
@@ -78,6 +79,14 @@ export default () => {
         height: height - 200,
         edit: true,
         deleteRow: true,
+        // hideSelecting: true,
+        rightToolbar: (rowsSelected) => (
+          <Tooltip title="Delete">
+            <IconButton size="small" onClick={() => console.log(rowsSelected)}>
+              <FaTrash />
+            </IconButton>
+          </Tooltip>
+        ),
       }}
       response={{
         list: ({ data }) => {

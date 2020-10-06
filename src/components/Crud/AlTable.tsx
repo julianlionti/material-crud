@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo, useState } from 'react'
+import React, { memo, ReactNode, useCallback, useMemo, useState } from 'react'
 import {
   Checkbox,
   Collapse,
@@ -42,6 +42,7 @@ export interface TableProps {
   deleteRow?: boolean
   onDelete?: (row: any) => void
   hideSelecting?: boolean
+  rightToolbar?: (rowsSelected: any[]) => ReactNode
   // actionsLabel?: string
 }
 
@@ -75,9 +76,12 @@ export default memo((props: Props) => {
     loading,
     onSort,
     hideSelecting,
+    rightToolbar,
   } = props
   const lang = useLang()
-  const classes = useClasses({ height })
+  const finalRowHeight = useMemo(() => rowHeight || 48, [rowHeight])
+
+  const classes = useClasses({ height, finalRowHeight })
   const [rowsSelected, setRowSelected] = useState<any[]>([])
 
   const finalColumns = useMemo(
@@ -88,8 +92,6 @@ export default memo((props: Props) => {
         .map((e): FieldAndColProps => ({ ...e, title: e.title || '', ...e.list!! })),
     [columns],
   )
-
-  const finalRowHeight = useMemo(() => rowHeight || 48, [rowHeight])
 
   const handleSelectRow = useCallback(
     (item: any) => {
@@ -119,25 +121,21 @@ export default memo((props: Props) => {
       <Collapse timeout="auto" in={loading} unmountOnExit>
         <LinearProgress />
       </Collapse>
+      <Collapse timeout="auto" in={rowsSelected.length > 0} unmountOnExit>
+        <div className={classes.selected}>
+          <Typography
+            style={{ flex: '1 1 100%' }}
+            color="inherit"
+            variant="subtitle1"
+            component="div">
+            {rowsSelected.length} selected
+          </Typography>
+          {rightToolbar && rightToolbar(rowsSelected)}
+        </div>
+      </Collapse>
       <AutoSizer>
         {({ height, width }) => (
           <div>
-            {rowsSelected.length && (
-              <div className={`${rowsSelected.length ? classes.selected : {}}`}>
-                <Typography
-                  style={{ flex: '1 1 100%' }}
-                  color="inherit"
-                  variant="subtitle1"
-                  component="div">
-                  {rowsSelected.length} selected
-                </Typography>
-                <Tooltip title="Delete">
-                  <IconButton size="small" onClick={() => console.log(rowsSelected)}>
-                    <FaTrash />
-                  </IconButton>
-                </Tooltip>
-              </div>
-            )}
             <Table
               // gridStyle={{outline:"none"}}
               onRowClick={onRowClick}
@@ -148,10 +146,7 @@ export default memo((props: Props) => {
               rowCount={rows?.length || 0}
               rowHeight={finalRowHeight}
               rowClassName={({ index }) =>
-                clsx(
-                  index % 2 === 0 ? classes.tableRowOdd : classes.tableRow,
-                  // rowsSelected[index] ? classes.selected : {},
-                )
+                index % 2 === 0 ? classes.tableRowOdd : classes.tableRow
               }
               headerRowRenderer={({ className, style, columns }) => (
                 <div
@@ -264,8 +259,13 @@ const useClasses = makeStyles((theme) => ({
     backgroundColor: theme.palette.grey[100],
   },
   selected: {
+    display: 'flex',
+    flexDirection: 'row',
+    flex: 1,
+    alignItems: 'center',
+    height: 15,
     color: theme.palette.secondary.main,
     backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-    paddingLeft: theme.spacing(2),
+    padding: theme.spacing(2),
   },
 }))

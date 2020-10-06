@@ -77,7 +77,7 @@ export default ({ col, onSort }: Props) => {
 
 const useClasses = makeStyles((theme) => ({
   celd: ({ align }: any) => ({
-    display: 'flex',
+    display: 'contents',
     alignItems: 'center',
     flex: 1,
     justifyContent: align || 'flex-start',
