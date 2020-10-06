@@ -13,6 +13,7 @@ export interface Translations {
     startsWith: string
     equal: string
     different: string
+    contains: string
     greater: string
     lower: string
   }

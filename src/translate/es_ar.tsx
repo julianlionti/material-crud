@@ -15,6 +15,7 @@ export const esAR = createTranslation({
     startsWith: 'Empieza con',
     equal: 'Igual',
     different: 'Distinto',
+    contains: 'Contiene',
     greater: 'Mayor',
     lower: 'Menor',
   },

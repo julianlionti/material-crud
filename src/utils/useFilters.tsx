@@ -78,8 +78,13 @@ export default (): FilterResponse => {
     ],
     autocomplete: [
       {
+        id: 'equal',
+        text: lang?.filterOptions?.equal || 'Equal',
+        icon: <FaEquals size={defIconSize} />,
+      },
+      {
         id: 'contains',
-        text: lang?.filterOptions?.equal || 'Contains',
+        text: lang?.filterOptions?.contains || 'Contains',
         icon: <FaInbox size={defIconSize} />,
       },
       {
