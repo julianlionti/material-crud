@@ -67,7 +67,10 @@ export default ({ col, onSort }: Props) => {
           })
         }}
         color="inherit"
-        style={{ textAlign: 'start', cursor: col.sort ? 'pointer' : 'default' }}
+        style={{
+          textAlign: col.align === 'center' ? 'center' : 'start',
+          cursor: col.sort ? 'pointer' : 'default',
+        }}
         startIcon={renderIcono(col)}>
         {col.title}
       </Button>
