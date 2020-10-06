@@ -21,7 +21,7 @@ export default memo(() => {
       createFields(() => [
         {
           id: 'imagen',
-          type: Types.File,
+          type: Types.Image,
           title: 'Imagen',
           placeholder: 'Imagen del producto',
           baseURL: 'http://localhost:5050/archivos/imagenes/productos/',

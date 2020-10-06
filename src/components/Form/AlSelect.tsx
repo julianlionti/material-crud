@@ -65,14 +65,14 @@ export default memo((props: AlSelectProps) => {
             labelId={id}
             id={`${id}-select`}
             value={finalValue}
-            onChange={({ target: { value } }) => {
+            onChange={({ target: { value: valInput } }) => {
               if (isFiltering) {
                 setValue({
                   filter: (value as SelectFilter).filter,
-                  value: value as string,
+                  value: valInput as string,
                 })
               } else {
-                setValue(value as string)
+                setValue(valInput as string)
               }
             }}
             label={finalTitle}>
