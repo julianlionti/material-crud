@@ -1,8 +1,8 @@
-import { makeStyles, TableCell } from '@material-ui/core'
+import { Avatar, makeStyles, TableCell } from '@material-ui/core'
 import React, { ReactNode, useCallback } from 'react'
 import { FaCheck, FaTimes } from 'react-icons/fa'
 import { TableCellProps } from 'react-virtualized'
-import { TodosProps } from '../Form'
+import { AlImagenProps } from '../Form/AlImagen'
 import { ComunesProps, Types } from '../Form/Types'
 
 export interface ColumnProps {
@@ -28,6 +28,16 @@ export default ({ cellData, children, rowHeight, col, rowData }: Props) => {
 
   const renderContent = useCallback(() => {
     switch (col!.type) {
+      case Types.Image: {
+        const finalSize = rowHeight - 8
+        return (
+          <Avatar
+            alt={col?.title}
+            src={(col as AlImagenProps).baseURL + cellData}
+            style={{ height: finalSize, width: finalSize }}
+          />
+        )
+      }
       case Types.Switch:
         return cellData ? (
           <FaCheck size={18} color="green" />
@@ -37,7 +47,7 @@ export default ({ cellData, children, rowHeight, col, rowData }: Props) => {
       default:
         return String(cellData)
     }
-  }, [cellData, col])
+  }, [cellData, col, rowHeight])
 
   return (
     <TableCell component="div" variant="body" className={classes.cellContainer}>
