@@ -1,6 +1,6 @@
-import { createTranslation } from 'material-crud'
+import { createTranslation } from '.'
 
-export const english = createTranslation({
+export const enUS = createTranslation({
   showCards: 'Show cards',
   add: 'Add',
   close: 'Close',

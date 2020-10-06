@@ -10,8 +10,8 @@ export enum Types {
   Multiline,
   Options,
   Image,
+  File,
   Autocomplete,
-  // Ubicacion,
   Switch,
   Multiple,
   Custom,
@@ -34,6 +34,7 @@ export interface ComunesProps {
   depends?: (props: any) => boolean
   hide?: boolean
   list?: ColumnProps
+  edit?: boolean
 }
 
 export interface Interactions {

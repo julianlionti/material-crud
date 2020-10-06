@@ -163,7 +163,7 @@ export default memo((props: Props) => {
 const useClasses = makeStyles((theme) => ({
   container: ({ height }: any) => ({
     margin: 'auto',
-    width: '95%',
+    width: '100%',
     height,
     minHeight: 250,
   }),

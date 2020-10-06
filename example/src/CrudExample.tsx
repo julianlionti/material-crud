@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
-import { Types, Crud, CrudItem } from 'material-crud'
+import { Types, Crud, CrudItem, useAxios } from 'material-crud'
 import { FaArrowLeft } from 'react-icons/fa'
 import { Button, Card, CardActions, CardContent, IconButton } from '@material-ui/core'
 
@@ -31,6 +31,17 @@ const ItemCategoria = ({ id, type, creation_date, onDelete, onEdit }: Categoria)
 
 export default () => {
   const history = useHistory()
+  const { call, response } = useAxios<any>({})
+
+  useEffect(() => {
+    call({
+      url: 'http://localhost:5050/api/categoria',
+      params: { ordenado: { nombre: 1 } },
+    })
+  }, [call])
+
+  const { data } = response || {}
+  const { docs } = data || {}
 
   return (
     <Crud
@@ -104,6 +115,27 @@ export default () => {
             },
             { type: Types.Number, title: 'Cantidad', id: 'cantidad' },
           ],
+        },
+        {
+          id: 'categorias',
+          type: Types.Autocomplete,
+          multiple: true,
+          title: 'Categoría',
+          placeholder: 'Seleccione una o más categorías',
+          // ordenar: true,
+          options: docs?.map((e: any) => ({ id: e._id, title: e.nombre })) || [],
+          onChangeText: (texto) => {
+            call({
+              url: 'http://localhost:5050/api/categoria',
+              params: {
+                ordenado: { nombre: 1 },
+                filtros: { nombre: { valor: texto, filtro: 'empiezaCon' } },
+              },
+            })
+          },
+          list: {
+            filter: true,
+          },
         },
       ]}
       description="Crud example"
