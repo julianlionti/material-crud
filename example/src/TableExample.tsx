@@ -76,13 +76,10 @@ export default () => {
         deleteRow: true,
       }}
       response={{
-        list: ({ data }) => {
-          console.log(data)
-          return {
-            items: data.docs,
-            ...data,
-          }
-        },
+        list: ({ data }) => ({
+          items: data.docs,
+          ...data,
+        }),
         new: 'item',
         edit: { id: '_id', item: 'item' },
         delete: { id: '_id', item: 'borrado' },
