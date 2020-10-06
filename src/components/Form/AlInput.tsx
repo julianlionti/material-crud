@@ -22,70 +22,7 @@ import {
 import BaseInput from './BaseInput'
 import { Types, ComunesProps } from './Types'
 import { useLang } from '../../utils/CrudContext'
-
-type FiltroTipo =
-  | 'empiezaCon'
-  | 'igual'
-  | 'distinto'
-  | 'contiene'
-  | 'id'
-  | 'array'
-  | 'custom'
-  | 'mayor'
-  | 'menor'
-
-interface Filtro {
-  valor: string
-  filtro: FiltroTipo
-}
-
-interface FiltrosMenu {
-  id: FiltroTipo
-  texto: string
-  icono: ReactNode
-}
-
-interface FiltrosProps {
-  texto: FiltrosMenu[]
-  numerico: FiltrosMenu[]
-}
-
-const opcionesFiltros: FiltrosProps = {
-  texto: [
-    {
-      id: 'empiezaCon',
-      texto: 'Empieza con',
-      icono: <FaArrowRight size={16} />,
-    },
-    {
-      id: 'igual',
-      texto: 'Igual',
-      icono: <FaEquals size={16} />,
-    },
-    {
-      id: 'distinto',
-      texto: 'Distinto',
-      icono: <FaNotEqual size={16} />,
-    },
-  ],
-  numerico: [
-    {
-      id: 'igual',
-      texto: 'Igual',
-      icono: <FaEquals size={16} />,
-    },
-    {
-      id: 'mayor',
-      texto: 'Mayor',
-      icono: <FaChevronRight size={16} />,
-    },
-    {
-      id: 'menor',
-      texto: 'Menor',
-      icono: <FaChevronLeft size={16} />,
-    },
-  ],
-}
+import useFilters, { Filter } from '../../utils/useFilters'
 
 export type InputsTypes =
   | Types.Input
@@ -102,6 +39,7 @@ export interface AlInputProps extends ComunesProps {
   fullWidth?: boolean
 }
 
+type InputFilter = Filter<string>
 export default memo((props: AlInputProps) => {
   const {
     id,
@@ -120,8 +58,9 @@ export default memo((props: AlInputProps) => {
     hide,
   } = props
   const lang = useLang()
+  const filterOptions = useFilters()
   const [anchorFilter, setAnchorFilter] = useState<HTMLElement | null>(null)
-  const [{ value }, { error, touched }, { setValue }] = useField<string | Filtro>(id)
+  const [{ value }, { error, touched }, { setValue }] = useField<string | InputFilter>(id)
   const formik = useFormikContext()
 
   const mandatory = !!validate?.describe().tests.find((e) => e.name === 'required')
@@ -140,7 +79,7 @@ export default memo((props: AlInputProps) => {
 
   const finalValue = useMemo(() => {
     if (list?.filter) {
-      return (value as Filtro).valor
+      return (value as Filter).value
     }
     return value as string
   }, [list, value])
@@ -148,11 +87,11 @@ export default memo((props: AlInputProps) => {
   const filterType = useMemo(() => {
     switch (type) {
       case Types.Number:
-        return opcionesFiltros.numerico
+        return filterOptions.numeric!!
       default:
-        return opcionesFiltros.texto
+        return filterOptions.text!!
     }
-  }, [type])
+  }, [type, filterOptions])
 
   return (
     <BaseInput grow={grow} fullWidth={fullWidth} ocultar={hide}>
@@ -168,7 +107,7 @@ export default memo((props: AlInputProps) => {
             list?.filter && (
               <Tooltip title={lang?.tooltips.defineFilter || 'Definir TIPO de filtro'}>
                 <IconButton onClick={(e) => setAnchorFilter(e.currentTarget)}>
-                  {filterType.find((e) => e.id === (value as Filtro).filtro)?.icono}
+                  {filterType.find((e) => e.id === (value as InputFilter).filter)?.icon}
                 </IconButton>
               </Tooltip>
             )
@@ -181,8 +120,8 @@ export default memo((props: AlInputProps) => {
               setValue(target.value)
             } else {
               setValue({
-                filtro: (value as Filtro).filtro,
-                valor: target.value,
+                filter: (value as InputFilter).filter,
+                value: target.value,
               })
             }
           }}
@@ -205,12 +144,12 @@ export default memo((props: AlInputProps) => {
               <MenuItem
                 onClick={() => {
                   setAnchorFilter(null)
-                  setValue({ filtro: e.id, valor: (value as Filtro).valor })
+                  setValue({ filter: e.id, value: (value as InputFilter).value })
                 }}
-                selected={(value as Filtro).filtro === e.id}
+                selected={(value as InputFilter).filter === e.id}
                 key={e.id}>
-                <ListItemIcon>{e.icono}</ListItemIcon>
-                <ListItemText>{e.texto}</ListItemText>
+                <ListItemIcon>{e.icon}</ListItemIcon>
+                <ListItemText>{e.text}</ListItemText>
               </MenuItem>
             ))}
           </Menu>

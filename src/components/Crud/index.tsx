@@ -75,6 +75,7 @@ export interface CrudProps {
   itemId?: 'id' | '_id' | string
   itemName?: string // PAra borrar
   transformEdit?: (row: any) => Object // Para el editar
+  transformFilter?: (row: any) => {} // Para manipular lo q se envia
 }
 
 export default memo((props: CrudProps) => {
@@ -100,6 +101,7 @@ export default memo((props: CrudProps) => {
     itemName,
     interaction,
     transformEdit,
+    transformFilter,
   } = props
 
   const lang = useLang()
@@ -355,9 +357,14 @@ export default memo((props: CrudProps) => {
                   [interaction?.filter || 'filter']: filtros,
                   [interaction?.page || 'page']: 1,
                 }
+
+                const finalParams = transformFilter
+                  ? transformFilter(lastFilter.current)
+                  : lastFilter.current
+
                 call({
                   method: 'GET',
-                  params: lastFilter.current,
+                  params: finalParams,
                   url,
                 })
               }}
@@ -458,7 +465,6 @@ export default memo((props: CrudProps) => {
           } ${name}`}
           subtitle={description}>
           <Formulario
-            interaction={interaction}
             intials={editObj}
             loading={loading}
             accept={
@@ -484,7 +490,7 @@ export default memo((props: CrudProps) => {
               if (usePut && url?.slice(-1) !== '/') finalURL = finalURL + '/' + vals[itId]
 
               call({
-                method: usePut ? 'PUT' : 'POST',
+                method: editing && usePut ? 'PUT' : 'POST',
                 data,
                 url: finalURL,
               })

@@ -1,8 +1,7 @@
 import React from 'react'
 import * as Yup from 'yup'
 
-import { Crud, createFields, Types, useWindowSize, CrudProvider } from 'material-crud'
-import { english } from './lang'
+import { Crud, createFields, Types, useWindowSize } from 'material-crud'
 
 const campos = createFields(() => [
   {
@@ -37,6 +36,7 @@ const campos = createFields(() => [
       width: 30,
       sort: true,
       align: 'center',
+      filter: true,
     },
   },
   {
@@ -88,9 +88,14 @@ export default () => {
         page: 'pagina',
         perPage: 'porPagina',
         sort: 'ordenado',
+        filter: 'filtros',
       }}
       itemName="nombre"
       onError={(err) => console.log(err)}
+      transformFilter={(props) => {
+        console.log(props)
+        return props
+      }}
     />
   )
 }

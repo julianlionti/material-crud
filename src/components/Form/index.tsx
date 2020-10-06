@@ -10,6 +10,8 @@ import AlSwitch, { AlSwitchProps } from './AlSwitch'
 import AlMultiple, { AlMultipleProps, valDefault } from './AlMultiple'
 import { Interactions, Types } from './Types'
 import AlCustom, { AlCustomProps } from './AlCustom'
+import useFilters, { Filter } from '../../utils/useFilters'
+import { FaClosedCaptioning } from 'react-icons/fa'
 
 Yup.setLocale({
   string: {
@@ -38,24 +40,29 @@ export interface Props {
   loading?: boolean
   intials?: any
   noValidate?: boolean
-  interaction?: Interactions
 }
 
 export const createFields = (props: () => CamposProps[]) => props()
 
-export const generateDefault = (item: TodosProps, interaction?: Interactions): any => {
+type DefResponse = boolean | null | '' | any[] | Filter
+export const generateDefault = (item: TodosProps): DefResponse => {
   if (item.list?.filter) {
-    const filter = interaction?.filter || 'filter'
-    if (item.type === Types.Autocomplete) {
-      if (item.multiple) return []
-      else {
-        return { value: [], [filter]: 'igual' }
+    switch (item.type) {
+      case Types.Autocomplete: {
+        if (item.multiple) return []
+        else {
+          return { value: [], filter: 'equal' }
+        }
       }
+      case Types.Number: {
+        return { value: '', filter: 'equal' }
+      }
+      case Types.Switch: {
+        return { value: false, filter: 'equal' }
+      }
+      default:
+        return { value: '', filter: 'equal' }
     }
-    if (item.type === Types.Number) {
-      return { value: '', [filter]: 'igual' }
-    }
-    return { value: '', [filter]: 'empiezaCon' }
   }
   switch (item.type) {
     case Types.Switch: {
@@ -75,7 +82,7 @@ export const generateDefault = (item: TodosProps, interaction?: Interactions): a
 }
 
 export default memo((props: Props) => {
-  const { fields, onSubmit, accept, loading, intials, noValidate, interaction } = props
+  const { fields, onSubmit, accept, loading, intials, noValidate } = props
   const classes = useClases()
 
   const renderInput = useCallback(
@@ -115,15 +122,12 @@ export default memo((props: Props) => {
 
   const defaultValues = useMemo(
     () =>
-      fields
-        .flat()
-        .reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it, interaction) }), {}),
-    [fields, interaction],
+      fields.flat().reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it) }), {}),
+    [fields],
   )
 
   return (
     <Formik
-      // enableReinitialize={!onSubmit}
       enableReinitialize
       initialValues={Object.keys(intials || {}).length > 0 ? intials : defaultValues}
       validationSchema={noValidate ? null : Yup.object().shape(valSchema)}

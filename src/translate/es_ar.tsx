@@ -11,6 +11,13 @@ export const esAR = createTranslation({
   delExplanation: (name) =>
     `¿Estás seguro/a de borrar el ${name}? ¡Esta accion no se puede deshacer!`,
   filter: 'Filtrar',
+  filterOptions: {
+    startsWith: 'Empieza con',
+    equal: 'Igual',
+    different: 'Distinto',
+    greater: 'Mayor',
+    lower: 'Menor',
+  },
   filters: 'filtros',
   sort: 'Orgenar',
   open: 'Abrir',
