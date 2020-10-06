@@ -18,7 +18,6 @@ export interface AlAutocompleteProps extends ComunesProps {
     setAggregate: (value: any) => void
   }) => ReactNode
   placeholder?: string
-  transformValue?: (item: any) => OpcionesProps
 }
 
 export default memo((props: AlAutocompleteProps) => {
@@ -34,7 +33,6 @@ export default memo((props: AlAutocompleteProps) => {
     grow,
     validate,
     list,
-    transformValue,
   } = props
   const lang = useLang()
   const warnRef = useRef(false)
@@ -44,13 +42,13 @@ export default memo((props: AlAutocompleteProps) => {
 
   const clases = useClases({ grow })
 
-  const valores = useMemo((): OpcionesProps[] | OpcionesProps => {
+  /* const valores = useMemo((): OpcionesProps[] | OpcionesProps => {
     if (multiple) {
       const valores = value as OpcionesProps[]
       return valores.map((e) => (transformValue ? transformValue(e) : e))
     }
     return value
-  }, [multiple, value, transformValue])
+  }, [multiple, value, transformValue]) */
 
   useEffect(() => {
     if (renderAggregate && !multiple && !warnRef.current) {

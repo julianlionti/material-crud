@@ -74,6 +74,7 @@ export interface CrudProps {
   interaction?: Interactions
   itemId?: 'id' | '_id' | string
   itemName?: string // PAra borrar
+  transformEdit?: (row: any) => Object // Para el editar
 }
 
 export default memo((props: CrudProps) => {
@@ -98,6 +99,7 @@ export default memo((props: CrudProps) => {
     itemId,
     itemName,
     interaction,
+    transformEdit,
   } = props
 
   const lang = useLang()
@@ -398,8 +400,9 @@ export default memo((props: CrudProps) => {
             rows={list}
             onEdit={(rowData) => {
               const { onEdit } = table
-              if (onEdit) onEdit(rowData)
-              else onEditCall(rowData)
+              const editData = transformEdit ? transformEdit(rowData) : rowData
+              if (onEdit) onEdit(editData)
+              else onEditCall(editData)
             }}
             onDelete={(rowData) => {
               const { onDelete } = table
