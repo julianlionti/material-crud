@@ -78,7 +78,7 @@ export default memo(() => {
         {
           id: 'categorias',
           type: Types.Autocomplete,
-          // multiple: true,
+          multiple: true,
           title: 'Categoría',
           placeholder: 'Seleccione una o más categorías',
           options: docs?.map((e: any) => ({ id: e._id, title: e.nombre })) || [],
