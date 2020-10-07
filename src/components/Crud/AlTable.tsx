@@ -1,12 +1,18 @@
-import React, { memo } from 'react'
+import React, { memo, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import {
+  Checkbox,
   Collapse,
   IconButton,
+  lighten,
   LinearProgress,
   makeStyles,
   Paper,
+  TableCell,
+  Tooltip,
+  Typography,
 } from '@material-ui/core'
 import 'react-virtualized/styles.css'
+import { PaginationProps, useABM } from '../../utils/DataContext'
 import { Table, Column, AutoSizer, RowMouseEventHandlerParams } from 'react-virtualized'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { CamposProps } from '../Form'
@@ -15,15 +21,6 @@ import CustomCell, { FieldAndColProps } from './CustomCell'
 import Pagination from './Pagination'
 import { SortProps } from './Sort'
 import { useLang } from '../../utils/CrudContext'
-
-export interface PaginationProps {
-  hasNextPage?: boolean
-  nextPage?: number
-  page: number
-  limit?: number
-  totalDocs?: number
-  totalPages?: number
-}
 
 export interface TableProps {
   height: number
@@ -35,23 +32,32 @@ export interface TableProps {
   onEdit?: (row: any) => void
   deleteRow?: boolean
   onDelete?: (row: any) => void
+  hideSelecting?: boolean
+  rightToolbar?: (props: {
+    rowsSelected: any[]
+    list: any[]
+    deleteCall: (id: any) => void
+    editCall: (id: any, item: any) => void
+    clearSelected: () => void
+  }) => ReactNode
   // actionsLabel?: string
 }
 
 interface Props extends TableProps {
+  itemId?: string
   loading?: boolean
   columns: CamposProps[]
   rows: any[]
   onEdit: (row: any) => void
   onDelete: (row: any) => void
   headerClassName?: string
-  pagination: PaginationProps
   onChangePagination: (page: number, perPage: number) => void
   onSort: (sort: SortProps) => void
 }
 
 export default memo((props: Props) => {
   const {
+    itemId,
     columns,
     rows,
     height,
@@ -63,112 +69,201 @@ export default memo((props: Props) => {
     rowHeight,
     headerHeight,
     headerClassName,
-    pagination,
     onChangePagination,
     loading,
     onSort,
+    hideSelecting,
+    rightToolbar,
   } = props
   const lang = useLang()
-  const classes = useClasses({ height })
+  const finalRowHeight = useMemo(() => rowHeight || 48, [rowHeight])
 
-  const finalColumns = columns!
-    .flat()
-    .filter((e) => e.list)
-    .map((e): FieldAndColProps => ({ ...e, title: e.title || '', ...e.list!! }))
+  const { list, deleteCall, edit: editCall } = useABM()
+  const [rowsSelected, setRowSelected] = useState<any[]>([])
 
-  const finalRowHeith = rowHeight || 48
+  const classes = useClasses({
+    height,
+    finalRowHeight,
+    rowsLength: rows.length,
+    toolbar: rowsSelected.length > 0,
+  })
+
+  const finalColumns = useMemo(
+    () =>
+      columns!
+        .flat()
+        .filter((e) => e.list)
+        .map((e): FieldAndColProps => ({ ...e, title: e.title || '', ...e.list!! })),
+    [columns],
+  )
+
+  const handleSelectRow = useCallback(
+    (item: any) =>
+      setRowSelected((acc) => {
+        const i = acc.findIndex((x) => x[itemId!!] === item[itemId!!])
+        if (i >= 0) return acc.filter((_, index) => index !== i)
+        else return [...acc, item]
+      }),
+    [rowsSelected],
+  )
+
+  const clearSelected = useCallback(() => setRowSelected([]), [setRowSelected])
 
   return (
-    <Paper elevation={5} className={classes.container}>
-      <Collapse timeout="auto" in={loading} unmountOnExit>
-        <LinearProgress />
+    <div>
+      <Collapse timeout="auto" in={rowsSelected.length > 0} unmountOnExit>
+        <Paper elevation={5} className={classes.selected}>
+          <Typography
+            style={{ flex: 1 }}
+            color="inherit"
+            variant="subtitle1"
+            component="div">
+            {rowsSelected.length} {lang?.selected}
+          </Typography>
+          {rightToolbar &&
+            rightToolbar({ rowsSelected, list, deleteCall, editCall, clearSelected })}
+        </Paper>
       </Collapse>
-      <AutoSizer>
-        {({ height, width }) => (
-          <div>
-            <Table
-              // gridStyle={{outline:"none"}}
-              onRowClick={onRowClick}
-              rowGetter={({ index }) => rows[index]}
-              height={height - 50}
-              width={width}
-              headerHeight={headerHeight || 54}
-              rowCount={rows?.length || 0}
-              rowHeight={finalRowHeith}
-              rowClassName={({ index }) =>
-                index % 2 === 0 ? classes.tableRowOdd : classes.tableRow
-              }
-              headerRowRenderer={({ className, style, columns }) => (
-                <div
-                  className={`${className} ${headerClassName}`}
-                  role="row"
-                  style={style}>
-                  {columns}
-                </div>
-              )}>
-              {finalColumns.map((col, index) => (
-                <Column
-                  headerRenderer={(props) => (
-                    <CustomHeader onSort={onSort} col={col} {...props} />
-                  )}
-                  cellRenderer={(props) => (
-                    <CustomCell col={col} rowHeight={finalRowHeith} {...props} />
-                  )}
-                  dataKey={col.id}
-                  key={col.id}
-                  flexGrow={
-                    !edit && !deleteRow && finalColumns.length - 1 === index ? 1 : 0
-                  }
-                  width={
-                    col.width ? (width * col.width) / 100 : width / finalColumns.length
-                  }
-                />
-              ))}
-              <Column
-                headerRenderer={(props) => (
-                  <CustomHeader
-                    col={{ title: lang?.crudCol || 'CRUD', align: 'flex-end' }}
-                    {...props}
+      <Paper elevation={5} className={classes.container}>
+        <Collapse timeout="auto" in={loading} unmountOnExit>
+          <LinearProgress />
+        </Collapse>
+        <AutoSizer>
+          {({ height, width }) => (
+            <div>
+              <Table
+                // gridStyle={{outline:"none"}}
+                onRowClick={onRowClick}
+                rowGetter={({ index }) => rows[index]}
+                height={height - 50}
+                width={width}
+                headerHeight={headerHeight || 54}
+                rowCount={rows?.length || 0}
+                rowHeight={finalRowHeight}
+                rowClassName={({ index }) =>
+                  index % 2 === 0 ? classes.tableRowOdd : classes.tableRow
+                }
+                headerRowRenderer={({ className, style, columns }) => (
+                  <div
+                    className={`${className} ${headerClassName}`}
+                    role="row"
+                    style={style}>
+                    {columns}
+                  </div>
+                )}>
+                {!hideSelecting && (
+                  <Column
+                    headerRenderer={() => (
+                      <TableCell
+                        component="div"
+                        variant="head"
+                        style={{ display: 'contents' }}>
+                        <Checkbox
+                          indeterminate={
+                            rowsSelected.length > 0 && rowsSelected.length < rows.length
+                          }
+                          checked={rows.length > 0 && rowsSelected.length === rows.length}
+                          onChange={(e, checked) => setRowSelected(checked ? rows : [])}
+                        />
+                      </TableCell>
+                    )}
+                    width={(width * 5) / 100}
+                    cellRenderer={({ rowData }) => (
+                      <TableCell
+                        component="div"
+                        variant="body"
+                        style={{ display: 'contents' }}>
+                        <Checkbox
+                          checked={rowsSelected.some(
+                            (x) => x[itemId!!] === rowData[itemId!!],
+                          )}
+                          onChange={() => handleSelectRow(rowData)}
+                        />
+                      </TableCell>
+                    )}
+                    dataKey=""
                   />
                 )}
-                width={(width * 10) / 100}
-                flexGrow={1}
-                cellRenderer={({ rowData }) => (
-                  <CustomCell rowHeight={finalRowHeith}>
-                    <div>
-                      {deleteRow && (
-                        <IconButton size="small" onClick={() => onDelete(rowData)}>
-                          <FaTrash />
-                        </IconButton>
-                      )}
-                      {edit && (
-                        <IconButton size="small" onClick={() => onEdit(rowData)}>
-                          <FaEdit />
-                        </IconButton>
-                      )}
-                    </div>
-                  </CustomCell>
-                )}
-                dataKey=""
-              />
-            </Table>
-            <Pagination width={width} onChange={onChangePagination} {...pagination} />
-          </div>
-        )}
-      </AutoSizer>
-    </Paper>
+                {finalColumns.map((col, index) => (
+                  <Column
+                    headerRenderer={(props) => (
+                      <CustomHeader onSort={onSort} col={col} {...props} />
+                    )}
+                    cellRenderer={(props) => (
+                      <CustomCell col={col} rowHeight={finalRowHeight} {...props} />
+                    )}
+                    dataKey={col.id}
+                    key={col.id}
+                    flexGrow={
+                      !edit && !deleteRow && finalColumns.length - 1 === index ? 1 : 0
+                    }
+                    width={
+                      col.width ? (width * col.width) / 100 : width / finalColumns.length
+                    }
+                  />
+                ))}
+                <Column
+                  headerRenderer={(props) => (
+                    <CustomHeader
+                      col={{ title: lang?.crudCol || 'CRUD', align: 'flex-end' }}
+                      {...props}
+                    />
+                  )}
+                  width={(width * 10) / 100}
+                  flexGrow={1}
+                  cellRenderer={({ rowData }) => (
+                    <CustomCell rowHeight={finalRowHeight}>
+                      <div>
+                        {deleteRow && (
+                          <Tooltip title="Delete">
+                            <IconButton size="small" onClick={() => onDelete(rowData)}>
+                              <FaTrash />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                        {edit && (
+                          <Tooltip title="Edit">
+                            <IconButton size="small" onClick={() => onEdit(rowData)}>
+                              <FaEdit />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </div>
+                    </CustomCell>
+                  )}
+                  dataKey=""
+                />
+              </Table>
+              <Pagination width={width} onChange={onChangePagination} />
+            </div>
+          )}
+        </AutoSizer>
+      </Paper>
+    </div>
   )
 })
 
 const useClasses = makeStyles((theme) => ({
-  container: ({ height }: any) => ({
+  container: ({ height, finalRowHeight, rowsLength, toolbar }: any) => ({
     margin: 'auto',
     width: '100%',
-    height,
+    height: finalRowHeight * rowsLength + 115,
     minHeight: 250,
+    maxHeight: height,
   }),
   tableRow: {},
   tableRowOdd: {
     backgroundColor: theme.palette.grey[100],
+  },
+  selected: {
+    display: 'flex',
+    flexDirection: 'row',
+    flex: 1,
+    alignItems: 'center',
+    height: 20,
+    marginBottom: 4,
+    color: theme.palette.secondary.main,
+    backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+    padding: theme.spacing(2),
   },
 }))

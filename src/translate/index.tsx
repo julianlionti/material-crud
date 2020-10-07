@@ -23,6 +23,7 @@ export interface Translations {
   seeMore: string
   noOptions: string
   loading: string
+  selected: string
   tooltips: {
     defineFilter: string
     cancel: string
@@ -30,6 +31,7 @@ export interface Translations {
   pagination?: {
     rowsPerPage: string
     totalCount: string
+    page: string
   }
   inputs?: {
     image: { new: string; edit: string }

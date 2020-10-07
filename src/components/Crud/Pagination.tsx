@@ -1,36 +1,39 @@
 import { makeStyles, MenuItem, Select, Typography } from '@material-ui/core'
 import React, { memo } from 'react'
 import Pagination from '@material-ui/lab/Pagination'
-import { PaginationProps } from './AlTable'
 import { useLang } from '../../utils/CrudContext'
+import { useABM } from '../../utils/DataContext'
 
-interface Props extends PaginationProps {
+interface Props {
   width: number
   onChange: (page: number, perPage: number) => void
 }
 
 const perPageList = [5, 10, 15, 50, 100, 500, 1000]
 
-export default memo((props: Props) => {
-  const { width, page, limit, onChange, totalDocs, totalPages } = props
+export default memo(({ width, onChange }: Props) => {
+  const { pagination } = useABM()
+  const { page, limit, totalDocs, totalPages } = pagination
   const lang = useLang()
   const classes = useClasses()
 
   return (
     <div style={{ width: width - 10 }} className={classes.pagContainer}>
-      <Typography>{`${lang?.pagination?.totalCount} ${totalDocs} - `}</Typography>
-      <Typography>{` ${lang?.pagination?.rowsPerPage}:`}</Typography>
-      <Select
-        className={classes.perPage}
-        value={limit}
-        onChange={({ target }) => onChange(page, target.value as number)}>
-        {perPageList.map((e) => (
-          <MenuItem key={e} value={e}>
-            {String(e)}
-          </MenuItem>
-        ))}
-        <MenuItem value={-1}>Todos</MenuItem>
-      </Select>
+      <div style={{ display: 'flex', alignItems: 'center', padding: 8 }}>
+        <Typography>{`${lang?.pagination?.totalCount} ${totalDocs} - `}</Typography>
+        <Typography>{` ${lang?.pagination?.rowsPerPage}:`}</Typography>
+        <Select
+          className={classes.perPage}
+          value={limit}
+          onChange={({ target }) => onChange(page, target.value as number)}>
+          {perPageList.map((e) => (
+            <MenuItem key={e} value={e}>
+              {String(e)}
+            </MenuItem>
+          ))}
+          <MenuItem value={-1}>Todos</MenuItem>
+        </Select>
+      </div>
       <Pagination
         color="primary"
         variant="outlined"
@@ -49,7 +52,7 @@ export default memo((props: Props) => {
 const useClasses = makeStyles((theme) => ({
   pagContainer: {
     display: 'flex',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     alignItems: 'center',
     height: 50,
     flexDirection: 'row',

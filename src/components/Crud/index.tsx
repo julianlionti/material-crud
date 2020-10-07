@@ -20,14 +20,14 @@ import {
 import { FaFilter } from 'react-icons/fa'
 import Formulario, { CamposProps } from '../Form'
 import useAxios, { Error } from '../../utils/useAxios'
-import { useABM } from '../../utils/DataContext'
+import { PaginationProps, useABM } from '../../utils/DataContext'
 import Dialog, { CartelState } from '../UI/Dialog'
 import Ordenado from './Sort'
 import useWindowSize from '../../utils/useWindowSize'
 import { serialize } from 'object-to-formdata'
 import CenteredCard from '../UI/CenteredCard'
 import AnimatedItem from '../UI/AnimatedItem'
-import AlTable, { PaginationProps, TableProps } from '../Crud/AlTable'
+import AlTable, { TableProps } from '../Crud/AlTable'
 import { Interactions } from '../Form/Types'
 import { useLang } from '../../utils/CrudContext'
 
@@ -107,11 +107,15 @@ export default memo((props: CrudProps) => {
   const lang = useLang()
   const itId = itemId || '_id'
   const called = useRef(false)
+  const getCallRef = useRef(false)
+  const lastCallRef = useRef<any>(null)
 
-  const { list, add, edit: editABM, replace, deleteCall } = useABM<any>({ id: itId })
+  const { list, add, edit: editABM, replace, deleteCall, pagination } = useABM<any>({
+    id: itId,
+  })
   const { loading, response: responseWS, call } = useAxios<any>({ onError })
 
-  const [pagination, setPagination] = useState<PaginationProps>({ page: 1, limit: 10 })
+  // const [pagination, setPagination] = useState<PaginationProps>({ page: 1, limit: 10 })
   const [cartel, setCartel] = useState<CartelState>({ visible: false })
   const [toolbar, setToolbar] = useState(false)
   const [editObj, setEditObj] = useState<object | null>(null)
@@ -149,22 +153,28 @@ export default memo((props: CrudProps) => {
   }, [response, responseWS])
 
   useEffect(() => {
+    if (lastCallRef.current === null) return
     if (item && !edited?.id) {
       add([item])
       onFinished && onFinished('new', gender)
       setEditObj(null)
+      // setPagination((state) => ({ ...state, totalDocs: (state.totalDocs || 0) + 1 }))
+      lastCallRef.current = null
     } else if (edited && edited?.item) {
       editABM({ id: edited.id, item: { ...edited.item, edited: true } })
       onFinished && onFinished('update', gender)
       setEditObj(null)
+      lastCallRef.current = null
     } else if (deleted && deleted.item) {
       if (table) {
         deleteCall(deleted.id)
+        // setPagination((state) => ({ ...state, totalDocs: (state.totalDocs || 1) - 1 }))
       } else {
         editABM({ id: deleted.id, item: { ...deleted.item, deleted: true } })
       }
       onFinished && onFinished('delete', gender)
       setCartel({ visible: false })
+      lastCallRef.current = null
     }
   }, [
     item,
@@ -181,16 +191,16 @@ export default memo((props: CrudProps) => {
 
   const { data, docs, page } = useMemo(() => {
     if (!responseWS) return {}
+    if (getCallRef.current === false) return {}
+    getCallRef.current = false
     if (typeof response?.list === 'function') {
-      if (!deleted?.item && !edited?.item && !item) {
-        const { items, ...data } = response.list(responseWS) as any
-        return {
-          docs: items,
-          data,
-          page: data.page,
-        }
+      // if (!deleted?.item && !edited?.item && !item) {
+      const { items, ...data } = response.list(responseWS) as any
+      return {
+        docs: items,
+        data,
+        page: data.page,
       }
-      return {}
     } else {
       const data = responseWS[response?.list.data || 'data'] || { page: 1 }
       return {
@@ -203,14 +213,14 @@ export default memo((props: CrudProps) => {
 
   useEffect(() => {
     if (docs) {
-      setPagination(data!!)
+      // setPagination(data!!)
       if (page === 1 || table) {
-        replace(docs)
+        replace(docs, data)
       } else {
         add(docs)
       }
     }
-  }, [add, data, docs, page, setPagination, replace, table])
+  }, [add, data, docs, page, replace, table])
 
   const interactions = useMemo(
     () => ({
@@ -220,13 +230,6 @@ export default memo((props: CrudProps) => {
     }),
     [interaction, pagination],
   )
-
-  useEffect(() => {
-    if (!called.current) {
-      call({ method: 'GET', url, params: interactions })
-      called.current = true
-    }
-  }, [call, url, interactions])
 
   const onEditCall = useCallback((item) => setEditObj(item), [])
   const onDeleteCall = useCallback(
@@ -241,7 +244,9 @@ export default memo((props: CrudProps) => {
         titulo: `${lang?.delete || 'Borrar'} ${name}`,
         onCerrar: (aceptado: boolean) => {
           if (aceptado) {
-            call({ method: 'DELETE', data: { id: it[itId] }, url })
+            const data = { id: it[itId] }
+            lastCallRef.current = data
+            call({ method: 'DELETE', data, url })
           } else {
             setCartel({ visible: false })
           }
@@ -280,6 +285,14 @@ export default memo((props: CrudProps) => {
   )
 
   const order = useMemo(() => fields.flat().filter((e) => e.list?.sort), [fields])
+
+  useEffect(() => {
+    if (!called.current) {
+      call({ method: 'GET', url, params: interactions })
+      called.current = true
+      getCallRef.current = true
+    }
+  }, [call, url, interactions])
 
   return (
     <div className={classes.contenedor}>
@@ -326,6 +339,7 @@ export default memo((props: CrudProps) => {
                     ...lastFilter.current,
                     [interaction?.sort || 'sort']: ordenado,
                   }
+                  getCallRef.current = true
                   call({
                     method: 'GET',
                     params: { ...interactions, ...lastFilter.current },
@@ -357,6 +371,7 @@ export default memo((props: CrudProps) => {
                   [interaction?.filter || 'filter']: filtros,
                   [interaction?.page || 'page']: 1,
                 }
+                getCallRef.current = true
 
                 const finalParams = transformFilter
                   ? transformFilter(lastFilter.current)
@@ -378,14 +393,15 @@ export default memo((props: CrudProps) => {
       <Collapse in={!editObj} timeout="auto" unmountOnExit>
         {(table && !viewCards && (
           <AlTable
-            loading={loading}
             {...table}
-            pagination={pagination}
+            itemId={itId}
+            loading={loading}
             onSort={(newSort) => {
               lastFilter.current = {
                 ...lastFilter.current,
                 [interaction?.sort || 'sort']: newSort,
               }
+              getCallRef.current = true
               call({
                 method: 'GET',
                 params: { ...interactions, ...lastFilter.current },
@@ -393,13 +409,16 @@ export default memo((props: CrudProps) => {
               })
             }}
             onChangePagination={(page, perPage) => {
+              getCallRef.current = true
               call({
                 method: 'GET',
                 url,
                 params: {
                   ...interactions,
-                  [interaction?.page || 'page']: page,
-                  [interaction?.perPage || 'perPage']: perPage,
+                  [interaction?.page || lang?.pagination?.page || 'page']: page,
+                  [interaction?.perPage ||
+                  lang?.pagination?.rowsPerPage ||
+                  'perPage']: perPage,
                 },
               })
             }}
@@ -441,6 +460,7 @@ export default memo((props: CrudProps) => {
                 ...lastFilter.current,
                 [interaction?.page || 'page']: pagination.nextPage,
               }
+              getCallRef.current = true
               call({
                 method: 'GET',
                 params: lastFilter.current,
@@ -486,6 +506,7 @@ export default memo((props: CrudProps) => {
                 })
               }
 
+              lastCallRef.current = data
               let finalURL = url
               if (usePut && url?.slice(-1) !== '/') finalURL = finalURL + '/' + vals[itId]
 
