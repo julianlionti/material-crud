@@ -8,6 +8,7 @@ export const esAR = createTranslation({
   add: 'Agregar nuev',
   delete: 'Borrar',
   crudCol: 'Acciones',
+  selected: 'seleccionados',
   delExplanation: (name) =>
     `¿Estás seguro/a de borrar el ${name}? ¡Esta accion no se puede deshacer!`,
   filter: 'Filtrar',
@@ -33,6 +34,7 @@ export const esAR = createTranslation({
   pagination: {
     rowsPerPage: 'Filas por página',
     totalCount: 'Cantidad de items',
+    page: 'Página',
   },
   inputs: {
     image: {
