@@ -5,9 +5,9 @@ import { Types } from '../..'
 import BaseInput from './BaseInput'
 import { ComunesProps } from './Types'
 
-export interface CustomComponentProps {
-  props: CamposProps
-  field: [FieldInputProps<any>, FieldMetaProps<any>, FieldHelperProps<any>]
+export interface CustomComponentProps<T = any> {
+  props: AlCustomProps
+  field: [FieldInputProps<T>, FieldMetaProps<T>, FieldHelperProps<T>]
 }
 
 type NoTitle = Omit<ComunesProps, 'title'>

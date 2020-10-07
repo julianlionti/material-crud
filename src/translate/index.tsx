@@ -9,6 +9,14 @@ export interface Translations {
   delExplanation: (name: string) => string
   filters: string
   filter: string
+  filterOptions?: {
+    startsWith: string
+    equal: string
+    different: string
+    contains: string
+    greater: string
+    lower: string
+  }
   sort: string
   open: string
   close: string
@@ -27,50 +35,9 @@ export interface Translations {
   }
   inputs?: {
     image: { new: string; edit: string }
+    file: { new: string; edit: string }
   }
   dialog?: { cancel: string; accept: string }
 }
 
-// Con la propiedad género se cambian las O por las A
-const translations: Translations = {
-  showCards: 'Cartas',
-  listOf: 'Listado de',
-  new: 'Agregar nuevo',
-  edit: 'Editar',
-  add: 'Agregar',
-  delete: 'Borrar',
-  crudCol: 'Acciones',
-  delExplanation: (name) =>
-    `¿Estás segure de borrar el ${name}? Esta accion no se puede deshacer?`,
-  filter: 'Filtrar',
-  filters: 'filtros',
-  sort: 'Orgenar',
-  open: 'Abrir',
-  close: 'Cerrar',
-  seeMore: 'Ver más',
-  noOptions: 'Sin opciones',
-  loading: 'Cargando...',
-  selected: 'seleccionados',
-  tooltips: {
-    defineFilter: 'Definit TIPO de filtro',
-    cancel: 'Cancelar',
-  },
-  pagination: {
-    rowsPerPage: 'Filas por página',
-    totalCount: 'Cantidad de items',
-    page: 'página',
-  },
-  inputs: {
-    image: {
-      new: 'Haga click en la camara para subir una imagen.',
-      edit: 'Haga click en la imagen para editarla.',
-    },
-  },
-  dialog: {
-    cancel: 'Cancelar',
-    accept: 'Aceptar',
-  },
-}
-
 export const createTranslation = (props: Translations) => props
-export default translations

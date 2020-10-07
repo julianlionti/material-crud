@@ -1,15 +1,24 @@
-import React, { memo, useCallback, useMemo } from 'react'
+import React, { lazy, memo, Suspense, useCallback, useMemo } from 'react'
 import { Formik, FormikValues, FormikHelpers } from 'formik'
 import { Button, CircularProgress, makeStyles } from '@material-ui/core'
 import * as Yup from 'yup'
-import AlInput, { AlInputProps } from './AlInput'
-import AlSelect, { AlSelectProps } from './AlSelect'
-import AlImagen, { AlImagenProps } from './AlImagen'
-import AlAutocomplete, { AlAutocompleteProps } from './AlAutocomplete'
-import AlSwitch, { AlSwitchProps } from './AlSwitch'
-import AlMultiple, { AlMultipleProps, valDefault } from './AlMultiple'
-import { Interactions, Types } from './Types'
+import { Types } from './Types'
 import AlCustom, { AlCustomProps } from './AlCustom'
+import { Filter } from '../../utils/useFilters'
+
+import { AlInputProps } from './AlInput'
+import { AlSelectProps } from './AlSelect'
+import { AlImagenProps } from './AlImagen'
+import { AlAutocompleteProps } from './AlAutocomplete'
+import { AlSwitchProps } from './AlSwitch'
+import { AlMultipleProps, valDefault } from './AlMultiple'
+
+const AlInput = lazy(() => import('./AlInput'))
+const AlSelect = lazy(() => import('./AlSelect'))
+const AlImagen = lazy(() => import('./AlImagen'))
+const AlAutocomplete = lazy(() => import('./AlAutocomplete'))
+const AlSwitch = lazy(() => import('./AlSwitch'))
+const AlMultiple = lazy(() => import('./AlMultiple'))
 
 Yup.setLocale({
   string: {
@@ -38,24 +47,29 @@ export interface Props {
   loading?: boolean
   intials?: any
   noValidate?: boolean
-  interaction?: Interactions
 }
 
 export const createFields = (props: () => CamposProps[]) => props()
 
-export const generateDefault = (item: TodosProps, interaction?: Interactions): any => {
+type DefResponse = boolean | null | '' | any[] | Filter
+export const generateDefault = (item: TodosProps): DefResponse => {
   if (item.list?.filter) {
-    const filter = interaction?.filter || 'filter'
-    if (item.type === Types.Autocomplete) {
-      if (item.multiple) return []
-      else {
-        return { value: [], [filter]: 'igual' }
+    switch (item.type) {
+      case Types.Autocomplete: {
+        if (item.multiple) return { value: [], filter: 'contains' }
+        else {
+          return { value: null, filter: 'contains' }
+        }
       }
+      case Types.Number: {
+        return { value: '', filter: 'equal' }
+      }
+      case Types.Switch: {
+        return { value: false, filter: 'equal' }
+      }
+      default:
+        return { value: '', filter: 'equal' }
     }
-    if (item.type === Types.Number) {
-      return { value: '', [filter]: 'igual' }
-    }
-    return { value: '', [filter]: 'empiezaCon' }
   }
   switch (item.type) {
     case Types.Switch: {
@@ -75,7 +89,7 @@ export const generateDefault = (item: TodosProps, interaction?: Interactions): a
 }
 
 export default memo((props: Props) => {
-  const { fields, onSubmit, accept, loading, intials, noValidate, interaction } = props
+  const { fields, onSubmit, accept, loading, intials, noValidate } = props
   const classes = useClases()
 
   const renderInput = useCallback(
@@ -91,6 +105,7 @@ export default memo((props: Props) => {
           return <AlInput key={campo.id} {...campo} loading={loading} hide={hidden} />
         case Types.Options:
           return <AlSelect key={campo.id} {...campo} loading={loading} hide={hidden} />
+        case Types.File:
         case Types.Image:
           return <AlImagen key={campo.id} {...campo} loading={loading} />
         case Types.Autocomplete:
@@ -115,15 +130,12 @@ export default memo((props: Props) => {
 
   const defaultValues = useMemo(
     () =>
-      fields
-        .flat()
-        .reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it, interaction) }), {}),
-    [fields, interaction],
+      fields.flat().reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it) }), {}),
+    [fields],
   )
 
   return (
     <Formik
-      // enableReinitialize={!onSubmit}
       enableReinitialize
       initialValues={Object.keys(intials || {}).length > 0 ? intials : defaultValues}
       validationSchema={noValidate ? null : Yup.object().shape(valSchema)}
@@ -131,29 +143,31 @@ export default memo((props: Props) => {
         if (onSubmit) onSubmit(vals, helpers)
       }}>
       {({ submitForm, values }) => (
-        <div className={classes.container}>
-          {fields.map((field, index) => {
-            if (Array.isArray(field)) {
-              return (
-                <div key={`${field[0].id}-row-${index}`} className={classes.horizontal}>
-                  {field.map((e) => renderInput(e, values))}
-                </div>
-              )
-            }
-            return renderInput(field, values)
-          })}
-          {accept && (
-            <Button
-              disabled={loading}
-              onClick={submitForm}
-              className={classes.btn}
-              color="primary"
-              endIcon={loading && <CircularProgress size={16} />}
-              variant="outlined">
-              {accept}
-            </Button>
-          )}
-        </div>
+        <Suspense fallback={<CircularProgress />}>
+          <div className={classes.container}>
+            {fields.map((field, index) => {
+              if (Array.isArray(field)) {
+                return (
+                  <div key={`${field[0].id}-row-${index}`} className={classes.horizontal}>
+                    {field.map((e) => renderInput(e, values))}
+                  </div>
+                )
+              }
+              return renderInput(field, values)
+            })}
+            {accept && (
+              <Button
+                disabled={loading}
+                onClick={submitForm}
+                className={classes.btn}
+                color="primary"
+                endIcon={loading && <CircularProgress size={16} />}
+                variant="outlined">
+                {accept}
+              </Button>
+            )}
+          </div>
+        </Suspense>
       )}
     </Formik>
   )

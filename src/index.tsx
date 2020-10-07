@@ -7,13 +7,16 @@ import Dialog from './components/UI/Dialog'
 import { createTranslation } from './translate'
 
 import { DataProvider, useABM } from './utils/DataContext'
-import useAxios, { callWs } from './utils/useAxios'
+import useAxios, { callWs, useAxiosProps } from './utils/useAxios'
 import useWindowSize from './utils/useWindowSize'
 import { CustomComponentProps } from './components/Form/AlCustom'
 
 import { CrudProvider, useUser, useLang } from './utils/CrudContext'
 import AlTable, { TableProps } from './components/Crud/AlTable'
 import Crud from './components/Crud/WithProvider'
+
+import { esAR } from './translate/es_ar'
+import { enUS } from './translate/en_us'
 
 export {
   Crud,
@@ -35,4 +38,7 @@ export {
   useLang,
   TableProps,
   AlTable as CrudTable,
+  useAxiosProps,
+  esAR,
+  enUS,
 }

@@ -2,7 +2,7 @@ import React from 'react'
 import * as Yup from 'yup'
 import { Crud, createFields, Types, useWindowSize, useAxios } from 'material-crud'
 import { english } from './lang'
-import { IconButton, Tooltip } from '@material-ui/core'
+import { IconButton, makeStyles, Tooltip } from '@material-ui/core'
 import { FaTrash } from 'react-icons/fa'
 
 const campos = createFields(() => [
@@ -115,14 +115,13 @@ export default () => {
           </Tooltip>
         ),
       }}
+      itemId="_id"
+      itemName="nombre"
       response={{
-        list: ({ data }) => {
-          console.log(data?.docs)
-          return {
-            items: data.docs,
-            ...data,
-          }
-        },
+        list: ({ data }) => ({
+          items: data.docs,
+          ...data,
+        }),
         new: 'item',
         edit: { id: '_id', item: 'item' },
         delete: { id: '_id', item: 'borrado' },
@@ -130,11 +129,27 @@ export default () => {
       interaction={{
         page: 'pagina',
         perPage: 'porPagina',
+        filter: 'filtros',
         sort: 'ordenado',
       }}
-      itemName="username"
-      onError={(err) => console.log(err)}
-      itemId="_id"
     />
   )
 }
+
+const useClases = makeStyles((tema) => ({
+  alertContainer: {
+    [tema.breakpoints.down('md')]: {
+      width: '95%',
+    },
+    width: '60%',
+    margin: '0 auto',
+    marginBottom: tema.spacing(1),
+  },
+  alert: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  mensaje: {
+    width: '100%',
+  },
+}))

@@ -1,4 +1,4 @@
-import React, { useState, memo, useMemo } from 'react'
+import React, { useState, memo, useMemo, ReactNode, useCallback } from 'react'
 import {
   makeStyles,
   IconButton,
@@ -12,15 +12,19 @@ import { red } from '@material-ui/core/colors'
 import BaseInput from './BaseInput'
 import { Types, ComunesProps } from './Types'
 import { useLang } from '../../utils/CrudContext'
+import { FaCamera, FaFile } from 'react-icons/fa'
 
 export interface AlImagenProps extends ComunesProps {
-  type: Types.Image
+  type: Types.Image | Types.File
   baseURL: string
+  ImgButton?: ReactNode
+  accept?: string
+  renderPreview?: (base64: string | null) => ReactNode
 }
 
 export default memo((props: AlImagenProps) => {
   const lang = useLang()
-  const { id, loading, grow, baseURL } = props
+  const { id, loading, grow, baseURL, ImgButton, type, renderPreview } = props
   const [base64, setBase64] = useState<string | null>(null)
   const [{ value }, { error }, { setValue, setTouched }] = useField<string | File | null>(
     id,
@@ -39,30 +43,50 @@ export default memo((props: AlImagenProps) => {
     return null
   }, [base64, baseURL, value])
 
+  const isImage = type === Types.Image
+
+  const renderExplanation = useCallback(() => {
+    if (value === null && isImage) {
+      return lang?.inputs?.image.new || 'Haga click en la camara para subir una imagen:'
+    } else if (value === null && !isImage) {
+      return lang?.inputs?.file.new || 'Haga click abajo para subir una imagen:'
+    } else if (value !== null && isImage) {
+      return lang?.inputs?.image.edit || 'Haga click en el icono para subir un archivo:'
+    } else {
+      return lang?.inputs?.file.edit || 'Haga click abajo para editar el archivo:'
+    }
+  }, [value, isImage, lang])
+
+  const renderContent = useCallback(() => {
+    if (srcFinal && isImage) {
+      return <img height={300} alt={id} src={srcFinal} />
+    } else if (value && !isImage && renderPreview) {
+      return renderPreview(base64)
+    } else if (value && !isImage && !renderPreview) {
+      return <span>Es necesario renderizar el resultado con el 'renderPreview'</span>
+    } else {
+      if (ImgButton) return ImgButton
+      return isImage ? (
+        <FaCamera className={clases.icono} />
+      ) : (
+        <FaFile className={clases.icono} />
+      )
+    }
+  }, [srcFinal, value, isImage, ImgButton, clases, base64, id, renderPreview])
+
   return (
     <BaseInput grow={grow}>
       <Collapse in={!subiendo} timeout="auto">
         <div className={clases.contenedor}>
           {subiendo && <CircularProgress />}
-          <Typography variant="body1">
-            {value === ''
-              ? lang?.inputs?.image.new ||
-                'Haga click en la camara para subir una iamgen:'
-              : lang?.inputs?.image.edit || 'Haga click en la imagen para editarla'}
-          </Typography>
+          <Typography variant="body1">{renderExplanation()}</Typography>
           <label htmlFor={camaraId}>
             <IconButton
               disabled={loading}
               color="primary"
               component="span"
-              onClick={() => {
-                setTouched(true)
-              }}>
-              {srcFinal ? (
-                <img height={300} alt={id} src={srcFinal} />
-              ) : (
-                <Camara className={clases.icono} />
-              )}
+              onClick={() => setTouched(true)}>
+              {renderContent()}
             </IconButton>
           </label>
           {!!error && (

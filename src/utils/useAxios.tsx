@@ -8,7 +8,7 @@ export interface Error {
   code: number
 }
 
-interface Props {
+export interface useAxiosProps {
   onInit?: AxiosRequestConfig
   onError?: (error: Error) => void
 }
@@ -66,7 +66,7 @@ export const callWs = async <T extends any>(
   return { error, response }
 }
 
-export default <T extends any>(props?: Props): Response<T> => {
+export default <T extends any = any>(props?: useAxiosProps): Response<T> => {
   const { onInit, onError } = props || {}
   // const { enqueueSnackbar } = useSnackbar()
   const onInitRef = useRef(false)

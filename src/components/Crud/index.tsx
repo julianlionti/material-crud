@@ -64,6 +64,7 @@ export interface CrudProps {
   onFinished?: (what: 'new' | 'update' | 'delete', genero?: 'M' | 'F') => void
   onError?: (err: Error) => void
   Left?: ReactNode
+  usePut?: boolean
   response?: {
     list: ListConfiguration | ListOnFlyConfiguration
     new: string
@@ -73,6 +74,8 @@ export interface CrudProps {
   interaction?: Interactions
   itemId?: 'id' | '_id' | string
   itemName?: string // PAra borrar
+  transformEdit?: (row: any) => Object // Para el editar
+  transformFilter?: (row: any) => {} // Para manipular lo q se envia
 }
 
 export default memo((props: CrudProps) => {
@@ -92,10 +95,13 @@ export default memo((props: CrudProps) => {
     titleSize,
     onError,
     Left,
+    usePut,
     response,
     itemId,
     itemName,
     interaction,
+    transformEdit,
+    transformFilter,
   } = props
 
   const lang = useLang()
@@ -119,7 +125,6 @@ export default memo((props: CrudProps) => {
   const classes = useClasses({ titleSize })
 
   const editing = editObj ? Object.keys(editObj!!).length > 0 : false
-  // const { borrado, item, _id, data } = respuesta || {}
   const { deleted, item, edited } = useMemo(() => {
     if (!responseWS) return {}
     if (!response) {
@@ -264,13 +269,18 @@ export default memo((props: CrudProps) => {
 
   const fieldsWithoutFilters = useMemo(
     () =>
-      fields.map((cam) => {
-        if (Array.isArray(cam)) {
-          return cam.map(({ list, ...etc }) => etc)
-        }
-        const { list, ...etc } = cam
-        return etc
-      }),
+      fields
+        .filter((e) => {
+          if (!Array.isArray(e)) return e.edit !== false
+          return true
+        })
+        .map((cam) => {
+          if (Array.isArray(cam)) {
+            return cam.filter((e) => e.edit !== false).map(({ list, ...etc }) => etc)
+          }
+          const { list, ...etc } = cam
+          return etc
+        }),
     [fields],
   )
 
@@ -362,9 +372,14 @@ export default memo((props: CrudProps) => {
                   [interaction?.page || 'page']: 1,
                 }
                 getCallRef.current = true
+
+                const finalParams = transformFilter
+                  ? transformFilter(lastFilter.current)
+                  : lastFilter.current
+
                 call({
                   method: 'GET',
-                  params: lastFilter.current,
+                  params: finalParams,
                   url,
                 })
               }}
@@ -411,8 +426,9 @@ export default memo((props: CrudProps) => {
             rows={list}
             onEdit={(rowData) => {
               const { onEdit } = table
-              if (onEdit) onEdit(rowData)
-              else onEditCall(rowData)
+              const editData = transformEdit ? transformEdit(rowData) : rowData
+              if (onEdit) onEdit(editData)
+              else onEditCall(editData)
             }}
             onDelete={(rowData) => {
               const { onDelete } = table
@@ -463,14 +479,23 @@ export default memo((props: CrudProps) => {
           title={`${
             editing
               ? lang?.edit || 'Editar '
-              : lang?.new || `Nuev${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
+              : lang?.new
+              ? `${lang.new}${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
+              : `Nuev${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
           } ${name}`}
           subtitle={description}>
           <Formulario
-            interaction={interaction}
             intials={editObj}
             loading={loading}
-            accept={editing ? lang?.edit || 'Editar' : lang?.add || 'Agregar'}
+            accept={
+              editing
+                ? lang?.edit || 'Editar'
+                : lang?.add
+                ? `${lang?.add || 'Agregar nuev'}${
+                    gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''
+                  } ${name}`
+                : 'Agregar'
+            }
             fields={fieldsWithoutFilters}
             onSubmit={(vals) => {
               let data = vals
@@ -482,10 +507,13 @@ export default memo((props: CrudProps) => {
               }
 
               lastCallRef.current = data
+              let finalURL = url
+              if (usePut && url?.slice(-1) !== '/') finalURL = finalURL + '/' + vals[itId]
+
               call({
-                method: 'POST',
+                method: editing && usePut ? 'PUT' : 'POST',
                 data,
-                url,
+                url: finalURL,
               })
             }}
           />
