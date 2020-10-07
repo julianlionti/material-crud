@@ -17,6 +17,7 @@ export const enUS = createTranslation({
   crudCol: 'CRUD',
   loading: 'Loading...',
   noOptions: 'No options',
+  selected: 'selected',
   tooltips: {
     cancel: 'Cancel',
     defineFilter: 'Define filter Type',
@@ -24,6 +25,7 @@ export const enUS = createTranslation({
   pagination: {
     rowsPerPage: 'Items per page',
     totalCount: 'Total Items',
+    page: 'Page',
   },
   inputs: {
     image: {
