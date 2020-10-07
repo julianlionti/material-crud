@@ -1,4 +1,4 @@
-import React, { memo, ReactNode, useCallback, useMemo, useState } from 'react'
+import React, { memo, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Checkbox,
   Collapse,
@@ -12,7 +12,7 @@ import {
   Typography,
 } from '@material-ui/core'
 import 'react-virtualized/styles.css'
-import clsx from 'clsx'
+import { PaginationProps, useABM } from '../../utils/DataContext'
 import { Table, Column, AutoSizer, RowMouseEventHandlerParams } from 'react-virtualized'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { CamposProps } from '../Form'
@@ -21,15 +21,6 @@ import CustomCell, { FieldAndColProps } from './CustomCell'
 import Pagination from './Pagination'
 import { SortProps } from './Sort'
 import { useLang } from '../../utils/CrudContext'
-
-export interface PaginationProps {
-  hasNextPage?: boolean
-  nextPage?: number
-  page: number
-  limit?: number
-  totalDocs?: number
-  totalPages?: number
-}
 
 export interface TableProps {
   height: number
@@ -42,24 +33,31 @@ export interface TableProps {
   deleteRow?: boolean
   onDelete?: (row: any) => void
   hideSelecting?: boolean
-  rightToolbar?: (rowsSelected: any[]) => ReactNode
+  rightToolbar?: (props: {
+    rowsSelected: any[]
+    list: any[]
+    deleteCall: (id: any) => void
+    editCall: (id: any, item: any) => void
+    clearSelected: () => void
+  }) => ReactNode
   // actionsLabel?: string
 }
 
 interface Props extends TableProps {
+  itemId?: string
   loading?: boolean
   columns: CamposProps[]
   rows: any[]
   onEdit: (row: any) => void
   onDelete: (row: any) => void
   headerClassName?: string
-  pagination: PaginationProps
   onChangePagination: (page: number, perPage: number) => void
   onSort: (sort: SortProps) => void
 }
 
 export default memo((props: Props) => {
   const {
+    itemId,
     columns,
     rows,
     height,
@@ -71,7 +69,6 @@ export default memo((props: Props) => {
     rowHeight,
     headerHeight,
     headerClassName,
-    pagination,
     onChangePagination,
     loading,
     onSort,
@@ -81,8 +78,15 @@ export default memo((props: Props) => {
   const lang = useLang()
   const finalRowHeight = useMemo(() => rowHeight || 48, [rowHeight])
 
-  const classes = useClasses({ height, finalRowHeight })
+  const { list, deleteCall, edit: editCall } = useABM()
   const [rowsSelected, setRowSelected] = useState<any[]>([])
+
+  const classes = useClasses({
+    height,
+    finalRowHeight,
+    rowsLength: rows.length,
+    toolbar: rowsSelected.length > 0,
+  })
 
   const finalColumns = useMemo(
     () =>
@@ -94,165 +98,158 @@ export default memo((props: Props) => {
   )
 
   const handleSelectRow = useCallback(
-    (item: any) => {
-      const selectedIndex = rowsSelected.indexOf(item)
-      let newSelected: object[] = []
-
-      if (selectedIndex === -1) {
-        newSelected = newSelected.concat(rowsSelected, item)
-      } else if (selectedIndex === 0) {
-        newSelected = newSelected.concat(rowsSelected.slice(1))
-      } else if (selectedIndex === rowsSelected.length - 1) {
-        newSelected = newSelected.concat(rowsSelected.slice(0, -1))
-      } else if (selectedIndex > 0) {
-        newSelected = newSelected.concat(
-          rowsSelected.slice(0, selectedIndex),
-          rowsSelected.slice(selectedIndex + 1),
-        )
-      }
-
-      setRowSelected(newSelected)
-    },
+    (item: any) =>
+      setRowSelected((acc) => {
+        const i = acc.findIndex((x) => x[itemId!!] === item[itemId!!])
+        if (i >= 0) return acc.splice(i, 1)
+        else return [...acc, item]
+      }),
     [rowsSelected],
   )
 
+  const clearSelected = useCallback(() => setRowSelected([]), [setRowSelected])
+
   return (
-    <Paper elevation={5} className={classes.container}>
-      <Collapse timeout="auto" in={loading} unmountOnExit>
-        <LinearProgress />
-      </Collapse>
+    <div>
       <Collapse timeout="auto" in={rowsSelected.length > 0} unmountOnExit>
-        <div className={classes.selected}>
+        <Paper elevation={5} className={classes.selected}>
           <Typography
-            style={{ flex: '1 1 100%' }}
+            style={{ flex: 1 }}
             color="inherit"
             variant="subtitle1"
             component="div">
-            {rowsSelected.length} selected
+            {rowsSelected.length} {lang?.selected}
           </Typography>
-          {rightToolbar && rightToolbar(rowsSelected)}
-        </div>
+          {rightToolbar &&
+            rightToolbar({ rowsSelected, list, deleteCall, editCall, clearSelected })}
+        </Paper>
       </Collapse>
-      <AutoSizer>
-        {({ height, width }) => (
-          <div>
-            <Table
-              // gridStyle={{outline:"none"}}
-              onRowClick={onRowClick}
-              rowGetter={({ index }) => rows[index]}
-              height={height - 50}
-              width={width}
-              headerHeight={headerHeight || 54}
-              rowCount={rows?.length || 0}
-              rowHeight={finalRowHeight}
-              rowClassName={({ index }) =>
-                index % 2 === 0 ? classes.tableRowOdd : classes.tableRow
-              }
-              headerRowRenderer={({ className, style, columns }) => (
-                <div
-                  className={`${className} ${headerClassName}`}
-                  role="row"
-                  style={style}>
-                  {columns}
-                </div>
-              )}>
-              {!hideSelecting && (
+      <Paper elevation={5} className={classes.container}>
+        <Collapse timeout="auto" in={loading} unmountOnExit>
+          <LinearProgress />
+        </Collapse>
+        <AutoSizer>
+          {({ height, width }) => (
+            <div>
+              <Table
+                // gridStyle={{outline:"none"}}
+                onRowClick={onRowClick}
+                rowGetter={({ index }) => rows[index]}
+                height={height - 50}
+                width={width}
+                headerHeight={headerHeight || 54}
+                rowCount={rows?.length || 0}
+                rowHeight={finalRowHeight}
+                rowClassName={({ index }) =>
+                  index % 2 === 0 ? classes.tableRowOdd : classes.tableRow
+                }
+                headerRowRenderer={({ className, style, columns }) => (
+                  <div
+                    className={`${className} ${headerClassName}`}
+                    role="row"
+                    style={style}>
+                    {columns}
+                  </div>
+                )}>
+                {!hideSelecting && (
+                  <Column
+                    headerRenderer={() => (
+                      <TableCell
+                        component="div"
+                        variant="head"
+                        style={{ display: 'contents' }}>
+                        <Checkbox
+                          indeterminate={
+                            rowsSelected.length > 0 && rowsSelected.length < rows.length
+                          }
+                          checked={rows.length > 0 && rowsSelected.length === rows.length}
+                          onChange={(e, checked) => setRowSelected(checked ? rows : [])}
+                        />
+                      </TableCell>
+                    )}
+                    width={(width * 5) / 100}
+                    cellRenderer={({ rowData }) => (
+                      <TableCell
+                        component="div"
+                        variant="body"
+                        style={{ display: 'contents' }}>
+                        <Checkbox
+                          checked={rowsSelected.some(
+                            (x) => x[itemId!!] === rowData[itemId!!],
+                          )}
+                          onChange={() => handleSelectRow(rowData)}
+                        />
+                      </TableCell>
+                    )}
+                    dataKey=""
+                  />
+                )}
+                {finalColumns.map((col, index) => (
+                  <Column
+                    headerRenderer={(props) => (
+                      <CustomHeader onSort={onSort} col={col} {...props} />
+                    )}
+                    cellRenderer={(props) => (
+                      <CustomCell col={col} rowHeight={finalRowHeight} {...props} />
+                    )}
+                    dataKey={col.id}
+                    key={col.id}
+                    flexGrow={
+                      !edit && !deleteRow && finalColumns.length - 1 === index ? 1 : 0
+                    }
+                    width={
+                      col.width ? (width * col.width) / 100 : width / finalColumns.length
+                    }
+                  />
+                ))}
                 <Column
-                  headerRenderer={() => (
-                    <TableCell
-                      component="div"
-                      variant="head"
-                      style={{ display: 'contents' }}>
-                      <Checkbox
-                        indeterminate={
-                          rowsSelected.length > 0 && rowsSelected.length < rows.length
-                        }
-                        checked={rows.length > 0 && rowsSelected.length === rows.length}
-                        onChange={(e, checked) =>
-                          setRowSelected(checked ? rows.map((item) => item) : [])
-                        }
-                      />
-                    </TableCell>
+                  headerRenderer={(props) => (
+                    <CustomHeader
+                      col={{ title: lang?.crudCol || 'CRUD', align: 'flex-end' }}
+                      {...props}
+                    />
                   )}
-                  width={(width * 5) / 100}
+                  width={(width * 10) / 100}
+                  flexGrow={1}
                   cellRenderer={({ rowData }) => (
-                    <TableCell
-                      component="div"
-                      variant="body"
-                      style={{ display: 'contents' }}>
-                      <Checkbox
-                        checked={rowsSelected.includes(rowData)}
-                        onChange={() => handleSelectRow(rowData)}
-                      />
-                    </TableCell>
+                    <CustomCell rowHeight={finalRowHeight}>
+                      <div>
+                        {deleteRow && (
+                          <Tooltip title="Delete">
+                            <IconButton size="small" onClick={() => onDelete(rowData)}>
+                              <FaTrash />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                        {edit && (
+                          <Tooltip title="Edit">
+                            <IconButton size="small" onClick={() => onEdit(rowData)}>
+                              <FaEdit />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </div>
+                    </CustomCell>
                   )}
                   dataKey=""
                 />
-              )}
-              {finalColumns.map((col, index) => (
-                <Column
-                  headerRenderer={(props) => (
-                    <CustomHeader onSort={onSort} col={col} {...props} />
-                  )}
-                  cellRenderer={(props) => (
-                    <CustomCell col={col} rowHeight={finalRowHeight} {...props} />
-                  )}
-                  dataKey={col.id}
-                  key={col.id}
-                  flexGrow={
-                    !edit && !deleteRow && finalColumns.length - 1 === index ? 1 : 0
-                  }
-                  width={
-                    col.width ? (width * col.width) / 100 : width / finalColumns.length
-                  }
-                />
-              ))}
-              <Column
-                headerRenderer={(props) => (
-                  <CustomHeader
-                    col={{ title: lang?.crudCol || 'CRUD', align: 'flex-end' }}
-                    {...props}
-                  />
-                )}
-                width={(width * 10) / 100}
-                flexGrow={1}
-                cellRenderer={({ rowData }) => (
-                  <CustomCell rowHeight={finalRowHeight}>
-                    <div>
-                      {deleteRow && (
-                        <Tooltip title="Delete">
-                          <IconButton size="small" onClick={() => onDelete(rowData)}>
-                            <FaTrash />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                      {edit && (
-                        <Tooltip title="Edit">
-                          <IconButton size="small" onClick={() => onEdit(rowData)}>
-                            <FaEdit />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </div>
-                  </CustomCell>
-                )}
-                dataKey=""
-              />
-            </Table>
-            <Pagination width={width} onChange={onChangePagination} {...pagination} />
-          </div>
-        )}
-      </AutoSizer>
-    </Paper>
+              </Table>
+              <Pagination width={width} onChange={onChangePagination} />
+            </div>
+          )}
+        </AutoSizer>
+      </Paper>
+    </div>
   )
 })
 
 const useClasses = makeStyles((theme) => ({
-  container: ({ height }: any) => ({
+  container: ({ height, finalRowHeight, rowsLength, toolbar }: any) => ({
     margin: 'auto',
     width: '100%',
-    height,
+    height: finalRowHeight * rowsLength + 115,
     minHeight: 250,
+    maxHeight: height,
   }),
   tableRow: {},
   tableRowOdd: {
@@ -263,7 +260,8 @@ const useClasses = makeStyles((theme) => ({
     flexDirection: 'row',
     flex: 1,
     alignItems: 'center',
-    height: 15,
+    height: 20,
+    marginBottom: 4,
     color: theme.palette.secondary.main,
     backgroundColor: lighten(theme.palette.secondary.light, 0.85),
     padding: theme.spacing(2),

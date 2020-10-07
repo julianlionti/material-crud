@@ -16,6 +16,7 @@ export const english = createTranslation({
   seeMore: 'See more',
   crudCol: 'CRUD',
   loading: 'Loading...',
+  selected: 'selected',
   noOptions: 'No options',
   tooltips: {
     cancel: 'Cancel',
@@ -24,6 +25,7 @@ export const english = createTranslation({
   pagination: {
     rowsPerPage: 'Items per page',
     totalCount: 'Total Items',
+    page: 'page',
   },
   inputs: {
     image: {
