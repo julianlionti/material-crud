@@ -14,7 +14,6 @@ const perPageList = [5, 10, 15, 50, 100, 500, 1000]
 export default memo(({ width, onChange }: Props) => {
   const { pagination } = useABM()
   const { page, limit, totalDocs, totalPages } = pagination
-  console.log({ page, limit, totalDocs, totalPages })
   const lang = useLang()
   const classes = useClasses()
 

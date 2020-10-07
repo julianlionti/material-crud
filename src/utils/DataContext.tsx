@@ -30,7 +30,7 @@ const DataContext = createContext<Context>([
 ])
 
 export const DataProvider = ({ children }: { children: ReactNode }) => {
-  const status = useState<ContextProps>({ list: [], pagination: { page: 1 } })
+  const status = useState<ContextProps>({ list: [], pagination: { page: 1, limit: 10 } })
   return <DataContext.Provider value={status}>{children}</DataContext.Provider>
 }
 

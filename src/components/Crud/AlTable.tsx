@@ -101,7 +101,7 @@ export default memo((props: Props) => {
     (item: any) =>
       setRowSelected((acc) => {
         const i = acc.findIndex((x) => x[itemId!!] === item[itemId!!])
-        if (i >= 0) return acc.splice(i, 1)
+        if (i >= 0) return acc.filter((_, index) => index !== i)
         else return [...acc, item]
       }),
     [rowsSelected],
