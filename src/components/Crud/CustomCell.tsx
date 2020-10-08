@@ -7,13 +7,19 @@ import { CamposProps } from '../Form'
 import { useABM } from '../../utils/DataContext'
 import { ListChildComponentProps } from 'react-window'
 
+interface ComponentProps {
+  rowData: any
+  expandRow: () => void
+  isExpanded: boolean
+}
+
 export interface ColumnProps {
   filter?: boolean
   sort?: boolean
   width?: number
   heigth?: number
   align?: 'center' | 'justify' | 'left' | 'right'
-  component?: (rowData: any, expandRow: () => void) => ReactNode
+  component?: (props: ComponentProps) => ReactNode
   content?: (rowData: any) => ReactNode
   fields?: CamposProps[]
 }
@@ -33,6 +39,7 @@ export default memo(({ children, rowHeight, col, index: rowIndex }: Props) => {
   const { insertIndex, removeIndex, list, itemId } = useABM()
   const rowData = list[rowIndex]
   const cellData = rowData[col?.id!!]!!
+  const expanded = !!list[rowIndex + 1]?.isChild
 
   const renderContent = useCallback(() => {
     switch (col!.type) {
@@ -69,7 +76,12 @@ export default memo(({ children, rowHeight, col, index: rowIndex }: Props) => {
 
   return (
     <TableCell component="div" variant="body" align={col?.align} className={classes.cell}>
-      {(col?.component && col.component(rowData, addRowNopagination)) ||
+      {(col?.component &&
+        col.component({
+          rowData,
+          expandRow: addRowNopagination,
+          isExpanded: expanded,
+        })) ||
         children ||
         renderContent()}
     </TableCell>

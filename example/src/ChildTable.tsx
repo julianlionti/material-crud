@@ -1,7 +1,7 @@
 import React from 'react'
 import { Crud, createFields, Types, useWindowSize } from 'material-crud'
 import { IconButton } from '@material-ui/core'
-import { FaAsterisk } from 'react-icons/fa'
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
 
 const campos = createFields(() => [
   {
@@ -13,9 +13,9 @@ const campos = createFields(() => [
       align: 'center',
       width: 1,
       height: 250,
-      component: (props, expandRow) => (
+      component: ({ expandRow, isExpanded }) => (
         <IconButton onClick={expandRow}>
-          <FaAsterisk />
+          {isExpanded ? <FaChevronUp /> : <FaChevronDown />}
         </IconButton>
       ),
       content: (rowData) => {
