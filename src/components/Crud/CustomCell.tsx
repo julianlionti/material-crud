@@ -11,6 +11,7 @@ export interface ColumnProps {
   filter?: boolean
   sort?: boolean
   width?: number
+  heigth?: number
   align?: 'center' | 'justify' | 'left' | 'right'
   component?: (rowData: any, expandRow: () => void) => ReactNode
   content?: (rowData: any) => ReactNode
@@ -39,7 +40,7 @@ export default memo(({ children, rowHeight, col, index: rowIndex }: Props) => {
         const finalSize = rowHeight - 8
         return (
           <Avatar
-            alt={col?.title}
+            alt={cellData}
             src={(col as AlImagenProps).baseURL + cellData}
             style={{ height: finalSize, width: finalSize }}
           />
@@ -59,7 +60,7 @@ export default memo(({ children, rowHeight, col, index: rowIndex }: Props) => {
   const addRowNopagination = useCallback(() => {
     const childKey = col?.id + '-key'
     const nextIndex = (rowIndex || 0) + 1
-    if (list[nextIndex].isChild) {
+    if (list[nextIndex]?.isChild) {
       removeIndex(nextIndex)
     } else {
       insertIndex(nextIndex, { [itemId]: childKey, isChild: true, col })

@@ -12,13 +12,13 @@ const campos = createFields(() => [
     list: {
       align: 'center',
       width: 1,
+      height: 250,
       component: (props, expandRow) => (
         <IconButton onClick={expandRow}>
           <FaAsterisk />
         </IconButton>
       ),
       content: (rowData) => {
-        console.log(rowData)
         return (
           <div
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -37,6 +37,7 @@ const campos = createFields(() => [
       width: 3,
       filter: true,
       sort: true,
+      align: 'center',
     },
   },
   {
@@ -77,8 +78,8 @@ export default () => {
         height: height - 190,
         edit: true,
         deleteRow: true,
-        rowHeight: 65,
-        hideSelecting: false,
+        rowHeight: 80,
+        showSelecting: true,
       }}
       response={{
         list: ({ data }) => ({

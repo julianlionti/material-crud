@@ -1,4 +1,12 @@
-import React, { memo, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import React, {
+  memo,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   Checkbox,
   Collapse,
@@ -16,9 +24,9 @@ import {
   Tooltip,
   Typography,
 } from '@material-ui/core'
-import { VariableSizeList as List, ListChildComponentProps } from 'react-window'
+import { VariableSizeList as List } from 'react-window'
 
-import { PaginationProps, useABM } from '../../utils/DataContext'
+import { useABM } from '../../utils/DataContext'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { CamposProps } from '../Form'
 import CustomHeader from './CustomHeader'
@@ -26,7 +34,7 @@ import CustomCell, { FieldAndColProps } from './CustomCell'
 import Pagination from './Pagination'
 import { SortProps } from './Sort'
 import { useLang } from '../../utils/CrudContext'
-import CustomRow from './CustomRow'
+import CustomRow, { DataProps } from './CustomRow'
 import AutoSizer from 'react-virtualized-auto-sizer'
 
 export interface TableProps {
@@ -39,7 +47,7 @@ export interface TableProps {
   onEdit?: (row: any) => void
   deleteRow?: boolean
   onDelete?: (row: any) => void
-  hideSelecting?: boolean
+  showSelecting?: boolean
   rightToolbar?: (props: {
     rowsSelected: any[]
     list: any[]
@@ -77,9 +85,11 @@ export default memo((props: Props) => {
     onChangePagination,
     loading,
     onSort,
-    hideSelecting,
+    showSelecting,
     rightToolbar,
   } = props
+
+  const listRef = useRef<List | null>()
   const lang = useLang()
 
   const { list } = useABM()
@@ -102,13 +112,30 @@ export default memo((props: Props) => {
     toolbar: rowsSelected.length > 0,
   })
 
+  const listData = useMemo(
+    () => ({
+      rowHeight: finalRowHeight,
+      columns: finalColumns,
+      edit,
+      deleteRow,
+      showSelecting,
+    }),
+    [finalRowHeight, finalColumns, edit, deleteRow, showSelecting],
+  )
+
+  const childSize = useMemo(() => list.filter(({ isChild }) => isChild).length, [list])
+
+  useEffect(() => {
+    if (listRef.current && childSize >= 0) listRef.current.resetAfterIndex(0)
+  }, [childSize])
+
   return (
     <Paper elevation={5} className={classes.container}>
       <Collapse in={loading} timeout="auto" unmountOnExit>
         <LinearProgress />
       </Collapse>
       <CustomRow
-        rowHeight={finalRowHeight}
+        data={{ rowHeight: 55, showSelecting }}
         customClassName={`${classes.rowHeader} ${headerClassName}`}>
         {finalColumns.map((col) => (
           <CustomHeader col={col} onSort={onSort} key={col.id} />
@@ -118,13 +145,15 @@ export default memo((props: Props) => {
         <AutoSizer>
           {({ height: tableHeight, width }) => (
             <List
+              itemData={listData}
               height={tableHeight}
               itemCount={list.length}
-              itemSize={(index) => finalRowHeight}
+              ref={(e) => {
+                listRef.current = e
+              }}
+              itemSize={(index) => list[index]?.col?.list?.height || finalRowHeight}
               width={width}>
-              {(props) => (
-                <CustomRow columns={finalColumns} {...props} rowHeight={finalRowHeight} />
-              )}
+              {CustomRow}
             </List>
           )}
         </AutoSizer>
