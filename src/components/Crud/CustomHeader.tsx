@@ -7,12 +7,12 @@ import {
   FaSortNumericDown,
   FaSortNumericUpAlt,
 } from 'react-icons/fa'
-import { TableHeaderProps } from 'react-virtualized'
+import { ListChildComponentProps } from 'react-window'
 import { Types } from '../Form/Types'
 import { FieldAndColProps } from './CustomCell'
 import { SortProps } from './Sort'
 
-interface Props extends TableHeaderProps {
+interface Props {
   col: Partial<FieldAndColProps>
   onSort?: (newSort: SortProps) => void
   children?: ReactNode
@@ -20,7 +20,7 @@ interface Props extends TableHeaderProps {
 
 const icono = 22
 export default ({ col, onSort, children }: Props) => {
-  const classes = useClasses({ align: col?.align })
+  const classes = useClasses({ grow: col.width })
   const [sort, setSort] = useState<SortProps>({})
 
   const renderIcono = useCallback(
@@ -80,17 +80,16 @@ export default ({ col, onSort, children }: Props) => {
   }, [children, col, onSort, renderIcono])
 
   return (
-    <TableCell component="div" variant="head" className={classes.celd}>
+    <TableCell component="div" variant="head" align={col.align} className={classes.cell}>
       {renderContent()}
     </TableCell>
   )
 }
 
 const useClasses = makeStyles((theme) => ({
-  celd: ({ align }: any) => ({
-    display: 'contents',
-    alignItems: 'center',
+  cell: ({ grow }: any) => ({
+    flexGrow: grow || 1,
     flex: 1,
-    justifyContent: align || 'flex-start',
+    display: 'block',
   }),
 }))

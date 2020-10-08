@@ -5,20 +5,19 @@ import { useLang } from '../../utils/CrudContext'
 import { useABM } from '../../utils/DataContext'
 
 interface Props {
-  width: number
   onChange: (page: number, perPage: number) => void
 }
 
 const perPageList = [5, 10, 15, 50, 100, 500, 1000]
 
-export default memo(({ width, onChange }: Props) => {
+export default memo(({ onChange }: Props) => {
   const { pagination } = useABM()
   const { page, limit, totalDocs, totalPages } = pagination
   const lang = useLang()
   const classes = useClasses()
 
   return (
-    <div style={{ width: width - 10 }} className={classes.pagContainer}>
+    <div style={{ width: '100%' }} className={classes.pagContainer}>
       <Collapse in={!!totalDocs} timeout="auto">
         <div style={{ display: 'flex', alignItems: 'center', padding: 8 }}>
           <Typography>{`${lang?.pagination?.totalCount} ${totalDocs} - ${lang?.pagination?.rowsPerPage}:`}</Typography>

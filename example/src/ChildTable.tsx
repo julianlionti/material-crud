@@ -10,7 +10,6 @@ const campos = createFields(() => [
     edit: false,
     title: 'Normativas',
     list: {
-      width: 10,
       component: (props, expandRow) => (
         <IconButton
           onClick={() => {
@@ -20,7 +19,7 @@ const campos = createFields(() => [
           <FaAsterisk />
         </IconButton>
       ),
-      content: () => {
+      content: (rowData) => {
         return <span>Hije</span>
       },
     },
