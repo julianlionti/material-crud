@@ -1,283 +1,212 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { memo, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import {
-  CssBaseline,
+  Checkbox,
+  Collapse,
   IconButton,
+  lighten,
+  LinearProgress,
   makeStyles,
   Paper,
+  Table,
+  TableBody,
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
-  Divider,
+  Tooltip,
   Typography,
-  Select,
-  MenuItem,
 } from '@material-ui/core'
-import 'react-virtualized/styles.css'
-import {
-  Table,
-  Column,
-  AutoSizer,
-  TableCellProps,
-  TableCellRenderer,
-  TableHeaderProps,
-} from 'react-virtualized'
-import { createFields, Types, useAxios } from 'material-crud'
-import { FaCheck, FaEdit, FaTimes, FaTrash } from 'react-icons/fa'
-import { TodosProps } from '../../dist/components/Form'
-import Pagination from '@material-ui/lab/Pagination'
+import { VariableSizeList as List, ListChildComponentProps } from 'react-window'
 
-const columns = createFields(() => [
-  { id: 'nombre', title: 'Usuario', type: Types.Input, list: { width: 20 } },
-  { id: 'descripcion', title: 'Nombre', type: Types.Input, list: { width: 20 } },
-  {
-    id: 'requiereNormativa',
-    title: 'Requiere Normativas',
-    type: Types.Switch,
-    list: { width: 20 },
-  },
-  {
-    id: 'normativas',
-    type: Types.Multiple,
-    title: 'Normativas necesarias',
-    configuration: [
-      {
-        id: 'normativa',
-        type: Types.Input,
-        title: 'Normativa necesaria',
-        placeholder: 'Nombre de la normativa vigente',
-      },
-    ],
-    list: { width: 20 },
-  },
-])
+import { useABM, useAxios, useLang } from 'material-crud'
+import { FaEdit, FaTrash } from 'react-icons/fa'
 
-const Header = ({
-  title,
-  className,
-}: TableHeaderProps & { title: string; className?: string }) => {
-  const classes = useClasses()
-  return (
-    <TableCell component="div" variant="head" className={className}>
-      {title}
-    </TableCell>
-  )
+import { AutoSizer } from 'react-virtualized'
+import { CamposProps } from '../../dist/components/Form'
+import { SortProps } from '../../dist/components/Crud/Sort'
+
+export interface TableProps {
+  height: number
+  columns?: CamposProps[]
+  //   onRowClick?: (row: RowMouseEventHandlerParams) => void
+  headerHeight?: number
+  rowHeight?: number
+  edit?: boolean
+  onEdit?: (row: any) => void
+  deleteRow?: boolean
+  onDelete?: (row: any) => void
+  hideSelecting?: boolean
+  rightToolbar?: (props: {
+    rowsSelected: any[]
+    list: any[]
+    deleteCall: (id: any) => void
+    editCall: (id: any, item: any) => void
+    clearSelected: () => void
+  }) => ReactNode
+  // actionsLabel?: string
 }
 
-const Cell = ({
-  cellData,
-  rowData,
-  rowHeight,
-  col,
-}: TableCellProps & { rowHeight: number; col: TodosProps }) => {
-  const classes = useClasses({ rowHeight })
-
-  const renderContent = useCallback(() => {
-    switch (col.type) {
-      case Types.Switch:
-        return cellData ? (
-          <FaCheck size={18} color="green" />
-        ) : (
-          <FaTimes size={18} color="red" />
-        )
-      default:
-        return String(cellData)
-    }
-  }, [cellData, col.type])
-
-  return (
-    <TableCell component="div" variant="body" className={classes.cellContainer}>
-      {renderContent()}
-    </TableCell>
-  )
+interface Props extends TableProps {
+  loading?: boolean
+  columns: CamposProps[]
+  //   rows: any[]
+  onEdit: (row: any) => void
+  onDelete: (row: any) => void
+  headerClassName?: string
+  onChangePagination: (page: number, perPage: number) => void
+  onSort: (sort: SortProps) => void
 }
 
-export default (props: any) => {
+const Row = memo(
+  ({ index, style, data }: React.PropsWithChildren<ListChildComponentProps>) => {
+    const row = data[index]
+    const classes = useClasses({ index })
+    return (
+      <TableRow component="div" className={classes.row} style={style}>
+        <TableCell className={classes.cell} component="div">
+          asdsad 1
+        </TableCell>
+        <TableCell className={classes.cell} component="div" align="right">
+          asdsad 2
+        </TableCell>
+        <TableCell className={classes.cell} component="div" align="right">
+          asdsad 3
+        </TableCell>
+        <TableCell className={classes.cell} component="div" align="right">
+          asdsad 4
+        </TableCell>
+        <TableCell className={classes.cell} component="div" align="right">
+          asdsad 5
+        </TableCell>
+      </TableRow>
+    )
+  },
+)
+
+export default memo((props: Props) => {
   const {
-    onRowClick,
+    columns,
+    // rows,
+    height,
+    // onRowClick,
     edit,
     deleteRow,
     onDelete,
     onEdit,
     rowHeight,
     headerHeight,
-    actionsLabel,
     headerClassName,
+    onChangePagination,
+    loading,
+    onSort,
+    hideSelecting,
+    rightToolbar,
   } = props
-  const { response, call } = useAxios<any>()
-  const { data } = response || {}
-  const { docs } = data || []
-
-  const classes = useClasses({ height: 500 })
-
+  const { call, response } = useAxios()
   useEffect(() => {
-    call({
-      url: 'http://localhost:5050/api/categoria',
-      params: { pagina: 1, porPagina: 5 },
-    })
+    call({ url: 'http://localhost:5050/api/categoria' })
+  }, [call])
+
+  const list = response?.data.docs || []
+
+  const [rowsSelected, setRowSelected] = useState<any[]>([])
+  const finalRowHeight = useMemo(() => rowHeight || 48, [rowHeight])
+
+  const classes = useClasses({
+    height,
+    finalRowHeight,
+    rowsLength: list.length,
+    toolbar: rowsSelected.length > 0,
   })
 
-  const finalColumns = columns!
-    .flat()
-    .filter((e: any) => e.list)
-    .map((e: any) => ({ ...e, title: e.title || '', ...e.list!! }))
-
   return (
-    <div>
-      <CssBaseline />
-      <div style={{ marginTop: 16 }}></div>
-      <Paper elevation={5} className={classes.container}>
+    <Paper elevation={5} className={classes.container}>
+      <TableRow
+        component="div"
+        className={`${classes.row} ${classes.rowHeader} ${headerClassName}`}>
+        <TableCell className={classes.cell} component="div">
+          Dessert (100g serving)
+        </TableCell>
+        <TableCell className={classes.cell} component="div" align="right">
+          Calories
+        </TableCell>
+        <TableCell className={classes.cell} component="div" align="right">
+          Fat&nbsp;(g)
+        </TableCell>
+        <TableCell className={classes.cell} component="div" align="right">
+          Carbs&nbsp;(g)
+        </TableCell>
+        <TableCell className={classes.cell} component="div" align="right">
+          Protein&nbsp;(g)
+        </TableCell>
+      </TableRow>
+      <div style={{ flex: 1 }}>
         <AutoSizer>
-          {({ height, width }) => (
-            <div>
-              <Table
-                // gridStyle={{outline:"none"}}
-                onRowClick={onRowClick}
-                rowGetter={({ index }) => docs[index]}
-                height={height - 50}
-                width={width}
-                headerHeight={headerHeight || 54}
-                rowCount={docs?.length || 0}
-                rowHeight={rowHeight || 48}
-                rowClassName={({ index }) =>
-                  index % 2 === 0 ? classes.tableRowHover : classes.tableRow
-                }
-                headerRowRenderer={({ className, style, columns }) => (
-                  <div
-                    className={`${className} ${headerClassName}`}
-                    role="row"
-                    style={style}>
-                    {columns}
-                  </div>
-                )}>
-                {finalColumns.map((col, index) => (
-                  <Column
-                    headerRenderer={(props) => <Header title={col.title} {...props} />}
-                    cellRenderer={(props) => (
-                      <Cell col={col} rowHeight={rowHeight} {...props} />
-                    )}
-                    dataKey={col.id}
-                    key={col.id}
-                    flexGrow={
-                      !edit && !deleteRow && finalColumns.length - 1 === index ? 1 : 0
-                    }
-                    width={
-                      col.width ? (width * col.width) / 100 : width / finalColumns.length
-                    }
-                  />
-                ))}
-                {(edit || deleteRow) && (
-                  <Column
-                    headerRenderer={(props) => (
-                      <Header
-                        className={`${classes.cellContainer} ${classes.right}`}
-                        title={actionsLabel || 'CRUD'}
-                        {...props}
-                      />
-                    )}
-                    width={(width * 10) / 100}
-                    flexGrow={1}
-                    cellRenderer={({ rowData }) => (
-                      <TableCell
-                        variant="body"
-                        component="div"
-                        className={`${classes.cellContainer} ${classes.right}`}>
-                        <div>
-                          {deleteRow && (
-                            <IconButton
-                              size="small"
-                              onClick={() => {
-                                if (onDelete) onDelete(rowData)
-                              }}>
-                              <FaTrash />
-                            </IconButton>
-                          )}
-                          {edit && (
-                            <IconButton
-                              size="small"
-                              onClick={() => {
-                                if (onEdit) onEdit(rowData)
-                              }}>
-                              <FaEdit />
-                            </IconButton>
-                          )}
-                        </div>
-                      </TableCell>
-                    )}
-                    dataKey=""
-                  />
-                )}
-              </Table>
-              <Divider variant="fullWidth" />
-              <div style={{ width: width - 10 }} className={classes.pagContainer}>
-                <Typography>Registros por página:</Typography>
-                <Select className={classes.perPage} value={5} onChange={() => {}}>
-                  <MenuItem value={5}>5</MenuItem>
-                  <MenuItem value={10}>10</MenuItem>
-                  <MenuItem value={15}>15</MenuItem>
-                  <MenuItem value={50}>50</MenuItem>
-                  <MenuItem value={100}>100</MenuItem>
-                  <MenuItem value={500}>500</MenuItem>
-                  <MenuItem value={1000}>1000</MenuItem>
-                  <MenuItem value={-1}>Todos</MenuItem>
-                </Select>
-                <Pagination
-                  color="primary"
-                  variant="outlined"
-                  className={classes.pagination}
-                  count={11}
-                  defaultPage={6}
-                  siblingCount={1}
-                  showFirstButton
-                  showLastButton
-                />
-              </div>
-            </div>
+          {({ height: tableHeight, width }) => (
+            <List
+              itemData={list}
+              height={tableHeight}
+              itemCount={list.length}
+              itemSize={(index) => finalRowHeight}
+              width={width}>
+              {Row}
+            </List>
           )}
         </AutoSizer>
-      </Paper>
-    </div>
+      </div>
+      <TablePagination
+        component="div"
+        count={list.length}
+        page={0}
+        onChangePage={() => {}}
+        rowsPerPage={10}
+      />
+    </Paper>
   )
-}
+})
 
 const useClasses = makeStyles((theme) => ({
-  container: ({ height }: any) => ({
-    margin: 'auto',
-    width: '95%',
-    height,
-  }),
-  header: {
-    backgroundColor: 'red',
-  },
-  cellContainer: ({ rowHeight }: any) => ({
+  container: ({ height, finalRowHeight, rowsLength }: any) => ({
+    minHeight: 250,
+    height: finalRowHeight * rowsLength,
+    maxHeight: height,
     display: 'flex',
-    alignItems: 'center',
-    flex: 1,
-    height: rowHeight,
+    flexDirection: 'column',
   }),
-  tableRow: {},
-  tableRowHover: {
-    backgroundColor: theme.palette.grey[100],
-  },
-  right: {
-    justifyContent: 'flex-end',
-  },
-  pagContainer: {
+  row: ({ index }: any) => ({
     display: 'flex',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    height: 50,
     flexDirection: 'row',
-    [theme.breakpoints.down('xs')]: {
-      flexDirection: 'column',
-      backgroundColor: 'red',
-    },
+    flexWrap: 'nowrap',
+    alignItems: 'center',
+    boxSizing: 'border-box',
+    backgroundColor: index
+      ? index % 2 === 0
+        ? theme.palette.common.white
+        : theme.palette.grey[100]
+      : undefined,
+  }),
+  rowHeader: {
+    paddingRight: theme.spacing(2),
+    boxShadow: theme.shadows[1],
   },
-  perPage: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(2),
-    width: 80,
-    textAlign: 'center',
+  cell: {
+    flexGrow: 1,
+    flex: 1,
+    display: 'block',
   },
-  pagination: {},
+  expandingCell: {
+    flex: 1,
+  },
+  selected: {
+    display: 'flex',
+    flexDirection: 'row',
+    flex: 1,
+    alignItems: 'center',
+    height: 20,
+    marginBottom: 4,
+    color: theme.palette.secondary.main,
+    backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+    padding: theme.spacing(2),
+  },
 }))

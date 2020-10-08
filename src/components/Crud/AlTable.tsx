@@ -7,7 +7,7 @@ import {
   LinearProgress,
   makeStyles,
   Paper,
-  TableCell,
+  TableRow,
   Tooltip,
   Typography,
 } from '@material-ui/core'
@@ -44,7 +44,6 @@ export interface TableProps {
 }
 
 interface Props extends TableProps {
-  itemId?: string
   loading?: boolean
   columns: CamposProps[]
   rows: any[]
@@ -57,7 +56,6 @@ interface Props extends TableProps {
 
 export default memo((props: Props) => {
   const {
-    itemId,
     columns,
     rows,
     height,
@@ -78,7 +76,7 @@ export default memo((props: Props) => {
   const lang = useLang()
   const finalRowHeight = useMemo(() => rowHeight || 48, [rowHeight])
 
-  const { list, deleteCall, edit: editCall } = useABM()
+  const { list, deleteCall, edit: editCall, itemId } = useABM()
   const [rowsSelected, setRowSelected] = useState<any[]>([])
 
   const classes = useClasses({
@@ -104,7 +102,7 @@ export default memo((props: Props) => {
         if (i >= 0) return acc.filter((_, index) => index !== i)
         else return [...acc, item]
       }),
-    [rowsSelected],
+    [itemId],
   )
 
   const clearSelected = useCallback(() => setRowSelected([]), [setRowSelected])
@@ -132,7 +130,6 @@ export default memo((props: Props) => {
           {({ height, width }) => (
             <div>
               <Table
-                // gridStyle={{outline:"none"}}
                 onRowClick={onRowClick}
                 rowGetter={({ index }) => rows[index]}
                 height={height - 50}
@@ -154,10 +151,7 @@ export default memo((props: Props) => {
                 {!hideSelecting && (
                   <Column
                     headerRenderer={() => (
-                      <TableCell
-                        component="div"
-                        variant="head"
-                        style={{ display: 'contents' }}>
+                      <CustomHeader col={{ align: 'center' }} dataKey="">
                         <Checkbox
                           indeterminate={
                             rowsSelected.length > 0 && rowsSelected.length < rows.length
@@ -165,21 +159,18 @@ export default memo((props: Props) => {
                           checked={rows.length > 0 && rowsSelected.length === rows.length}
                           onChange={(e, checked) => setRowSelected(checked ? rows : [])}
                         />
-                      </TableCell>
+                      </CustomHeader>
                     )}
                     width={(width * 5) / 100}
                     cellRenderer={({ rowData }) => (
-                      <TableCell
-                        component="div"
-                        variant="body"
-                        style={{ display: 'contents' }}>
+                      <CustomCell col={{ align: 'center' }} rowHeight={finalRowHeight}>
                         <Checkbox
                           checked={rowsSelected.some(
                             (x) => x[itemId!!] === rowData[itemId!!],
                           )}
                           onChange={() => handleSelectRow(rowData)}
                         />
-                      </TableCell>
+                      </CustomCell>
                     )}
                     dataKey=""
                   />
@@ -202,37 +193,39 @@ export default memo((props: Props) => {
                     }
                   />
                 ))}
-                <Column
-                  headerRenderer={(props) => (
-                    <CustomHeader
-                      col={{ title: lang?.crudCol || 'CRUD', align: 'flex-end' }}
-                      {...props}
-                    />
-                  )}
-                  width={(width * 10) / 100}
-                  flexGrow={1}
-                  cellRenderer={({ rowData }) => (
-                    <CustomCell rowHeight={finalRowHeight}>
-                      <div>
-                        {deleteRow && (
-                          <Tooltip title="Delete">
-                            <IconButton size="small" onClick={() => onDelete(rowData)}>
-                              <FaTrash />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                        {edit && (
-                          <Tooltip title="Edit">
-                            <IconButton size="small" onClick={() => onEdit(rowData)}>
-                              <FaEdit />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </div>
-                    </CustomCell>
-                  )}
-                  dataKey=""
-                />
+                {(deleteRow || edit) && (
+                  <Column
+                    headerRenderer={(props) => (
+                      <CustomHeader
+                        col={{ title: lang?.crudCol || 'CRUD', align: 'flex-end' }}
+                        {...props}
+                      />
+                    )}
+                    width={(width * 10) / 100}
+                    flexGrow={1}
+                    cellRenderer={({ rowData }) => (
+                      <CustomCell rowHeight={finalRowHeight}>
+                        <div>
+                          {deleteRow && (
+                            <Tooltip title="Delete">
+                              <IconButton size="small" onClick={() => onDelete(rowData)}>
+                                <FaTrash />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                          {edit && (
+                            <Tooltip title="Edit">
+                              <IconButton size="small" onClick={() => onEdit(rowData)}>
+                                <FaEdit />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        </div>
+                      </CustomCell>
+                    )}
+                    dataKey=""
+                  />
+                )}
               </Table>
               <Pagination width={width} onChange={onChangePagination} />
             </div>

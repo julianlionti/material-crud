@@ -4,7 +4,7 @@ import { DataProvider } from '../../utils/DataContext'
 
 export default (props: CrudProps) => {
   return (
-    <DataProvider>
+    <DataProvider itemId={props.itemId}>
       <Crud {...props} />
     </DataProvider>
   )

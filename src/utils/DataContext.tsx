@@ -8,6 +8,11 @@ import React, {
   SetStateAction,
 } from 'react'
 
+interface ProviderProps {
+  children: ReactNode
+  itemId?: 'id' | '_id' | string
+}
+
 export interface PaginationProps {
   hasNextPage?: boolean
   nextPage?: number
@@ -20,39 +25,38 @@ export interface PaginationProps {
 interface ContextProps<T = any> {
   list: T[]
   pagination: PaginationProps
+  itemId: 'id' | '_id' | string
 }
 
-type Context<T = any> = [ContextProps, Dispatch<SetStateAction<ContextProps>>]
+type Context = [ContextProps, Dispatch<SetStateAction<ContextProps>>]
 
-const DataContext = createContext<Context>([
-  { list: [], pagination: { page: 1 } },
-  () => {},
-])
+const intials: ContextProps = {
+  list: [],
+  pagination: { page: 1, limit: 10 },
+  itemId: '_id',
+}
 
-export const DataProvider = ({ children }: { children: ReactNode }) => {
-  const status = useState<ContextProps>({ list: [], pagination: { page: 1, limit: 10 } })
+const DataContext = createContext<Context>([intials, () => {}])
+
+export const DataProvider = ({ children, itemId }: ProviderProps) => {
+  const status = useState<ContextProps>({ ...intials, itemId: itemId || '_id' })
   return <DataContext.Provider value={status}>{children}</DataContext.Provider>
 }
 
-export interface UseProps<T> {
-  id?: keyof T
-}
-
-export const useABM = <T extends object>(props?: UseProps<T>) => {
-  const key = props?.id || '_id'
-  const [config, setConfig] = useContext(DataContext) as Context<T>
+export const useABM = <T extends object>() => {
+  const [config, setConfig] = useContext(DataContext) as Context
 
   const add = useCallback(
     (items: T[]) => {
-      const anyKey = key as any
       setConfig((acc) => {
         const list = [
           ...items.filter(
-            (it: any) => !acc.list.some((ac: any) => ac[anyKey] === it[anyKey]),
+            (it: any) => !acc.list.some((ac: any) => ac[acc.itemId] === it[acc.itemId]),
           ),
           ...acc.list,
         ]
         return {
+          ...acc,
           list,
           pagination: {
             ...acc.pagination,
@@ -61,15 +65,15 @@ export const useABM = <T extends object>(props?: UseProps<T>) => {
         }
       })
     },
-    [key, setConfig],
+    [setConfig],
   )
 
   const edit = useCallback(
     ({ id, item }: { id: string; item: T }) => {
-      const anyKey = key as any
-      setConfig(({ list, pagination }) => {
-        const index = list.findIndex((e: any) => e[anyKey] === id)
+      setConfig(({ list, pagination, itemId }) => {
+        const index = list.findIndex((e: any) => e[itemId] === id)
         return {
+          itemId,
           list: list.map((e, i) => {
             if (i === index) return item
             else return e
@@ -78,24 +82,46 @@ export const useABM = <T extends object>(props?: UseProps<T>) => {
         }
       })
     },
-    [key, setConfig],
+    [setConfig],
   )
 
   const deleteCall = useCallback(
     (id: string) => {
-      const anyKey = key as any
       setConfig((acc) => ({
-        list: acc.list.filter((e: any) => e[anyKey] !== id),
+        ...acc,
+        list: acc.list.filter((e: any) => e[acc.itemId] !== id),
         pagination: { ...acc.pagination, totalDocs: (acc.pagination.totalDocs || 1) - 1 },
       }))
     },
-    [key, setConfig],
-  )
-
-  const replace = useCallback(
-    (items: T[], pagination: PaginationProps) => setConfig({ pagination, list: items }),
     [setConfig],
   )
 
-  return { add, edit, deleteCall, replace, ...config }
+  const replace = useCallback(
+    (items: T[], pagination: PaginationProps) =>
+      setConfig((acc) => ({ pagination, list: items, itemId: acc.itemId })),
+    [setConfig],
+  )
+
+  const insertIndex = useCallback(
+    (index: number, item: {}) => {
+      setConfig(({ list, pagination, itemId }) => ({
+        itemId,
+        pagination,
+        list: [...list.slice(0, index), item, ...list.slice(index)],
+      }))
+    },
+    [setConfig],
+  )
+
+  const removeIndex = useCallback(
+    (index: number) => {
+      setConfig((acc) => ({
+        ...acc,
+        list: acc.list.filter((_, i) => i !== index),
+      }))
+    },
+    [setConfig],
+  )
+
+  return { add, edit, deleteCall, replace, insertIndex, removeIndex, ...config }
 }

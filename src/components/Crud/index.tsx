@@ -27,7 +27,7 @@ import useWindowSize from '../../utils/useWindowSize'
 import { serialize } from 'object-to-formdata'
 import CenteredCard from '../UI/CenteredCard'
 import AnimatedItem from '../UI/AnimatedItem'
-import AlTable, { TableProps } from '../Crud/AlTable'
+import AlTable, { TableProps } from '../Crud/TableWindow'
 import { Interactions } from '../Form/Types'
 import { useLang } from '../../utils/CrudContext'
 
@@ -97,7 +97,6 @@ export default memo((props: CrudProps) => {
     Left,
     usePut,
     response,
-    itemId,
     itemName,
     interaction,
     transformEdit,
@@ -105,14 +104,11 @@ export default memo((props: CrudProps) => {
   } = props
 
   const lang = useLang()
-  const itId = itemId || '_id'
   const called = useRef(false)
   const getCallRef = useRef(false)
   const lastCallRef = useRef<any>(null)
 
-  const { list, add, edit: editABM, replace, deleteCall, pagination } = useABM<any>({
-    id: itId,
-  })
+  const { list, add, edit: editABM, replace, deleteCall, pagination, itemId } = useABM()
   const { loading, response: responseWS, call } = useAxios<any>({ onError })
 
   // const [pagination, setPagination] = useState<PaginationProps>({ page: 1, limit: 10 })
@@ -194,7 +190,6 @@ export default memo((props: CrudProps) => {
     if (getCallRef.current === false) return {}
     getCallRef.current = false
     if (typeof response?.list === 'function') {
-      // if (!deleted?.item && !edited?.item && !item) {
       const { items, ...data } = response.list(responseWS) as any
       return {
         docs: items,
@@ -209,7 +204,7 @@ export default memo((props: CrudProps) => {
         page: data[response?.list.page || 'page'],
       }
     }
-  }, [responseWS, response, deleted, edited, item])
+  }, [responseWS, response])
 
   useEffect(() => {
     if (docs) {
@@ -244,7 +239,7 @@ export default memo((props: CrudProps) => {
         titulo: `${lang?.delete || 'Borrar'} ${name}`,
         onCerrar: (aceptado: boolean) => {
           if (aceptado) {
-            const data = { id: it[itId] }
+            const data = { id: it[itemId] }
             lastCallRef.current = data
             call({ method: 'DELETE', data, url })
           } else {
@@ -253,7 +248,7 @@ export default memo((props: CrudProps) => {
         },
       })
     },
-    [call, name, url, lang, itId, itemName],
+    [call, name, url, lang, itemId, itemName],
   )
 
   const filters = useMemo(() => {
@@ -394,7 +389,6 @@ export default memo((props: CrudProps) => {
         {(table && !viewCards && (
           <AlTable
             {...table}
-            itemId={itId}
             loading={loading}
             onSort={(newSort) => {
               lastFilter.current = {
@@ -423,7 +417,6 @@ export default memo((props: CrudProps) => {
               })
             }}
             columns={table.columns || fields}
-            rows={list}
             onEdit={(rowData) => {
               const { onEdit } = table
               const editData = transformEdit ? transformEdit(rowData) : rowData
@@ -441,7 +434,7 @@ export default memo((props: CrudProps) => {
             <div className={classes.items}>
               {width &&
                 list.map((e: any) => (
-                  <AnimatedItem key={e[itId]} edited={e.edited} deleted={e.deleted}>
+                  <AnimatedItem key={e[itemId]} edited={e.edited} deleted={e.deleted}>
                     {renderItem({
                       ...e,
                       onEdit: () => onEditCall(e),
@@ -508,7 +501,8 @@ export default memo((props: CrudProps) => {
 
               lastCallRef.current = data
               let finalURL = url
-              if (usePut && url?.slice(-1) !== '/') finalURL = finalURL + '/' + vals[itId]
+              if (usePut && url?.slice(-1) !== '/')
+                finalURL = finalURL + '/' + vals[itemId]
 
               call({
                 method: editing && usePut ? 'PUT' : 'POST',

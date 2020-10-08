@@ -1,7 +1,6 @@
 import { Button, makeStyles, TableCell } from '@material-ui/core'
-import React, { useCallback, useState } from 'react'
+import React, { ReactNode, useCallback, useState } from 'react'
 import {
-  FaEgg,
   FaSortAlphaDown,
   FaSortAlphaUp,
   FaSortAmountDownAlt,
@@ -16,10 +15,11 @@ import { SortProps } from './Sort'
 interface Props extends TableHeaderProps {
   col: Partial<FieldAndColProps>
   onSort?: (newSort: SortProps) => void
+  children?: ReactNode
 }
 
 const icono = 22
-export default ({ col, onSort }: Props) => {
+export default ({ col, onSort, children }: Props) => {
   const classes = useClasses({ align: col?.align })
   const [sort, setSort] = useState<SortProps>({})
 
@@ -41,8 +41,10 @@ export default ({ col, onSort }: Props) => {
     [sort],
   )
 
-  return (
-    <TableCell component="div" variant="head" className={classes.celd}>
+  const renderContent = useCallback(() => {
+    if (children) return children
+
+    return (
       <Button
         size="small"
         disableFocusRipple={!col.sort}
@@ -74,6 +76,12 @@ export default ({ col, onSort }: Props) => {
         startIcon={renderIcono(col)}>
         {col.title}
       </Button>
+    )
+  }, [children, col, onSort, renderIcono])
+
+  return (
+    <TableCell component="div" variant="head" className={classes.celd}>
+      {renderContent()}
     </TableCell>
   )
 }

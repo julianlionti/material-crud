@@ -16,7 +16,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "allowSyntheticDefaultImports": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
     // "baseUrl": "src"
     // "paths": {"@material-crud/"}
   },
