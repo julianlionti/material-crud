@@ -19,7 +19,7 @@ export interface ColumnProps {
   width?: number
   heigth?: number
   align?: 'center' | 'justify' | 'left' | 'right'
-  component?: (props: ComponentProps) => ReactNode
+  cellComponent?: (props: ComponentProps) => ReactNode
   content?: (rowData: any) => ReactNode
   fields?: CamposProps[]
 }
@@ -76,8 +76,8 @@ export default memo(({ children, rowHeight, col, index: rowIndex }: Props) => {
 
   return (
     <TableCell component="div" variant="body" align={col?.align} className={classes.cell}>
-      {(col?.component &&
-        col.component({
+      {(col?.cellComponent &&
+        col.cellComponent({
           rowData,
           expandRow: addRowNopagination,
           isExpanded: expanded,

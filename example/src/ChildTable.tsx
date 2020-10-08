@@ -13,7 +13,7 @@ const campos = createFields(() => [
       align: 'center',
       width: 1,
       height: 250,
-      component: ({ expandRow, isExpanded }) => (
+      cellComponent: ({ expandRow, isExpanded }) => (
         <IconButton onClick={expandRow}>
           {isExpanded ? <FaChevronUp /> : <FaChevronDown />}
         </IconButton>
