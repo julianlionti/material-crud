@@ -12,7 +12,7 @@ import useWindowSize from './utils/useWindowSize'
 import { CustomComponentProps } from './components/Form/AlCustom'
 
 import { CrudProvider, useUser, useLang } from './utils/CrudContext'
-import AlTable, { TableProps } from './components/Crud/AlTable'
+import AlTable, { TableProps } from './components/Crud/TableWindow'
 import Crud from './components/Crud/WithProvider'
 
 import { esAR } from './translate/es_ar'

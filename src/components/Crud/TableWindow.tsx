@@ -26,8 +26,8 @@ import CustomCell, { FieldAndColProps } from './CustomCell'
 import Pagination from './Pagination'
 import { SortProps } from './Sort'
 import { useLang } from '../../utils/CrudContext'
-import { AutoSizer } from 'react-virtualized'
 import CustomRow from './CustomRow'
+import AutoSizer from 'react-virtualized-auto-sizer'
 
 export interface TableProps {
   height: number
@@ -104,6 +104,9 @@ export default memo((props: Props) => {
 
   return (
     <Paper elevation={5} className={classes.container}>
+      <Collapse in={loading} timeout="auto" unmountOnExit>
+        <LinearProgress />
+      </Collapse>
       <CustomRow
         rowHeight={finalRowHeight}
         customClassName={`${classes.rowHeader} ${headerClassName}`}>

@@ -23,13 +23,12 @@ export type FieldAndColProps = Exclude<ComunesProps, 'list'> &
 interface Props {
   rowHeight: number
   col?: Partial<FieldAndColProps>
-  align?: 'flex-start' | 'center' | 'flex-end'
   children?: ReactNode
   index: number
 }
 
 export default memo(({ children, rowHeight, col, index: rowIndex }: Props) => {
-  const classes = useClasses({ height: rowHeight, grow: col?.width })
+  const classes = useClasses({ height: rowHeight, grow: col?.width, align: col?.align })
   const { insertIndex, removeIndex, list, itemId } = useABM()
   const rowData = list[rowIndex]
   const cellData = rowData[col?.id!!]!!
@@ -77,11 +76,20 @@ export default memo(({ children, rowHeight, col, index: rowIndex }: Props) => {
 })
 
 const useClasses = makeStyles((theme) => ({
-  cell: ({ grow, height }: any) => ({
+  cell: ({ grow, height, align }: any) => ({
     flexGrow: grow || 1,
     flex: 1,
     display: 'flex',
-    alignItems: 'center',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems:
+      align === 'left'
+        ? 'flex-start'
+        : align === 'right'
+        ? 'flex-end'
+        : align === 'justify'
+        ? 'center'
+        : align,
     height,
   }),
 }))

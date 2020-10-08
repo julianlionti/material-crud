@@ -45,6 +45,7 @@
     "@types/react-dom": "^16.9.7",
     "@types/react-icons": "^3.0.0",
     "@types/react-virtualized": "^9.21.10",
+    "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.2",
     "@types/yup": "^0.29.7",
     "@typescript-eslint/eslint-plugin": "^2.26.0",
@@ -73,14 +74,12 @@
     "react-dom": "^16.13.1",
     "react-icons": "^3.11.0",
     "react-scripts": "^3.4.1",
+    "react-virtualized-auto-sizer": "^1.0.2",
+    "react-window": "^1.8.5",
     "typescript": "^3.7.5",
     "yup": "^0.29.3"
   },
   "files": [
     "dist"
-  ],
-  "dependencies": {
-    "react-virtualized": "^9.22.2",
-    "react-window": "^1.8.5"
-  }
+  ]
 }

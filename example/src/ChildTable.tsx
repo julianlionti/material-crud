@@ -10,17 +10,21 @@ const campos = createFields(() => [
     edit: false,
     title: 'Normativas',
     list: {
+      align: 'center',
+      width: 1,
       component: (props, expandRow) => (
-        <IconButton
-          onClick={() => {
-            expandRow()
-            console.log(props)
-          }}>
+        <IconButton onClick={expandRow}>
           <FaAsterisk />
         </IconButton>
       ),
       content: (rowData) => {
-        return <span>Hije</span>
+        console.log(rowData)
+        return (
+          <div
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span>Hije</span>
+          </div>
+        )
       },
     },
   },
@@ -30,6 +34,7 @@ const campos = createFields(() => [
     placeholder: 'Nombre de la categoría',
     type: Types.Input,
     list: {
+      width: 3,
       filter: true,
       sort: true,
     },
@@ -40,6 +45,7 @@ const campos = createFields(() => [
     placeholder: 'Descripción de la categoría',
     type: Types.Multiline,
     list: {
+      width: 3,
       filter: true,
       sort: true,
     },
@@ -48,7 +54,11 @@ const campos = createFields(() => [
     id: 'requiereNormativa',
     type: Types.Switch,
     title: 'Requiere normativa',
-    list: { sort: true },
+    list: {
+      width: 3,
+      sort: true,
+      align: 'center',
+    },
   },
 ])
 
