@@ -52,9 +52,7 @@ interface Props extends TableProps {
 export default memo((props: Props) => {
   const {
     columns,
-    // rows,
     height,
-    // onRowClick,
     edit,
     deleteRow,
     onDelete,

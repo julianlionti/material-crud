@@ -56,8 +56,6 @@ export default memo((props: Props) => {
       )
     }
 
-    console.log(rowData)
-
     const nextIsChild = !!list[index!! + 1]?.child
     return columns.map((col) => (
       <CustomCell
