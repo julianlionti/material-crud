@@ -1,6 +1,6 @@
 {
   "name": "material-crud",
-  "version": "0.6.10",
+  "version": "0.6.11",
   "description": "CRUD components with @material-ui/core components",
   "author": "Julián Lionti - Mariano Rey",
   "license": "MIT",

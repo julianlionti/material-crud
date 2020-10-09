@@ -521,7 +521,7 @@ export default memo((props: CrudProps) => {
 
               lastCallRef.current = data
               let finalURL = url
-              if (idInUrl && url?.slice(-1) !== '/')
+              if (editing && idInUrl && url?.slice(-1) !== '/')
                 finalURL = finalURL + '/' + vals[itemId]
 
               call({
