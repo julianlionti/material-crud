@@ -30,7 +30,7 @@ export default memo(({ onChange }: Props) => {
                 {String(e)}
               </MenuItem>
             ))}
-            <MenuItem value={-1}>Todos</MenuItem>
+            <MenuItem value={-1}>{lang?.pagination?.all || 'TODOS'}</MenuItem>
           </Select>
         </div>
       </Collapse>

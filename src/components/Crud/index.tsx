@@ -64,7 +64,7 @@ export interface CrudProps {
   onFinished?: (what: 'new' | 'update' | 'delete', genero?: 'M' | 'F') => void
   onError?: (err: Error) => void
   Left?: ReactNode
-  usePut?: boolean
+  idInUrl?: boolean
   response?: {
     list: ListConfiguration | ListOnFlyConfiguration
     new: string
@@ -95,7 +95,7 @@ export default memo((props: CrudProps) => {
     titleSize,
     onError,
     Left,
-    usePut,
+    idInUrl,
     response,
     itemName,
     interaction,
@@ -241,14 +241,19 @@ export default memo((props: CrudProps) => {
           if (aceptado) {
             const data = { id: it[itemId] }
             lastCallRef.current = data
-            call({ method: 'DELETE', data, url })
+
+            let finalURL = url
+            if (idInUrl && url?.slice(-1) !== '/')
+              finalURL = finalURL + '/' + item[itemId]
+
+            call({ method: 'DELETE', data, url: finalURL })
           } else {
             setCartel({ visible: false })
           }
         },
       })
     },
-    [call, name, url, lang, itemId, itemName],
+    [call, name, url, lang, itemId, itemName, idInUrl],
   )
 
   const filters = useMemo(() => {
@@ -516,11 +521,11 @@ export default memo((props: CrudProps) => {
 
               lastCallRef.current = data
               let finalURL = url
-              if (usePut && url?.slice(-1) !== '/')
+              if (idInUrl && url?.slice(-1) !== '/')
                 finalURL = finalURL + '/' + vals[itemId]
 
               call({
-                method: editing && usePut ? 'PUT' : 'POST',
+                method: editing && idInUrl ? 'PUT' : 'POST',
                 data,
                 url: finalURL,
               })

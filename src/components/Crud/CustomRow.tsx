@@ -1,4 +1,4 @@
-import { Checkbox, IconButton, makeStyles, TableRow } from '@material-ui/core'
+import { Checkbox, IconButton, makeStyles, TableRow, Tooltip } from '@material-ui/core'
 import React, { memo, useCallback, useMemo } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { ListChildComponentProps } from 'react-window'
@@ -131,14 +131,18 @@ export default memo((props: Props) => {
         rowHeight={rowHeight}
         rowIndex={index!!}>
         {onEdit && (
-          <IconButton size="small" onClick={() => onEdit(rowData)}>
-            <FaEdit />
-          </IconButton>
+          <Tooltip title={lang?.edit || 'Edit'}>
+            <IconButton size="small" onClick={() => onEdit(rowData)}>
+              <FaEdit />
+            </IconButton>
+          </Tooltip>
         )}
         {onDelete && (
-          <IconButton size="small" onClick={() => onDelete(rowData)}>
-            <FaTrash />
-          </IconButton>
+          <Tooltip title={lang?.delete || 'Delete'}>
+            <IconButton size="small" onClick={() => onDelete(rowData)}>
+              <FaTrash />
+            </IconButton>
+          </Tooltip>
         )}
       </CustomCell>
     )

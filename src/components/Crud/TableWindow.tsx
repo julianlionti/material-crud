@@ -209,7 +209,7 @@ const useClasses = makeStyles((theme) => ({
     flex: 1,
     display: 'block',
   },
-  selected: ({ finalRowHeight }: any) => ({
+  selected:  {
     display: 'flex',
     flexDirection: 'row',
     flex: 1,
@@ -218,5 +218,5 @@ const useClasses = makeStyles((theme) => ({
     color: theme.palette.secondary.main,
     backgroundColor: lighten(theme.palette.secondary.light, 0.85),
     padding: theme.spacing(2),
-  }),
+  },
 }))
