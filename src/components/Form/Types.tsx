@@ -15,6 +15,7 @@ export enum Types {
   Switch,
   Multiple,
   Custom,
+  Expandable,
 }
 
 export interface OpcionesProps {
@@ -23,9 +24,13 @@ export interface OpcionesProps {
   extras?: object
 }
 
-export interface ComunesProps {
+export interface BaseProps {
   id: string
   title: string
+  list?: ColumnProps
+}
+
+export interface ComunesProps extends BaseProps {
   validate?: Yup.Schema<any>
   grow?: number
   help?: string
@@ -33,7 +38,6 @@ export interface ComunesProps {
   readonly?: boolean
   depends?: (props: any) => boolean
   hide?: boolean
-  list?: ColumnProps
   edit?: boolean
 }
 

@@ -28,7 +28,7 @@ import { serialize } from 'object-to-formdata'
 import CenteredCard from '../UI/CenteredCard'
 import AnimatedItem from '../UI/AnimatedItem'
 import AlTable, { TableProps } from '../Crud/TableWindow'
-import { Interactions } from '../Form/Types'
+import { Interactions, Types } from '../Form/Types'
 import { useLang } from '../../utils/CrudContext'
 
 export interface CRUD {
@@ -255,7 +255,14 @@ export default memo((props: CrudProps) => {
     const items = fields
       .flat()
       .filter((e) => e.list?.filter)
-      .map(({ grow, ...etc }) => etc)
+      .map((props) => {
+        if (props.type !== Types.Expandable) {
+          const { grow, ...etc } = props
+          return etc
+        }
+
+        return props
+      })
     const columnas = filtersPerRow || 3
     return new Array(Math.ceil(items.length / columnas))
       .fill(null)
@@ -266,12 +273,20 @@ export default memo((props: CrudProps) => {
     () =>
       fields
         .filter((e) => {
-          if (!Array.isArray(e)) return e.edit !== false
+          if (!Array.isArray(e)) {
+            if (e.type === Types.Expandable) return false
+            return e.edit !== false
+          }
           return true
         })
         .map((cam) => {
           if (Array.isArray(cam)) {
-            return cam.filter((e) => e.edit !== false).map(({ list, ...etc }) => etc)
+            return cam
+              .filter((e) => {
+                if (e.type === Types.Expandable) return false
+                return e.edit !== false
+              })
+              .map(({ list, ...etc }) => etc)
           }
           const { list, ...etc } = cam
           return etc

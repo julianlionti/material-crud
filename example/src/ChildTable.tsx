@@ -1,13 +1,12 @@
 import React from 'react'
 import { Crud, createFields, Types, useWindowSize } from 'material-crud'
 import { IconButton } from '@material-ui/core'
-import { FaChevronDown, FaChevronUp, FaTrash } from 'react-icons/fa'
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
 
 const campos = createFields(() => [
   {
     id: 'normativas',
-    type: Types.Input,
-    edit: false,
+    type: Types.Expandable,
     title: 'Normativas',
     list: {
       align: 'flex-start',
@@ -85,13 +84,13 @@ export default () => {
         deleteRow: true,
         rowHeight: 80,
         showSelecting: true,
-        rightToolbar: () => {
-          return (
-            <IconButton size="small">
-              <FaTrash />
-            </IconButton>
-          )
-        },
+        // rightToolbar: () => {
+        //   return (
+        //     <IconButton size="small">
+        //       <FaTrash />
+        //     </IconButton>
+        //   )
+        // },
       }}
       response={{
         list: ({ data }) => ({

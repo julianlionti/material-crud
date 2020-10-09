@@ -18,6 +18,8 @@ interface Props extends Partial<ListChildComponentProps> {
   onExpanded?: (index: number) => void
   onEdit?: false | ((rowData: any) => void)
   onDelete?: false | ((rowData: any) => void)
+  showSelecting?: boolean
+  isHeader?: boolean
 }
 
 export default memo((props: Props) => {
@@ -33,13 +35,14 @@ export default memo((props: Props) => {
     onExpanded,
     onEdit,
     onDelete,
+    showSelecting,
+    isHeader,
   } = props
 
   const lang = useLang()
   const { list, insertIndex, removeIndex, itemId } = useABM()
   const classes = useClasses({ index, height: rowHeight })
   const rowData = useMemo(() => list[index!!], [list, index])
-  const isHeader = !!onSort
 
   const renderContent = useCallback(() => {
     if (isHeader) {
@@ -51,7 +54,7 @@ export default memo((props: Props) => {
     if (rowData.child) {
       return (
         <CustomCell rowIndex={index!!} rowHeight={rowData.height}>
-          {rowData.child(rowData)}
+          {rowData.child(list[index!! - 1])}
         </CustomCell>
       )
     }
@@ -90,7 +93,7 @@ export default memo((props: Props) => {
   ])
 
   const renderSelecting = useCallback(() => {
-    if (!onSelect || rowData?.child) return null
+    if (!showSelecting || rowData?.child) return null
 
     if (isHeader)
       return (
@@ -108,10 +111,11 @@ export default memo((props: Props) => {
         <Checkbox checked={selected} onChange={() => onSelect(rowData)} />
       </CustomCell>
     )
-  }, [onSelect, index, rowHeight, isHeader, rowData, selected])
+  }, [showSelecting, onSelect, index, rowHeight, isHeader, rowData, selected])
 
   const renderCrud = useCallback(() => {
     if (rowData?.child) return null
+    if (!onEdit && !onDelete) return null
 
     if (isHeader)
       return (

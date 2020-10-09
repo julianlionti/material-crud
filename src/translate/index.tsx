@@ -30,6 +30,7 @@ export interface Translations {
     cancel: string
   }
   pagination?: {
+    all: string
     rowsPerPage: string
     totalCount: string
     page: string

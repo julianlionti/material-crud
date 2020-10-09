@@ -33,6 +33,7 @@ export const esAR = createTranslation({
     cancel: 'Cancelar',
   },
   pagination: {
+    all: 'Todos',
     rowsPerPage: 'Filas por página',
     totalCount: 'Cantidad de items',
     page: 'Página',

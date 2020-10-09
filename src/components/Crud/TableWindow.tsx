@@ -35,13 +35,11 @@ export interface TableProps {
     editCall: (id: any, item: any) => void
     clearSelected: () => void
   }) => ReactNode
-  // actionsLabel?: string
 }
 
 interface Props extends TableProps {
   loading?: boolean
   columns: CamposProps[]
-  //   rows: any[]
   onEdit: (row: any) => void
   onDelete: (row: any) => void
   headerClassName?: string
@@ -94,9 +92,7 @@ export default memo((props: Props) => {
 
   const selectRow = useCallback(
     (rowData) => {
-      if (!showSelecting) return null
-
-      return setRowSelected((acc) => {
+      setRowSelected((acc) => {
         if (headerSelected === true && !rowData) return []
         if (!headerSelected && !rowData) return list.filter((e) => !e.child)
 
@@ -105,7 +101,7 @@ export default memo((props: Props) => {
         else return [...acc, rowData]
       })
     },
-    [showSelecting, itemId, headerSelected, list],
+    [itemId, headerSelected, list],
   )
 
   return (
@@ -139,6 +135,10 @@ export default memo((props: Props) => {
         onSelect={selectRow}
         selected={headerSelected}
         onSort={onSort}
+        onEdit={edit && onEdit}
+        onDelete={deleteRow && onDelete}
+        showSelecting={showSelecting}
+        isHeader
       />
       {!loading && list.length === 0 && (
         <div className={classes.noResult}>
@@ -168,6 +168,7 @@ export default memo((props: Props) => {
                   onExpanded={(index) => listRef.current!!.resetAfterIndex(index)}
                   onEdit={edit && onEdit}
                   onDelete={deleteRow && onDelete}
+                  showSelecting={showSelecting}
                 />
               )}
             </List>
@@ -208,15 +209,14 @@ const useClasses = makeStyles((theme) => ({
     flex: 1,
     display: 'block',
   },
-  selected: {
+  selected: ({ finalRowHeight }: any) => ({
     display: 'flex',
     flexDirection: 'row',
     flex: 1,
     alignItems: 'center',
-    height: 20,
     marginBottom: 4,
     color: theme.palette.secondary.main,
     backgroundColor: lighten(theme.palette.secondary.light, 0.85),
     padding: theme.spacing(2),
-  },
+  }),
 }))

@@ -2,7 +2,7 @@ import React, { lazy, memo, Suspense, useCallback, useMemo } from 'react'
 import { Formik, FormikValues, FormikHelpers } from 'formik'
 import { Button, CircularProgress, makeStyles } from '@material-ui/core'
 import * as Yup from 'yup'
-import { Types } from './Types'
+import { Types, BaseProps } from './Types'
 import AlCustom, { AlCustomProps } from './AlCustom'
 import { Filter } from '../../utils/useFilters'
 
@@ -37,6 +37,7 @@ export type TodosProps =
   | AlSwitchProps
   | AlMultipleProps
   | AlCustomProps
+  | ({ type: Types.Expandable } & BaseProps)
 
 export type CamposProps = TodosProps | TodosProps[]
 
@@ -94,6 +95,7 @@ export default memo((props: Props) => {
 
   const renderInput = useCallback(
     (campo: TodosProps, values: any) => {
+      if (campo.type === Types.Expandable) return null
       const { depends } = campo
       const hidden = depends && depends(values) === false
       switch (campo.type) {
@@ -124,7 +126,11 @@ export default memo((props: Props) => {
   )
 
   const valSchema = useMemo(
-    () => fields.flat().reduce((acc, it) => ({ ...acc, [it.id]: it.validate }), {}),
+    () =>
+      fields.flat().reduce((acc, it) => {
+        if (it.type === Types.Expandable) return acc
+        return { ...acc, [it.id]: it.validate }
+      }, {}),
     [fields],
   )
 

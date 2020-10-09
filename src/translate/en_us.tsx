@@ -24,6 +24,7 @@ export const enUS = createTranslation({
     defineFilter: 'Define filter Type',
   },
   pagination: {
+    all: 'All',
     rowsPerPage: 'Items per page',
     totalCount: 'Total Items',
     page: 'Page',
