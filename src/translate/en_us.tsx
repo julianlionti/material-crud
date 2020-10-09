@@ -17,6 +17,7 @@ export const enUS = createTranslation({
   crudCol: 'CRUD',
   loading: 'Loading...',
   noOptions: 'No options',
+  noResults: 'No results',
   selected: 'selected',
   tooltips: {
     cancel: 'Cancel',

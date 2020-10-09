@@ -6,6 +6,7 @@ import { CrudProvider } from 'material-crud'
 import Prueba from './Prueba'
 import TableExample from './TableExample'
 import { english } from './lang'
+import ChildTable from './ChildTable'
 
 const App = () => {
   const user = {
@@ -39,6 +40,9 @@ const App = () => {
                   <Link to="/table">Table example</Link>
                 </li>
                 <li>
+                  <Link to="/child">ChildTable</Link>
+                </li>
+                <li>
                   <Link to="/prueba">Test Component</Link>
                 </li>
               </ul>
@@ -47,9 +51,14 @@ const App = () => {
           <Route path="/form" component={FormExample} />
           <Route path="/crud" component={CrudExample} />
           <Route path="/table" component={TableExample} />
+          <Route path="/child" component={ChildTable} />
           <Route
             path="/prueba"
-            component={(props: any) => <Prueba deleteRow edit {...props} />}
+            component={(props: any) => (
+              <CrudProvider>
+                <Prueba height={350} deleteRow edit {...props} />
+              </CrudProvider>
+            )}
           />
         </Switch>
       </BrowserRouter>

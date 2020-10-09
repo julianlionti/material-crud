@@ -1,38 +1,66 @@
-import React, { memo, ReactNode, useCallback } from 'react'
+import React, { memo, PropsWithChildren, ReactNode, useCallback, useMemo } from 'react'
 import { Avatar, makeStyles, TableCell } from '@material-ui/core'
 import { FaCheck, FaTimes } from 'react-icons/fa'
-import { TableCellProps } from 'react-virtualized'
 import { AlImagenProps } from '../Form/AlImagen'
 import { ComunesProps, Types } from '../Form/Types'
+import { CamposProps } from '../Form'
+import { useABM } from '../../utils/DataContext'
+import { ListChildComponentProps } from 'react-window'
+
+interface ComponentProps {
+  rowData: any
+  expandRow: () => void
+  isExpanded: boolean
+}
 
 export interface ColumnProps {
   filter?: boolean
   sort?: boolean
   width?: number
-  component?: (rodData: any) => ReactNode
-  align?: 'flex-start' | 'center' | 'flex-end'
+  height?: number
+  align?: 'center' | 'flex-start' | 'flex-end'
+  cellComponent?: (props: ComponentProps) => ReactNode
+  content?: (rowData: any) => ReactNode
+  fields?: CamposProps[]
 }
 
 export type FieldAndColProps = Exclude<ComunesProps, 'list'> &
   ColumnProps & { type: Types }
 
-interface Props extends Partial<TableCellProps> {
+interface Props {
   rowHeight: number
-  col?: FieldAndColProps
-  align?: 'flex-start' | 'center' | 'flex-end'
+  rowIndex: number
+  col?: Partial<FieldAndColProps>
   children?: ReactNode
+  onExpand?: () => void
+  expanded?: boolean
 }
 
-export default memo(({ cellData, children, rowHeight, col, rowData }: Props) => {
-  const classes = useClasses({ rowHeight, align: col?.align })
+export default memo((props: PropsWithChildren<Props>) => {
+  const { children, rowHeight, col, rowIndex, onExpand, expanded } = props
+  const classes = useClasses({ height: rowHeight, grow: col?.width, align: col?.align })
+  const { list } = useABM()
+  const rowData = list[rowIndex]
+  const cellData = useMemo(() => {
+    if (col && col.id) return rowData[col.id]
+  }, [col, rowData])
 
   const renderContent = useCallback(() => {
+    if (children) return children
+    if (col?.cellComponent) {
+      return col.cellComponent({
+        rowData,
+        expandRow: onExpand!!,
+        isExpanded: !!expanded,
+      })
+    }
+
     switch (col!.type) {
       case Types.Image: {
         const finalSize = rowHeight - 8
         return (
           <Avatar
-            alt={col?.title}
+            alt={cellData}
             src={(col as AlImagenProps).baseURL + cellData}
             style={{ height: finalSize, width: finalSize }}
           />
@@ -47,21 +75,22 @@ export default memo(({ cellData, children, rowHeight, col, rowData }: Props) => 
       default:
         return String(cellData)
     }
-  }, [cellData, col, rowHeight])
+  }, [cellData, col, rowHeight, rowData, children, expanded, onExpand])
 
   return (
-    <TableCell component="div" variant="body" className={classes.cellContainer}>
-      {(col?.component && col.component(rowData)) || children || renderContent()}
+    <TableCell component="div" variant="body" className={classes.cell}>
+      {renderContent()}
     </TableCell>
   )
 })
 
 const useClasses = makeStyles((theme) => ({
-  cellContainer: ({ rowHeight, align }: any) => ({
-    display: 'flex',
-    alignItems: 'center',
+  cell: ({ grow, height, align }: any) => ({
+    flexGrow: grow || 1,
     flex: 1,
-    height: rowHeight,
+    display: 'flex',
     justifyContent: align || 'flex-start',
+    alignItems: 'center',
+    height,
   }),
 }))

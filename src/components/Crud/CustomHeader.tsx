@@ -1,26 +1,26 @@
 import { Button, makeStyles, TableCell } from '@material-ui/core'
-import React, { useCallback, useState } from 'react'
+import React, { ReactNode, useCallback, useState } from 'react'
 import {
-  FaEgg,
   FaSortAlphaDown,
   FaSortAlphaUp,
   FaSortAmountDownAlt,
   FaSortNumericDown,
   FaSortNumericUpAlt,
 } from 'react-icons/fa'
-import { TableHeaderProps } from 'react-virtualized'
 import { Types } from '../Form/Types'
 import { FieldAndColProps } from './CustomCell'
 import { SortProps } from './Sort'
 
-interface Props extends TableHeaderProps {
-  col: Partial<FieldAndColProps>
+interface Props {
+  col?: Partial<FieldAndColProps>
   onSort?: (newSort: SortProps) => void
+  children?: ReactNode
+  rowHeight: number
 }
 
 const icono = 22
-export default ({ col, onSort }: Props) => {
-  const classes = useClasses({ align: col?.align })
+export default ({ col, onSort, children, rowHeight }: Props) => {
+  const classes = useClasses({ grow: col?.width, height: rowHeight, align: col?.align })
   const [sort, setSort] = useState<SortProps>({})
 
   const renderIcono = useCallback(
@@ -41,8 +41,10 @@ export default ({ col, onSort }: Props) => {
     [sort],
   )
 
-  return (
-    <TableCell component="div" variant="head" className={classes.celd}>
+  const renderContent = useCallback(() => {
+    if (children || !col) return children
+
+    return (
       <Button
         size="small"
         disableFocusRipple={!col.sort}
@@ -68,21 +70,29 @@ export default ({ col, onSort }: Props) => {
         }}
         color="inherit"
         style={{
-          textAlign: col.align === 'center' ? 'center' : 'start',
           cursor: col.sort ? 'pointer' : 'default',
         }}
         startIcon={renderIcono(col)}>
         {col.title}
       </Button>
+    )
+  }, [children, col, onSort, renderIcono])
+
+  return (
+    <TableCell component="div" variant="head" className={classes.cell}>
+      {renderContent()}
     </TableCell>
   )
 }
 
 const useClasses = makeStyles((theme) => ({
-  celd: ({ align }: any) => ({
-    display: 'contents',
-    alignItems: 'center',
+  cell: ({ grow, height, align }: any) => ({
+    borderBottomWidth: 0,
+    flexGrow: grow || 1,
     flex: 1,
+    display: 'flex',
     justifyContent: align || 'flex-start',
+    alignItems: 'center',
+    height,
   }),
 }))

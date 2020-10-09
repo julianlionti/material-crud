@@ -26,6 +26,7 @@ export const esAR = createTranslation({
   close: 'Cerrar',
   seeMore: 'Ver más',
   noOptions: 'Sin opciones',
+  noResults: 'No se encontraron resultados',
   loading: 'Cargando...',
   tooltips: {
     defineFilter: 'Definit TIPO de filtro',

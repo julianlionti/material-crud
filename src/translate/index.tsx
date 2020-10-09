@@ -21,6 +21,7 @@ export interface Translations {
   open: string
   close: string
   seeMore: string
+  noResults: string
   noOptions: string
   loading: string
   selected: string
