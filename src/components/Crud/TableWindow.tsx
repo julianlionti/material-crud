@@ -1,46 +1,26 @@
-import React, {
-  memo,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import React, { memo, ReactNode, useCallback, useMemo, useRef, useState } from 'react'
 import {
-  Checkbox,
   Collapse,
-  IconButton,
   lighten,
   LinearProgress,
   makeStyles,
   Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Tooltip,
   Typography,
 } from '@material-ui/core'
 import { VariableSizeList as List } from 'react-window'
 
 import { useABM } from '../../utils/DataContext'
-import { FaEdit, FaTrash } from 'react-icons/fa'
 import { CamposProps } from '../Form'
-import CustomHeader from './CustomHeader'
-import CustomCell, { FieldAndColProps } from './CustomCell'
+import { FieldAndColProps } from './CustomCell'
 import Pagination from './Pagination'
 import { SortProps } from './Sort'
 import { useLang } from '../../utils/CrudContext'
-import CustomRow, { DataProps } from './CustomRow'
+import CustomRow from './CustomRow'
 import AutoSizer from 'react-virtualized-auto-sizer'
 
 export interface TableProps {
   height: number
   columns?: CamposProps[]
-  //   onRowClick?: (row: RowMouseEventHandlerParams) => void
   headerHeight?: number
   rowHeight?: number
   edit?: boolean
@@ -90,9 +70,10 @@ export default memo((props: Props) => {
   } = props
 
   const listRef = useRef<List | null>()
-  const lang = useLang()
 
-  const { list } = useABM()
+  const lang = useLang()
+  const { list, itemId, deleteCall, edit: editCall } = useABM()
+
   const [rowsSelected, setRowSelected] = useState<any[]>([])
 
   const finalRowHeight = useMemo(() => rowHeight || 48, [rowHeight])
@@ -105,60 +86,103 @@ export default memo((props: Props) => {
     [columns],
   )
 
-  const classes = useClasses({
-    height,
-    finalRowHeight,
-    rowsLength: list.length,
-    toolbar: rowsSelected.length > 0,
-  })
+  const classes = useClasses({ height, finalRowHeight, rowsLength: list.length })
 
-  const listData = useMemo(
-    () => ({
-      rowHeight: finalRowHeight,
-      columns: finalColumns,
-      edit,
-      deleteRow,
-      showSelecting,
-    }),
-    [finalRowHeight, finalColumns, edit, deleteRow, showSelecting],
+  const headerSelected = useMemo(() => {
+    if (rowsSelected.length === 0) return false
+    if (rowsSelected.length === list.filter((e) => !e.child).length) return true
+    return undefined
+  }, [rowsSelected, list])
+
+  const selectRow = useCallback(
+    (rowData) => {
+      if (!showSelecting) return null
+
+      return setRowSelected((acc) => {
+        if (headerSelected === true && !rowData) return []
+        if (!headerSelected && !rowData) return list.filter((e) => !e.child)
+
+        const i = acc.findIndex((x) => x[itemId!!] === rowData[itemId!!])
+        if (i >= 0) return acc.filter((_, index) => index !== i)
+        else return [...acc, rowData]
+      })
+    },
+    [showSelecting, itemId, headerSelected, list],
   )
-
-  const childSize = useMemo(() => list.filter(({ isChild }) => isChild).length, [list])
-
-  useEffect(() => {
-    if (listRef.current && childSize >= 0) listRef.current.resetAfterIndex(0)
-  }, [childSize])
 
   return (
     <Paper elevation={5} className={classes.container}>
       <Collapse in={loading} timeout="auto" unmountOnExit>
         <LinearProgress />
       </Collapse>
+      <Collapse in={rowsSelected.length > 0} timeout="auto" unmountOnExit>
+        <div className={classes.selected}>
+          <Typography
+            style={{ flex: 1 }}
+            color="inherit"
+            variant="subtitle1"
+            component="div">
+            {rowsSelected.length} {lang?.selected}
+          </Typography>
+          {rightToolbar &&
+            rightToolbar({
+              rowsSelected,
+              list,
+              deleteCall,
+              editCall,
+              clearSelected: () => setRowSelected([]),
+            })}
+        </div>
+      </Collapse>
       <CustomRow
-        data={{ rowHeight: 55, showSelecting }}
-        customClassName={`${classes.rowHeader} ${headerClassName}`}>
-        {finalColumns.map((col) => (
-          <CustomHeader col={col} onSort={onSort} key={col.id} />
-        ))}
-      </CustomRow>
+        rowHeight={headerHeight || 54}
+        customClassName={`${classes.rowHeader} ${headerClassName}`}
+        columns={finalColumns}
+        onSelect={selectRow}
+        selected={headerSelected}
+        onSort={onSort}
+      />
+      {!loading && list.length === 0 && (
+        <div className={classes.noResult}>
+          <Typography>{lang?.noResults}</Typography>
+        </div>
+      )}
       <div style={{ flex: 1 }}>
         <AutoSizer>
           {({ height: tableHeight, width }) => (
             <List
-              itemData={listData}
               height={tableHeight}
               itemCount={list.length}
               ref={(e) => {
                 listRef.current = e
               }}
-              itemSize={(index) => list[index]?.col?.list?.height || finalRowHeight}
+              itemSize={(index) => list[index].height || finalRowHeight}
               width={width}>
-              {CustomRow}
+              {(props) => (
+                <CustomRow
+                  {...props}
+                  rowHeight={finalRowHeight}
+                  columns={finalColumns}
+                  onSelect={selectRow}
+                  selected={rowsSelected.some(
+                    (e) => e[itemId] === list[props.index][itemId],
+                  )}
+                  onExpanded={(index) => listRef.current!!.resetAfterIndex(index)}
+                  onEdit={edit && onEdit}
+                  onDelete={deleteRow && onDelete}
+                />
+              )}
             </List>
           )}
         </AutoSizer>
       </div>
-      <Pagination onChange={onChangePagination} />
+      <Pagination
+        onChange={(page, perpage) => {
+          setRowSelected([])
+          listRef.current!!.resetAfterIndex(0)
+          onChangePagination(page, perpage)
+        }}
+      />
     </Paper>
   )
 })
@@ -171,6 +195,12 @@ const useClasses = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
   }),
+  noResult: {
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   rowHeader: {
     paddingRight: theme.spacing(2),
     boxShadow: theme.shadows[1],

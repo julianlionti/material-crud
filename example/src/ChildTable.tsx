@@ -1,7 +1,7 @@
 import React from 'react'
 import { Crud, createFields, Types, useWindowSize } from 'material-crud'
 import { IconButton } from '@material-ui/core'
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
+import { FaChevronDown, FaChevronUp, FaTrash } from 'react-icons/fa'
 
 const campos = createFields(() => [
   {
@@ -10,7 +10,7 @@ const campos = createFields(() => [
     edit: false,
     title: 'Normativas',
     list: {
-      align: 'center',
+      align: 'flex-start',
       width: 1,
       height: 250,
       cellComponent: ({ expandRow, isExpanded }) => (
@@ -21,7 +21,12 @@ const campos = createFields(() => [
       content: (rowData) => {
         return (
           <div
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            style={{
+              display: 'flex',
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
             <span>Hije</span>
           </div>
         )
@@ -75,11 +80,18 @@ export default () => {
       description={'Los productos tendrán asociada una o más categorías.'}
       table={{
         columns: campos,
-        height: height - 190,
+        height: height - 100,
         edit: true,
         deleteRow: true,
         rowHeight: 80,
         showSelecting: true,
+        rightToolbar: () => {
+          return (
+            <IconButton size="small">
+              <FaTrash />
+            </IconButton>
+          )
+        },
       }}
       response={{
         list: ({ data }) => ({

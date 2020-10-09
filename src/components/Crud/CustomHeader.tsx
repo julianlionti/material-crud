@@ -7,20 +7,20 @@ import {
   FaSortNumericDown,
   FaSortNumericUpAlt,
 } from 'react-icons/fa'
-import { ListChildComponentProps } from 'react-window'
 import { Types } from '../Form/Types'
 import { FieldAndColProps } from './CustomCell'
 import { SortProps } from './Sort'
 
 interface Props {
-  col: Partial<FieldAndColProps>
+  col?: Partial<FieldAndColProps>
   onSort?: (newSort: SortProps) => void
   children?: ReactNode
+  rowHeight: number
 }
 
 const icono = 22
-export default ({ col, onSort, children }: Props) => {
-  const classes = useClasses({ grow: col.width })
+export default ({ col, onSort, children, rowHeight }: Props) => {
+  const classes = useClasses({ grow: col?.width, height: rowHeight, align: col?.align })
   const [sort, setSort] = useState<SortProps>({})
 
   const renderIcono = useCallback(
@@ -42,7 +42,7 @@ export default ({ col, onSort, children }: Props) => {
   )
 
   const renderContent = useCallback(() => {
-    if (children) return children
+    if (children || !col) return children
 
     return (
       <Button
@@ -70,7 +70,6 @@ export default ({ col, onSort, children }: Props) => {
         }}
         color="inherit"
         style={{
-          textAlign: col.align === 'center' ? 'center' : 'start',
           cursor: col.sort ? 'pointer' : 'default',
         }}
         startIcon={renderIcono(col)}>
@@ -80,16 +79,20 @@ export default ({ col, onSort, children }: Props) => {
   }, [children, col, onSort, renderIcono])
 
   return (
-    <TableCell component="div" variant="head" align={col.align} className={classes.cell}>
+    <TableCell component="div" variant="head" className={classes.cell}>
       {renderContent()}
     </TableCell>
   )
 }
 
 const useClasses = makeStyles((theme) => ({
-  cell: ({ grow }: any) => ({
+  cell: ({ grow, height, align }: any) => ({
+    borderBottomWidth: 0,
     flexGrow: grow || 1,
     flex: 1,
-    display: 'block',
+    display: 'flex',
+    justifyContent: align || 'flex-start',
+    alignItems: 'center',
+    height,
   }),
 }))

@@ -1,4 +1,4 @@
-import React, { memo, ReactNode, useCallback } from 'react'
+import React, { memo, PropsWithChildren, ReactNode, useCallback, useMemo } from 'react'
 import { Avatar, makeStyles, TableCell } from '@material-ui/core'
 import { FaCheck, FaTimes } from 'react-icons/fa'
 import { AlImagenProps } from '../Form/AlImagen'
@@ -17,8 +17,8 @@ export interface ColumnProps {
   filter?: boolean
   sort?: boolean
   width?: number
-  heigth?: number
-  align?: 'center' | 'justify' | 'left' | 'right'
+  height?: number
+  align?: 'center' | 'flex-start' | 'flex-end'
   cellComponent?: (props: ComponentProps) => ReactNode
   content?: (rowData: any) => ReactNode
   fields?: CamposProps[]
@@ -29,19 +29,32 @@ export type FieldAndColProps = Exclude<ComunesProps, 'list'> &
 
 interface Props {
   rowHeight: number
+  rowIndex: number
   col?: Partial<FieldAndColProps>
   children?: ReactNode
-  index: number
+  onExpand?: () => void
+  expanded?: boolean
 }
 
-export default memo(({ children, rowHeight, col, index: rowIndex }: Props) => {
+export default memo((props: PropsWithChildren<Props>) => {
+  const { children, rowHeight, col, rowIndex, onExpand, expanded } = props
   const classes = useClasses({ height: rowHeight, grow: col?.width, align: col?.align })
-  const { insertIndex, removeIndex, list, itemId } = useABM()
+  const { list } = useABM()
   const rowData = list[rowIndex]
-  const cellData = rowData[col?.id!!]!!
-  const expanded = !!list[rowIndex + 1]?.isChild
+  const cellData = useMemo(() => {
+    if (col && col.id) return rowData[col.id]
+  }, [col, rowData])
 
   const renderContent = useCallback(() => {
+    if (children) return children
+    if (col?.cellComponent) {
+      return col.cellComponent({
+        rowData,
+        expandRow: onExpand!!,
+        isExpanded: !!expanded,
+      })
+    }
+
     switch (col!.type) {
       case Types.Image: {
         const finalSize = rowHeight - 8
@@ -62,28 +75,11 @@ export default memo(({ children, rowHeight, col, index: rowIndex }: Props) => {
       default:
         return String(cellData)
     }
-  }, [cellData, col, rowHeight])
-
-  const addRowNopagination = useCallback(() => {
-    const childKey = col?.id + '-key'
-    const nextIndex = (rowIndex || 0) + 1
-    if (list[nextIndex]?.isChild) {
-      removeIndex(nextIndex)
-    } else {
-      insertIndex(nextIndex, { [itemId]: childKey, isChild: true, col })
-    }
-  }, [insertIndex, removeIndex, rowIndex, col, itemId, list])
+  }, [cellData, col, rowHeight, rowData, children, expanded, onExpand])
 
   return (
-    <TableCell component="div" variant="body" align={col?.align} className={classes.cell}>
-      {(col?.cellComponent &&
-        col.cellComponent({
-          rowData,
-          expandRow: addRowNopagination,
-          isExpanded: expanded,
-        })) ||
-        children ||
-        renderContent()}
+    <TableCell component="div" variant="body" className={classes.cell}>
+      {renderContent()}
     </TableCell>
   )
 })
@@ -93,16 +89,8 @@ const useClasses = makeStyles((theme) => ({
     flexGrow: grow || 1,
     flex: 1,
     display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems:
-      align === 'left'
-        ? 'flex-start'
-        : align === 'right'
-        ? 'flex-end'
-        : align === 'justify'
-        ? 'center'
-        : align,
+    justifyContent: align || 'flex-start',
+    alignItems: 'center',
     height,
   }),
 }))
