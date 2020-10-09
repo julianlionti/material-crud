@@ -19,8 +19,8 @@ import {
 } from '@material-ui/core'
 import { FaFilter } from 'react-icons/fa'
 import Formulario, { CamposProps } from '../Form'
-import useAxios, { Error } from '../../utils/useAxios'
-import { PaginationProps, useABM } from '../../utils/DataContext'
+import useAxios, { CallProps, CallResponse, Error } from '../../utils/useAxios'
+import { PaginationProps, ReplaceProps, useABM } from '../../utils/DataContext'
 import Dialog, { CartelState } from '../UI/Dialog'
 import Ordenado from './Sort'
 import useWindowSize from '../../utils/useWindowSize'
@@ -47,10 +47,16 @@ interface ListConfiguration extends PaginationProps {
 interface OnFlyResponse extends PaginationProps {
   items: any[]
 }
-type ListOnFlyConfiguration = (data: any) => OnFlyResponse
+
+interface ResponseProps {
+  list: (data: any) => OnFlyResponse
+  new: string
+  edit: { item: string; id: string }
+  delete: { item: string; id: string }
+}
 
 export interface CrudProps {
-  url?: string
+  url: string
   name: string
   titleSize?: number
   gender?: 'M' | 'F'
@@ -65,17 +71,33 @@ export interface CrudProps {
   onError?: (err: Error) => void
   Left?: ReactNode
   idInUrl?: boolean
-  response?: {
-    list: ListConfiguration | ListOnFlyConfiguration
-    new: string
-    edit: { item: string; id: string }
-    delete: { item: string; id: string }
-  }
+  response: ResponseProps
   interaction?: Interactions
   itemId?: 'id' | '_id' | string
   itemName?: string // PAra borrar
   transformEdit?: (row: any) => Object // Para el editar
   transformFilter?: (row: any) => {} // Para manipular lo q se envia
+}
+
+interface GetDataProps {
+  url: string
+  call: CallProps
+  response: ResponseProps
+  replace: (props: ReplaceProps) => void
+  params: any
+}
+
+const getData = async ({ call, response, replace, params, url }: GetDataProps) => {
+  const { error, response: responseWs, status } = await call({
+    method: 'GET',
+    url,
+    params,
+  })
+
+  if (status!! >= 200 && status!! <= 205) {
+    const { items, ...data } = response?.list(responseWs) || { page: 1 }
+    replace({ items: items || [], pagination: data })
+  }
 }
 
 export default memo((props: CrudProps) => {
@@ -110,6 +132,11 @@ export default memo((props: CrudProps) => {
 
   const { list, add, edit: editABM, replace, deleteCall, pagination, itemId } = useABM()
   const { loading, response: responseWS, call } = useAxios<any>({ onError })
+
+  const getDataCall = useCallback(
+    (params) => getData({ call, params, replace, response, url }),
+    [call, replace, response, url],
+  )
 
   // const [pagination, setPagination] = useState<PaginationProps>({ page: 1, limit: 10 })
   const [cartel, setCartel] = useState<CartelState>({ visible: false })
@@ -185,37 +212,37 @@ export default memo((props: CrudProps) => {
     deleteCall,
   ])
 
-  const { data, docs, page } = useMemo(() => {
-    if (!responseWS) return {}
-    if (getCallRef.current === false) return {}
-    getCallRef.current = false
-    if (typeof response?.list === 'function') {
-      const { items, ...data } = response.list(responseWS) as any
-      return {
-        docs: items,
-        data,
-        page: data.page,
-      }
-    } else {
-      const data = responseWS[response?.list.data || 'data'] || { page: 1 }
-      return {
-        data,
-        docs: data[response?.list.items || 'docs'],
-        page: data[response?.list.page || 'page'],
-      }
-    }
-  }, [responseWS, response])
+  // const { data, docs, page } = useMemo(() => {
+  //   if (!responseWS) return {}
+  //   if (getCallRef.current === false) return {}
+  //   getCallRef.current = false
+  //   if (typeof response?.list === 'function') {
+  //     const { items, ...data } = response.list(responseWS) as any
+  //     return {
+  //       docs: items,
+  //       data,
+  //       page: data.page,
+  //     }
+  //   } else {
+  //     const data = responseWS[response?.list.data || 'data'] || { page: 1 }
+  //     return {
+  //       data,
+  //       docs: data[response?.list.items || 'docs'],
+  //       page: data[response?.list.page || 'page'],
+  //     }
+  //   }
+  // }, [responseWS, response])
 
-  useEffect(() => {
-    if (docs) {
-      // setPagination(data!!)
-      if (page === 1 || table) {
-        replace(docs, data)
-      } else {
-        add(docs)
-      }
-    }
-  }, [add, data, docs, page, replace, table])
+  // useEffect(() => {
+  //   if (docs) {
+  //     // setPagination(data!!)
+  //     if (page === 1 || table) {
+  //       replace(docs, data)
+  //     } else {
+  //       add(docs)
+  //     }
+  //   }
+  // }, [add, data, docs, page, replace, table])
 
   const interactions = useMemo(
     () => ({
@@ -303,11 +330,12 @@ export default memo((props: CrudProps) => {
 
   useEffect(() => {
     if (!called.current) {
-      call({ method: 'GET', url, params: interactions })
+      // call({ method: 'GET', url, params: interactions })
+      getDataCall(interactions)
       called.current = true
-      getCallRef.current = true
+      // getCallRef.current = true
     }
-  }, [call, url, interactions])
+  }, [getDataCall, interactions])
 
   return (
     <div className={classes.contenedor}>
@@ -354,12 +382,13 @@ export default memo((props: CrudProps) => {
                     ...lastFilter.current,
                     [interaction?.sort || 'sort']: ordenado,
                   }
-                  getCallRef.current = true
-                  call({
-                    method: 'GET',
-                    params: { ...interactions, ...lastFilter.current },
-                    url,
-                  })
+                  getDataCall({ ...interactions, ...lastFilter.current })
+                  // getCallRef.current = true
+                  // call({
+                  //   method: 'GET',
+                  //   params: { ...interactions, ...lastFilter.current },
+                  //   url,
+                  // })
                 }}
               />
             )}
@@ -392,11 +421,12 @@ export default memo((props: CrudProps) => {
                   ? transformFilter(lastFilter.current)
                   : lastFilter.current
 
-                call({
-                  method: 'GET',
-                  params: finalParams,
-                  url,
-                })
+                getDataCall(finalParams)
+                // call({
+                //   method: 'GET',
+                //   params: finalParams,
+                //   url,
+                // })
               }}
               noValidate
             />
@@ -415,26 +445,34 @@ export default memo((props: CrudProps) => {
                 ...lastFilter.current,
                 [interaction?.sort || 'sort']: newSort,
               }
-              getCallRef.current = true
-              call({
-                method: 'GET',
-                params: { ...interactions, ...lastFilter.current },
-                url,
-              })
+              // getCallRef.current = true
+              getDataCall({ ...interactions, ...lastFilter.current })
+              // call({
+              //   method: 'GET',
+              //   params: { ...interactions, ...lastFilter.current },
+              //   url,
+              // })
             }}
             onChangePagination={(page, perPage) => {
-              getCallRef.current = true
-              call({
-                method: 'GET',
-                url,
-                params: {
-                  ...interactions,
-                  [interaction?.page || lang?.pagination?.page || 'page']: page,
-                  [interaction?.perPage ||
-                  lang?.pagination?.rowsPerPage ||
-                  'perPage']: perPage,
-                },
+              getDataCall({
+                ...interactions,
+                [interaction?.page || lang?.pagination?.page || 'page']: page,
+                [interaction?.perPage ||
+                lang?.pagination?.rowsPerPage ||
+                'perPage']: perPage,
               })
+              // getCallRef.current = true
+              // call({
+              //   method: 'GET',
+              //   url,
+              //   params: {
+              // ...interactions,
+              // [interaction?.page || lang?.pagination?.page || 'page']: page,
+              // [interaction?.perPage ||
+              // lang?.pagination?.rowsPerPage ||
+              // 'perPage']: perPage,
+              //   },
+              // })
             }}
             columns={table.columns || fields}
             onEdit={(rowData) => {
@@ -469,16 +507,20 @@ export default memo((props: CrudProps) => {
           <div
             className={classes.verMas}
             onClick={() => {
-              lastFilter.current = {
+              // lastFilter.current = {
+              //   ...lastFilter.current,
+              //   [interaction?.page || 'page']: pagination.nextPage,
+              // }
+              getDataCall({
                 ...lastFilter.current,
                 [interaction?.page || 'page']: pagination.nextPage,
-              }
-              getCallRef.current = true
-              call({
-                method: 'GET',
-                params: lastFilter.current,
-                url,
               })
+              // getCallRef.current = true
+              // call({
+              //   method: 'GET',
+              //   params: lastFilter.current,
+              //   url,
+              // })
             }}>
             <Button variant="outlined" color="primary">
               {lang?.seeMore || 'Ver más'}
