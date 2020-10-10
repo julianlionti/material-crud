@@ -146,14 +146,10 @@ export default () => {
       response={{
         list: ({ data }) => ({
           items: data.docs,
-          page: 1,
-          hasNextPage: false,
-          totalDocs: data.length,
-          totalPages: 1,
+          ...data,
         }),
-        new: 'item',
-        edit: { item: 'item', id: '_id' },
-        delete: { item: 'borrado', id: '_id' },
+        new: (data, response) => response,
+        edit: (data, response) => ({ id: '_id', item: 'item' }),
       }}
       interaction={{
         page: 'page',

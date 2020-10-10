@@ -97,9 +97,8 @@ export default () => {
           items: data.docs,
           ...data,
         }),
-        new: 'item',
-        edit: { id: '_id', item: 'item' },
-        delete: { id: '_id', item: 'borrado' },
+        new: (data, response) => response,
+        edit: (data, response) => ({ id: '_id', item: 'item' }),
       }}
       interaction={{
         page: 'pagina',

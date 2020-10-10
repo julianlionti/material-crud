@@ -50,9 +50,8 @@ interface OnFlyResponse extends PaginationProps {
 
 interface ResponseProps {
   list: (data: any) => OnFlyResponse
-  new: string
-  edit: { item: string; id: string }
-  delete: { item: string; id: string }
+  new: (data: any, responseWs?: any) => any
+  edit: (data: any, responseWs?: any) => any
 }
 
 export interface CrudProps {
@@ -79,22 +78,68 @@ export interface CrudProps {
   transformFilter?: (row: any) => {} // Para manipular lo q se envia
 }
 
-interface GetDataProps {
+interface DataCallProps {
   url: string
   call: CallProps
   response: ResponseProps
   replace: (props: ReplaceProps) => void
-  params: any
+  params?: any
 }
 
-const getData = async ({ call, response, replace, params, url }: GetDataProps) => {
-  const { error, response: responseWs, status } = await call({
+interface NoGetCallProps extends DataCallProps {
+  data: any
+  editing: boolean
+  isDelete?: boolean
+  idInUrl?: boolean
+  itemId: string
+  onFinished?: (what: 'new' | 'update' | 'delete', genero?: 'M' | 'F') => void
+  gender?: 'M' | 'F'
+  setEditObj: (value: React.SetStateAction<object | null>) => void
+  editABM: ({ id, item }: { id: string; item: object }) => void
+  add: (items: object[]) => void
+  deleteCall: (id: string) => void
+  setCartel: (value: React.SetStateAction<CartelState | null>) => void
+}
+
+const postData = async (props: NoGetCallProps) => {
+  const { url, data, editing, idInUrl, itemId, onFinished, isDelete, gender } = props
+  const { call, response, editABM, add, deleteCall, setEditObj, setCartel } = props
+  const finalId = data[itemId]
+  let finalURL = url
+  if ((editing || isDelete) && idInUrl && url?.slice(-1) !== '/')
+    finalURL = finalURL + '/' + finalId
+
+  const { response: responseWs, status } = await call({
+    method: isDelete ? 'DELETE' : editing && idInUrl ? 'PUT' : 'POST',
+    url: finalURL,
+    data,
+  })
+
+  if (status!! >= 200 && status!! < 300) {
+    if (isDelete) {
+      deleteCall(finalId)
+      setCartel({ visible: false })
+    } else if (editing) {
+      const item = response?.edit(data, responseWs)
+      editABM({ id: finalId, item: { ...item, edited: true } })
+      setEditObj(null)
+    } else {
+      const item = response?.new(data, responseWs)
+      add([item])
+      setEditObj(null)
+    }
+    onFinished && onFinished(isDelete ? 'delete' : editing ? 'update' : 'new', gender)
+  }
+}
+
+const getData = async ({ call, response, replace, params, url }: DataCallProps) => {
+  const { response: responseWs, status } = await call({
     method: 'GET',
     url,
     params,
   })
 
-  if (status!! >= 200 && status!! <= 205) {
+  if (status!! >= 200 && status!! < 300) {
     const { items, ...data } = response?.list(responseWs) || { page: 1 }
     replace({ items: items || [], pagination: data })
   }
@@ -133,84 +178,123 @@ export default memo((props: CrudProps) => {
   const { list, add, edit: editABM, replace, deleteCall, pagination, itemId } = useABM()
   const { loading, response: responseWS, call } = useAxios<any>({ onError })
 
-  const getDataCall = useCallback(
-    (params) => getData({ call, params, replace, response, url }),
-    [call, replace, response, url],
-  )
-
-  // const [pagination, setPagination] = useState<PaginationProps>({ page: 1, limit: 10 })
   const [cartel, setCartel] = useState<CartelState>({ visible: false })
   const [toolbar, setToolbar] = useState(false)
   const [editObj, setEditObj] = useState<object | null>(null)
   const [viewCards, setViewCards] = useState(false)
 
+  const editing = useMemo(() => (editObj ? Object.keys(editObj!!).length > 0 : false), [
+    editObj,
+  ])
+
+  const getDataCall = useCallback(
+    (params) => getData({ call, params, replace, response, url }),
+    [call, replace, response, url],
+  )
+  const postDataCall = useCallback(
+    (data, isDelete = false) =>
+      postData({
+        call,
+        replace,
+        response,
+        url,
+        data,
+        editing,
+        idInUrl,
+        itemId,
+        onFinished,
+        gender,
+        add,
+        editABM,
+        setEditObj,
+        deleteCall,
+        setCartel,
+        isDelete,
+      }),
+    [
+      call,
+      replace,
+      response,
+      url,
+      idInUrl,
+      editing,
+      itemId,
+      onFinished,
+      gender,
+      add,
+      editABM,
+      setEditObj,
+      deleteCall,
+      setCartel,
+    ],
+  )
+
   const { width } = useWindowSize()
   const classes = useClasses({ titleSize })
 
-  const editing = editObj ? Object.keys(editObj!!).length > 0 : false
-  const { deleted, item, edited } = useMemo(() => {
-    if (!responseWS) return {}
-    if (!response) {
-      const { borrado, item, _id } = responseWS
-      return {
-        deleted: { item: borrado, id: _id },
-        item,
-        edited: {
-          item,
-          id: _id,
-        },
-      }
-    }
+  // const { deleted, item, edited } = useMemo(() => {
+  //   if (!responseWS) return {}
+  //   if (!response) {
+  //     const { borrado, item, _id } = responseWS
+  //     return {
+  //       deleted: { item: borrado, id: _id },
+  //       item,
+  //       edited: {
+  //         item,
+  //         id: _id,
+  //       },
+  //     }
+  //   }
 
-    return {
-      deleted: {
-        item: responseWS[response.delete.item],
-        id: responseWS[response.delete.id],
-      },
-      edited: {
-        item: responseWS[response.edit.item],
-        id: responseWS[response.edit.id],
-      },
-      item: responseWS[response.new],
-    }
-  }, [response, responseWS])
+  //   return {
+  //     deleted: {
+  //       item: responseWS[response.delete.item],
+  //       id: responseWS[response.delete.id],
+  //     },
+  //     edited: {
+  //       item: responseWS[response.edit.item],
+  //       id: responseWS[response.edit.id],
+  //     },
+  //     item: responseWS[response.new],
+  //   }
+  // }, [response, responseWS])
 
-  useEffect(() => {
-    if (lastCallRef.current === null) return
-    if (item && !edited?.id) {
-      add([item])
-      onFinished && onFinished('new', gender)
-      setEditObj(null)
-      // setPagination((state) => ({ ...state, totalDocs: (state.totalDocs || 0) + 1 }))
-      lastCallRef.current = null
-    } else if (edited && edited?.item) {
-      editABM({ id: edited.id, item: { ...edited.item, edited: true } })
-      onFinished && onFinished('update', gender)
-      setEditObj(null)
-      lastCallRef.current = null
-    } else if (deleted && deleted.item) {
-      if (table) {
-        deleteCall(deleted.id)
-        // setPagination((state) => ({ ...state, totalDocs: (state.totalDocs || 1) - 1 }))
-      } else {
-        editABM({ id: deleted.id, item: { ...deleted.item, deleted: true } })
-      }
-      onFinished && onFinished('delete', gender)
-      setCartel({ visible: false })
-      lastCallRef.current = null
-    }
-  }, [
-    item,
-    edited,
-    deleted,
-    onFinished,
-    setCartel,
-    add,
-    editABM,
-    gender,
-    table,
-    deleteCall,
-  ])
+  // useEffect(() => {
+  //   if (lastCallRef.current === null) return
+  //   if (item && !edited?.id) {
+  //     add([item])
+  //     onFinished && onFinished('new', gender)
+  //     setEditObj(null)
+  //     // setPagination((state) => ({ ...state, totalDocs: (state.totalDocs || 0) + 1 }))
+  //     lastCallRef.current = null
+  //   } else if (edited && edited?.item) {
+  //     editABM({ id: edited.id, item: { ...edited.item, edited: true } })
+  //     onFinished && onFinished('update', gender)
+  //     setEditObj(null)
+  //     lastCallRef.current = null
+  //   } else if (deleted && deleted.item) {
+  //     if (table) {
+  //       deleteCall(deleted.id)
+  //       // setPagination((state) => ({ ...state, totalDocs: (state.totalDocs || 1) - 1 }))
+  //     } else {
+  //       editABM({ id: deleted.id, item: { ...deleted.item, deleted: true } })
+  //     }
+  //     onFinished && onFinished('delete', gender)
+  //     setCartel({ visible: false })
+  //     lastCallRef.current = null
+  //   }
+  // }, [
+  //   item,
+  //   edited,
+  //   deleted,
+  //   onFinished,
+  //   setCartel,
+  //   add,
+  //   editABM,
+  //   gender,
+  //   table,
+  //   deleteCall,
+  // ])
 
   // const { data, docs, page } = useMemo(() => {
   //   if (!responseWS) return {}
@@ -266,21 +350,22 @@ export default memo((props: CrudProps) => {
         titulo: `${lang?.delete || 'Borrar'} ${name}`,
         onCerrar: (aceptado: boolean) => {
           if (aceptado) {
-            const data = { id: it[itemId] }
-            lastCallRef.current = data
+            const data = { [itemId]: it[itemId] }
+            // lastCallRef.current = data
 
-            let finalURL = url
-            if (idInUrl && url?.slice(-1) !== '/')
-              finalURL = finalURL + '/' + item[itemId]
+            // let finalURL = url
+            // if (idInUrl && url?.slice(-1) !== '/')
+            //   finalURL = finalURL + '/' + item[itemId]
+            postDataCall(data, true)
 
-            call({ method: 'DELETE', data, url: finalURL })
+            // call({ method: 'DELETE', data, url: finalURL })
           } else {
             setCartel({ visible: false })
           }
         },
       })
     },
-    [call, name, url, lang, itemId, itemName, idInUrl],
+    [call, name, url, lang, itemId, itemName, idInUrl, postDataCall],
   )
 
   const filters = useMemo(() => {
@@ -561,16 +646,14 @@ export default memo((props: CrudProps) => {
                 })
               }
 
-              lastCallRef.current = data
-              let finalURL = url
-              if (editing && idInUrl && url?.slice(-1) !== '/')
-                finalURL = finalURL + '/' + vals[itemId]
+              // lastCallRef.current = data
 
-              call({
-                method: editing && idInUrl ? 'PUT' : 'POST',
-                data,
-                url: finalURL,
-              })
+              postDataCall(data)
+              // call({
+              //   method: editing && idInUrl ? 'PUT' : 'POST',
+              //   data,
+              //   url: finalURL,
+              // })
             }}
           />
         </CenteredCard>

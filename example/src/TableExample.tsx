@@ -4,6 +4,7 @@ import { Crud, createFields, Types, useWindowSize, useAxios } from 'material-cru
 import { english } from './lang'
 import { IconButton, makeStyles, Tooltip } from '@material-ui/core'
 import { FaTrash } from 'react-icons/fa'
+// import { useSnackbar } from 'notistack'
 
 const campos = createFields(() => [
   [
@@ -81,6 +82,7 @@ const campos = createFields(() => [
 export default () => {
   const { height } = useWindowSize()
   const { call } = useAxios()
+  // const { enqueueSnackbar } = useSnackbar()
 
   return (
     <Crud
@@ -116,16 +118,16 @@ export default () => {
         ),
       }}
       itemId="_id"
-      itemName="nombre"
+      itemName="name"
       response={{
         list: ({ data }) => ({
           items: data.docs,
           ...data,
         }),
-        new: 'item',
-        edit: { id: '_id', item: 'item' },
-        delete: { id: '_id', item: 'borrado' },
+        new: (data, { item }) => item,
+        edit: (data, { item }) => item,
       }}
+      // onError={(e) => enqueueSnackbar(e)}
       interaction={{
         page: 'pagina',
         perPage: 'porPagina',
