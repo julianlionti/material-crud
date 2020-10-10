@@ -1,24 +1,17 @@
-import React, { lazy, memo, Suspense, useCallback, useMemo } from 'react'
+import React, { memo, useCallback, useMemo } from 'react'
 import { Formik, FormikValues, FormikHelpers } from 'formik'
 import { Button, CircularProgress, makeStyles } from '@material-ui/core'
 import * as Yup from 'yup'
 import { Types, BaseProps } from './Types'
 import AlCustom, { AlCustomProps } from './AlCustom'
-import { Filter } from '../../utils/useFilters'
 
-import { AlInputProps } from './AlInput'
-import { AlSelectProps } from './AlSelect'
-import { AlImagenProps } from './AlImagen'
-import { AlAutocompleteProps } from './AlAutocomplete'
-import { AlSwitchProps } from './AlSwitch'
-import { AlMultipleProps, valDefault } from './AlMultiple'
-
-const AlInput = lazy(() => import('./AlInput'))
-const AlSelect = lazy(() => import('./AlSelect'))
-const AlImagen = lazy(() => import('./AlImagen'))
-const AlAutocomplete = lazy(() => import('./AlAutocomplete'))
-const AlSwitch = lazy(() => import('./AlSwitch'))
-const AlMultiple = lazy(() => import('./AlMultiple'))
+import AlInput, { AlInputProps } from './AlInput'
+import AlSelect, { AlSelectProps } from './AlSelect'
+import AlImagen, { AlImagenProps } from './AlImagen'
+import AlAutocomplete, { AlAutocompleteProps } from './AlAutocomplete'
+import AlSwitch, { AlSwitchProps } from './AlSwitch'
+import AlMultiple, { AlMultipleProps } from './AlMultiple'
+import { generateDefault } from './helpers'
 
 Yup.setLocale({
   string: {
@@ -51,43 +44,6 @@ export interface Props {
 }
 
 export const createFields = (props: () => CamposProps[]) => props()
-
-type DefResponse = boolean | null | '' | any[] | Filter
-export const generateDefault = (item: TodosProps): DefResponse => {
-  if (item.list?.filter) {
-    switch (item.type) {
-      case Types.Autocomplete: {
-        if (item.multiple) return { value: [], filter: 'contains' }
-        else {
-          return { value: null, filter: 'contains' }
-        }
-      }
-      case Types.Number: {
-        return { value: '', filter: 'equal' }
-      }
-      case Types.Switch: {
-        return { value: false, filter: 'equal' }
-      }
-      default:
-        return { value: '', filter: 'equal' }
-    }
-  }
-  switch (item.type) {
-    case Types.Switch: {
-      return false
-    }
-    case Types.Autocomplete: {
-      if (item.multiple) return []
-      return null
-    }
-    case Types.Multiple:
-      return [valDefault(item.configuration)]
-    case Types.Image:
-      return null
-    default:
-      return ''
-  }
-}
 
 export default memo((props: Props) => {
   const { fields, onSubmit, accept, loading, intials, noValidate } = props
@@ -135,8 +91,7 @@ export default memo((props: Props) => {
   )
 
   const defaultValues = useMemo(
-    () =>
-      fields.flat().reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it) }), {}),
+    () => fields.flat().reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it) }), {}),
     [fields],
   )
 
@@ -149,31 +104,29 @@ export default memo((props: Props) => {
         if (onSubmit) onSubmit(vals, helpers)
       }}>
       {({ submitForm, values }) => (
-        <Suspense fallback={<CircularProgress />}>
-          <div className={classes.container}>
-            {fields.map((field, index) => {
-              if (Array.isArray(field)) {
-                return (
-                  <div key={`${field[0].id}-row-${index}`} className={classes.horizontal}>
-                    {field.map((e) => renderInput(e, values))}
-                  </div>
-                )
-              }
-              return renderInput(field, values)
-            })}
-            {accept && (
-              <Button
-                disabled={loading}
-                onClick={submitForm}
-                className={classes.btn}
-                color="primary"
-                endIcon={loading && <CircularProgress size={16} />}
-                variant="outlined">
-                {accept}
-              </Button>
-            )}
-          </div>
-        </Suspense>
+        <div className={classes.container}>
+          {fields.map((field, index) => {
+            if (Array.isArray(field)) {
+              return (
+                <div key={`${field[0].id}-row-${index}`} className={classes.horizontal}>
+                  {field.map((e) => renderInput(e, values))}
+                </div>
+              )
+            }
+            return renderInput(field, values)
+          })}
+          {accept && (
+            <Button
+              disabled={loading}
+              onClick={submitForm}
+              className={classes.btn}
+              color="primary"
+              endIcon={loading && <CircularProgress size={16} />}
+              variant="outlined">
+              {accept}
+            </Button>
+          )}
+        </div>
       )}
     </Formik>
   )

@@ -1,19 +1,12 @@
 import React, { memo, ReactNode, useCallback, useMemo, useRef, useState } from 'react'
-import {
-  Collapse,
-  lighten,
-  LinearProgress,
-  makeStyles,
-  Paper,
-  Typography,
-} from '@material-ui/core'
+import { Collapse, lighten, LinearProgress, makeStyles, Paper, Typography } from '@material-ui/core'
 import { VariableSizeList as List } from 'react-window'
 
 import { useABM } from '../../utils/DataContext'
 import { CamposProps } from '../Form'
 import { FieldAndColProps } from './CustomCell'
 import Pagination from './Pagination'
-import { SortProps } from './Sort'
+import { SortProps } from './CustomHeader'
 import { useLang } from '../../utils/CrudContext'
 import CustomRow from './CustomRow'
 import AutoSizer from 'react-virtualized-auto-sizer'
@@ -111,11 +104,7 @@ export default memo((props: Props) => {
       </Collapse>
       <Collapse in={rowsSelected.length > 0} timeout="auto" unmountOnExit>
         <div className={classes.selected}>
-          <Typography
-            style={{ flex: 1 }}
-            color="inherit"
-            variant="subtitle1"
-            component="div">
+          <Typography style={{ flex: 1 }} color="inherit" variant="subtitle1" component="div">
             {rowsSelected.length} {lang?.selected}
           </Typography>
           {rightToolbar &&
@@ -162,9 +151,7 @@ export default memo((props: Props) => {
                   rowHeight={finalRowHeight}
                   columns={finalColumns}
                   onSelect={selectRow}
-                  selected={rowsSelected.some(
-                    (e) => e[itemId] === list[props.index][itemId],
-                  )}
+                  selected={rowsSelected.some((e) => e[itemId] === list[props.index][itemId])}
                   onExpanded={(index) => listRef.current!!.resetAfterIndex(index)}
                   onEdit={edit && onEdit}
                   onDelete={deleteRow && onDelete}
@@ -209,7 +196,7 @@ const useClasses = makeStyles((theme) => ({
     flex: 1,
     display: 'block',
   },
-  selected:  {
+  selected: {
     display: 'flex',
     flexDirection: 'row',
     flex: 1,

@@ -5,8 +5,7 @@ import { ListChildComponentProps } from 'react-window'
 import { useLang } from '../../utils/CrudContext'
 import { useABM } from '../../utils/DataContext'
 import CustomCell, { FieldAndColProps } from './CustomCell'
-import CustomHeader from './CustomHeader'
-import { SortProps } from './Sort'
+import CustomHeader, { SortProps } from './CustomHeader'
 
 interface Props extends Partial<ListChildComponentProps> {
   rowHeight: number
@@ -126,10 +125,7 @@ export default memo((props: Props) => {
       )
 
     return (
-      <CustomCell
-        col={{ width: 0.5, align: 'flex-end' }}
-        rowHeight={rowHeight}
-        rowIndex={index!!}>
+      <CustomCell col={{ width: 0.5, align: 'flex-end' }} rowHeight={rowHeight} rowIndex={index!!}>
         {onEdit && (
           <Tooltip title={lang?.edit || 'Edit'}>
             <IconButton size="small" onClick={() => onEdit(rowData)}>

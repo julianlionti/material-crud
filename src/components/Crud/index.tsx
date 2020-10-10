@@ -83,7 +83,7 @@ interface NoGetCallProps extends DataCallProps {
   editABM: ({ id, item }: { id: string; item: object }) => void
   add: (items: object[]) => void
   deleteCall: (id: string) => void
-  setCartel: (value: React.SetStateAction<CartelState | null>) => void
+  setCartel: (value: React.SetStateAction<CartelState>) => void
 }
 
 const postData = async (props: NoGetCallProps) => {
