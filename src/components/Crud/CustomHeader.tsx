@@ -9,7 +9,10 @@ import {
 } from 'react-icons/fa'
 import { Types } from '../Form/Types'
 import { FieldAndColProps } from './CustomCell'
-import { SortProps } from './Sort'
+
+interface SortProps {
+  [key: string]: 1 | -1 | 0
+}
 
 interface Props {
   col?: Partial<FieldAndColProps>
