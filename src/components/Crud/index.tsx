@@ -1,12 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  ReactNode,
-  useCallback,
-  memo,
-  useMemo,
-} from 'react'
+import React, { useState, useEffect, useRef, ReactNode, useCallback, memo, useMemo } from 'react'
 import {
   Typography,
   Divider,
@@ -14,19 +6,14 @@ import {
   makeStyles,
   Button,
   LinearProgress,
-  FormControlLabel,
-  Switch,
 } from '@material-ui/core'
 import { FaFilter } from 'react-icons/fa'
 import Formulario, { CamposProps } from '../Form'
-import useAxios, { Error } from '../../utils/useAxios'
-import { PaginationProps, useABM } from '../../utils/DataContext'
+import useAxios, { CallProps, Error } from '../../utils/useAxios'
+import { PaginationProps, ReplaceProps, useABM } from '../../utils/DataContext'
 import Dialog, { CartelState } from '../UI/Dialog'
-import Ordenado from './Sort'
-import useWindowSize from '../../utils/useWindowSize'
 import { serialize } from 'object-to-formdata'
 import CenteredCard from '../UI/CenteredCard'
-import AnimatedItem from '../UI/AnimatedItem'
 import AlTable, { TableProps } from '../Crud/TableWindow'
 import { Interactions, Types } from '../Form/Types'
 import { useLang } from '../../utils/CrudContext'
@@ -47,35 +34,100 @@ interface ListConfiguration extends PaginationProps {
 interface OnFlyResponse extends PaginationProps {
   items: any[]
 }
-type ListOnFlyConfiguration = (data: any) => OnFlyResponse
+
+interface ResponseProps {
+  list: (data: any) => OnFlyResponse
+  new: (data: any, responseWs?: any) => any
+  edit: (data: any, responseWs?: any) => any
+}
 
 export interface CrudProps {
-  url?: string
+  url: string
   name: string
   titleSize?: number
   gender?: 'M' | 'F'
   description: string
   fields: CamposProps[]
-  table?: TableProps
-  renderItem?: (vals: any) => ReactNode
-  cardsPerRow?: number
+  table: TableProps
   filtersPerRow?: number
   isFormData?: boolean
   onFinished?: (what: 'new' | 'update' | 'delete', genero?: 'M' | 'F') => void
   onError?: (err: Error) => void
   Left?: ReactNode
   idInUrl?: boolean
-  response?: {
-    list: ListConfiguration | ListOnFlyConfiguration
-    new: string
-    edit: { item: string; id: string }
-    delete: { item: string; id: string }
-  }
+  response: ResponseProps
   interaction?: Interactions
   itemId?: 'id' | '_id' | string
   itemName?: string // PAra borrar
   transformEdit?: (row: any) => Object // Para el editar
   transformFilter?: (row: any) => {} // Para manipular lo q se envia
+}
+
+interface DataCallProps {
+  url: string
+  call: CallProps
+  response: ResponseProps
+  replace: (props: ReplaceProps) => void
+  params?: any
+}
+
+interface NoGetCallProps extends DataCallProps {
+  data: any
+  editing: boolean
+  isDelete?: boolean
+  idInUrl?: boolean
+  itemId: string
+  onFinished?: (what: 'new' | 'update' | 'delete', genero?: 'M' | 'F') => void
+  gender?: 'M' | 'F'
+  setEditObj: (value: React.SetStateAction<object | null>) => void
+  editABM: ({ id, item }: { id: string; item: object }) => void
+  add: (items: object[]) => void
+  deleteCall: (id: string) => void
+  setCartel: (value: React.SetStateAction<CartelState | null>) => void
+}
+
+const postData = async (props: NoGetCallProps) => {
+  const { url, data, editing, idInUrl, itemId, onFinished, isDelete, gender } = props
+  const { call, response, editABM, add, deleteCall, setEditObj, setCartel } = props
+  const finalId = data[itemId]
+  let finalURL = url
+  if ((editing || isDelete) && idInUrl && url?.slice(-1) !== '/')
+    finalURL = finalURL + '/' + finalId
+
+  const { response: responseWs, status } = await call({
+    method: isDelete ? 'DELETE' : editing && idInUrl ? 'PUT' : 'POST',
+    url: finalURL,
+    data,
+  })
+
+  if (status!! >= 200 && status!! < 300) {
+    if (isDelete) {
+      deleteCall(finalId)
+      setCartel({ visible: false })
+    } else if (editing) {
+      const item = response?.edit(data, responseWs)
+      editABM({ id: finalId, item: { ...item, edited: true } })
+      setEditObj(null)
+    } else {
+      const item = response?.new(data, responseWs)
+      add([item])
+      setEditObj(null)
+    }
+    onFinished && onFinished(isDelete ? 'delete' : editing ? 'update' : 'new', gender)
+  }
+}
+
+const getData = async ({ call, response, replace, params, url }: DataCallProps) => {
+  const { response: responseWs, status } = await call({
+    method: 'GET',
+    url,
+    params,
+  })
+
+  if (status!! >= 200 && status!! < 300) {
+    const { items, ...data } = response?.list(responseWs) || { page: 1 }
+    replace({ items: items || [], pagination: data })
+  }
 }
 
 export default memo((props: CrudProps) => {
@@ -87,8 +139,6 @@ export default memo((props: CrudProps) => {
     description,
     fields,
     table,
-    renderItem,
-    cardsPerRow,
     filtersPerRow,
     isFormData,
     onFinished,
@@ -105,117 +155,61 @@ export default memo((props: CrudProps) => {
 
   const lang = useLang()
   const called = useRef(false)
-  const getCallRef = useRef(false)
-  const lastCallRef = useRef<any>(null)
 
-  const { list, add, edit: editABM, replace, deleteCall, pagination, itemId } = useABM()
+  const { add, edit: editABM, replace, deleteCall, pagination, itemId } = useABM()
   const { loading, response: responseWS, call } = useAxios<any>({ onError })
 
-  // const [pagination, setPagination] = useState<PaginationProps>({ page: 1, limit: 10 })
   const [cartel, setCartel] = useState<CartelState>({ visible: false })
   const [toolbar, setToolbar] = useState(false)
   const [editObj, setEditObj] = useState<object | null>(null)
-  const [viewCards, setViewCards] = useState(false)
 
-  const { width } = useWindowSize()
-  const classes = useClasses({ titleSize })
+  const editing = useMemo(() => (editObj ? Object.keys(editObj!!).length > 0 : false), [editObj])
 
-  const editing = editObj ? Object.keys(editObj!!).length > 0 : false
-  const { deleted, item, edited } = useMemo(() => {
-    if (!responseWS) return {}
-    if (!response) {
-      const { borrado, item, _id } = responseWS
-      return {
-        deleted: { item: borrado, id: _id },
-        item,
-        edited: {
-          item,
-          id: _id,
-        },
-      }
-    }
-
-    return {
-      deleted: {
-        item: responseWS[response.delete.item],
-        id: responseWS[response.delete.id],
-      },
-      edited: {
-        item: responseWS[response.edit.item],
-        id: responseWS[response.edit.id],
-      },
-      item: responseWS[response.new],
-    }
-  }, [response, responseWS])
-
-  useEffect(() => {
-    if (lastCallRef.current === null) return
-    if (item && !edited?.id) {
-      add([item])
-      onFinished && onFinished('new', gender)
-      setEditObj(null)
-      // setPagination((state) => ({ ...state, totalDocs: (state.totalDocs || 0) + 1 }))
-      lastCallRef.current = null
-    } else if (edited && edited?.item) {
-      editABM({ id: edited.id, item: { ...edited.item, edited: true } })
-      onFinished && onFinished('update', gender)
-      setEditObj(null)
-      lastCallRef.current = null
-    } else if (deleted && deleted.item) {
-      if (table) {
-        deleteCall(deleted.id)
-        // setPagination((state) => ({ ...state, totalDocs: (state.totalDocs || 1) - 1 }))
-      } else {
-        editABM({ id: deleted.id, item: { ...deleted.item, deleted: true } })
-      }
-      onFinished && onFinished('delete', gender)
-      setCartel({ visible: false })
-      lastCallRef.current = null
-    }
-  }, [
-    item,
-    edited,
-    deleted,
-    onFinished,
-    setCartel,
-    add,
-    editABM,
-    gender,
-    table,
-    deleteCall,
+  const getDataCall = useCallback((params) => getData({ call, params, replace, response, url }), [
+    call,
+    replace,
+    response,
+    url,
   ])
-
-  const { data, docs, page } = useMemo(() => {
-    if (!responseWS) return {}
-    if (getCallRef.current === false) return {}
-    getCallRef.current = false
-    if (typeof response?.list === 'function') {
-      const { items, ...data } = response.list(responseWS) as any
-      return {
-        docs: items,
+  const postDataCall = useCallback(
+    (data, isDelete = false) =>
+      postData({
+        call,
+        replace,
+        response,
+        url,
         data,
-        page: data.page,
-      }
-    } else {
-      const data = responseWS[response?.list.data || 'data'] || { page: 1 }
-      return {
-        data,
-        docs: data[response?.list.items || 'docs'],
-        page: data[response?.list.page || 'page'],
-      }
-    }
-  }, [responseWS, response])
+        editing,
+        idInUrl,
+        itemId,
+        onFinished,
+        gender,
+        add,
+        editABM,
+        setEditObj,
+        deleteCall,
+        setCartel,
+        isDelete,
+      }),
+    [
+      call,
+      replace,
+      response,
+      url,
+      idInUrl,
+      editing,
+      itemId,
+      onFinished,
+      gender,
+      add,
+      editABM,
+      setEditObj,
+      deleteCall,
+      setCartel,
+    ],
+  )
 
-  useEffect(() => {
-    if (docs) {
-      // setPagination(data!!)
-      if (page === 1 || table) {
-        replace(docs, data)
-      } else {
-        add(docs)
-      }
-    }
-  }, [add, data, docs, page, replace, table])
+  const classes = useClasses({ titleSize })
 
   const interactions = useMemo(
     () => ({
@@ -239,21 +233,15 @@ export default memo((props: CrudProps) => {
         titulo: `${lang?.delete || 'Borrar'} ${name}`,
         onCerrar: (aceptado: boolean) => {
           if (aceptado) {
-            const data = { id: it[itemId] }
-            lastCallRef.current = data
-
-            let finalURL = url
-            if (idInUrl && url?.slice(-1) !== '/')
-              finalURL = finalURL + '/' + item[itemId]
-
-            call({ method: 'DELETE', data, url: finalURL })
+            const data = { [itemId]: it[itemId] }
+            postDataCall(data, true)
           } else {
             setCartel({ visible: false })
           }
         },
       })
     },
-    [call, name, url, lang, itemId, itemName, idInUrl],
+    [name, lang, itemId, itemName, postDataCall],
   )
 
   const filters = useMemo(() => {
@@ -299,15 +287,14 @@ export default memo((props: CrudProps) => {
     [fields],
   )
 
-  const order = useMemo(() => fields.flat().filter((e) => e.list?.sort), [fields])
+  // const order = useMemo(() => fields.flat().filter((e) => e.list?.sort), [fields])
 
   useEffect(() => {
     if (!called.current) {
-      call({ method: 'GET', url, params: interactions })
+      getDataCall(interactions)
       called.current = true
-      getCallRef.current = true
     }
-  }, [call, url, interactions])
+  }, [getDataCall, interactions])
 
   return (
     <div className={classes.contenedor}>
@@ -320,19 +307,6 @@ export default memo((props: CrudProps) => {
             } ${name}`}</Typography>
           </div>
           <div>
-            {table && renderItem && (
-              <FormControlLabel
-                control={
-                  <Switch
-                    onChange={() => setViewCards(!viewCards)}
-                    value={viewCards}
-                    color="primary"
-                  />
-                }
-                label={lang?.showCards || 'Cartas'}
-                labelPlacement="start"
-              />
-            )}
             {Object.keys(filters || {}).length > 0 && (
               <Button
                 color="primary"
@@ -344,24 +318,6 @@ export default memo((props: CrudProps) => {
                   lang?.filters || 'filtros'
                 }`}
               </Button>
-            )}
-            {!table && (
-              <Ordenado
-                que={name}
-                columnas={order}
-                onOrden={(ordenado) => {
-                  lastFilter.current = {
-                    ...lastFilter.current,
-                    [interaction?.sort || 'sort']: ordenado,
-                  }
-                  getCallRef.current = true
-                  call({
-                    method: 'GET',
-                    params: { ...interactions, ...lastFilter.current },
-                    url,
-                  })
-                }}
-              />
             )}
             <Button
               disabled={!!editObj}
@@ -386,17 +342,11 @@ export default memo((props: CrudProps) => {
                   [interaction?.filter || 'filter']: filtros,
                   [interaction?.page || 'page']: 1,
                 }
-                getCallRef.current = true
 
                 const finalParams = transformFilter
                   ? transformFilter(lastFilter.current)
                   : lastFilter.current
-
-                call({
-                  method: 'GET',
-                  params: finalParams,
-                  url,
-                })
+                getDataCall(finalParams)
               }}
               noValidate
             />
@@ -404,87 +354,38 @@ export default memo((props: CrudProps) => {
         )}
       </Collapse>
       <Divider className={classes.divisor} />
-      {loading && !table && <LinearProgress />}
+      {loading && <LinearProgress />}
       <Collapse in={!editObj} timeout="auto" unmountOnExit>
-        {(table && !viewCards && (
-          <AlTable
-            {...table}
-            loading={loading}
-            onSort={(newSort) => {
-              lastFilter.current = {
-                ...lastFilter.current,
-                [interaction?.sort || 'sort']: newSort,
-              }
-              getCallRef.current = true
-              call({
-                method: 'GET',
-                params: { ...interactions, ...lastFilter.current },
-                url,
-              })
-            }}
-            onChangePagination={(page, perPage) => {
-              getCallRef.current = true
-              call({
-                method: 'GET',
-                url,
-                params: {
-                  ...interactions,
-                  [interaction?.page || lang?.pagination?.page || 'page']: page,
-                  [interaction?.perPage ||
-                  lang?.pagination?.rowsPerPage ||
-                  'perPage']: perPage,
-                },
-              })
-            }}
-            columns={table.columns || fields}
-            onEdit={(rowData) => {
-              const { onEdit } = table
-              const editData = transformEdit ? transformEdit(rowData) : rowData
-              if (onEdit) onEdit(editData)
-              else onEditCall(editData)
-            }}
-            onDelete={(rowData) => {
-              const { onDelete } = table
-              if (onDelete) onDelete(rowData)
-              else onDeleteCall(rowData)
-            }}
-          />
-        )) ||
-          (renderItem && (
-            <div className={classes.items}>
-              {width &&
-                list.map((e: any) => (
-                  <AnimatedItem key={e[itemId]} edited={e.edited} deleted={e.deleted}>
-                    {renderItem({
-                      ...e,
-                      onEdit: () => onEditCall(e),
-                      onDelete: () => onDeleteCall(e),
-                      cardWidth: (width - 320) / (cardsPerRow || 3),
-                    })}
-                  </AnimatedItem>
-                ))}
-            </div>
-          ))}
-        {!loading && pagination.hasNextPage && !table && (
-          <div
-            className={classes.verMas}
-            onClick={() => {
-              lastFilter.current = {
-                ...lastFilter.current,
-                [interaction?.page || 'page']: pagination.nextPage,
-              }
-              getCallRef.current = true
-              call({
-                method: 'GET',
-                params: lastFilter.current,
-                url,
-              })
-            }}>
-            <Button variant="outlined" color="primary">
-              {lang?.seeMore || 'Ver más'}
-            </Button>
-          </div>
-        )}
+        <AlTable
+          {...table}
+          loading={loading}
+          onSort={(newSort) => {
+            lastFilter.current = {
+              ...lastFilter.current,
+              [interaction?.sort || 'sort']: newSort,
+            }
+            getDataCall({ ...interactions, ...lastFilter.current })
+          }}
+          onChangePagination={(page, perPage) => {
+            getDataCall({
+              ...interactions,
+              [interaction?.page || lang?.pagination?.page || 'page']: page,
+              [interaction?.perPage || lang?.pagination?.rowsPerPage || 'perPage']: perPage,
+            })
+          }}
+          columns={table.columns || fields}
+          onEdit={(rowData) => {
+            const { onEdit } = table
+            const editData = transformEdit ? transformEdit(rowData) : rowData
+            if (onEdit) onEdit(editData)
+            else onEditCall(editData)
+          }}
+          onDelete={(rowData) => {
+            const { onDelete } = table
+            if (onDelete) onDelete(rowData)
+            else onDeleteCall(rowData)
+          }}
+        />
       </Collapse>
       <Collapse in={!!editObj} timeout="auto" unmountOnExit>
         <CenteredCard
@@ -518,17 +419,7 @@ export default memo((props: CrudProps) => {
                   allowEmptyArrays: true,
                 })
               }
-
-              lastCallRef.current = data
-              let finalURL = url
-              if (editing && idInUrl && url?.slice(-1) !== '/')
-                finalURL = finalURL + '/' + vals[itemId]
-
-              call({
-                method: editing && idInUrl ? 'PUT' : 'POST',
-                data,
-                url: finalURL,
-              })
+              postDataCall(data)
             }}
           />
         </CenteredCard>

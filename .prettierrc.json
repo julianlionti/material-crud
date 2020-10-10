@@ -5,5 +5,5 @@
   "trailingComma": "all",
   "semi": false,
   "parser": "typescript",
-  "printWidth": 90
+  "printWidth": 100
 }

@@ -13,6 +13,11 @@ interface ProviderProps {
   itemId?: 'id' | '_id' | string
 }
 
+export interface ReplaceProps<T = any> {
+  items: T[]
+  pagination: PaginationProps
+}
+
 export interface PaginationProps {
   hasNextPage?: boolean
   nextPage?: number
@@ -97,7 +102,7 @@ export const useABM = <T extends object>() => {
   )
 
   const replace = useCallback(
-    (items: T[], pagination: PaginationProps) =>
+    ({ pagination, items }: ReplaceProps) =>
       setConfig((acc) => ({ pagination, list: items, itemId: acc.itemId })),
     [setConfig],
   )

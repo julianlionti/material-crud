@@ -1,7 +1,6 @@
 import { useReducer, useRef, useCallback, useEffect } from 'react'
 import axios, { AxiosRequestConfig, AxiosError } from 'axios'
 import { useUser } from './CrudContext'
-// import { useSnackbar } from 'notistack'
 
 export interface Error {
   message: string
@@ -13,8 +12,12 @@ export interface useAxiosProps {
   onError?: (error: Error) => void
 }
 
+export type CallProps = (
+  props: AxiosRequestConfig,
+  authorize?: boolean,
+) => Promise<CallResponse>
 interface Response<T> extends Status<T> {
-  call: (props: AxiosRequestConfig, authorize?: boolean) => void
+  call: CallProps
 }
 
 export interface ErrorResponse {
@@ -26,6 +29,12 @@ interface Status<T = any> {
   loading?: boolean
   error?: ErrorResponse
   response?: T
+}
+
+export interface CallResponse<T = any> {
+  error?: ErrorResponse
+  response?: T
+  status?: number
 }
 
 const initial: Status = {
@@ -43,6 +52,7 @@ export const callWs = async <T extends any>(
 ) => {
   let response: undefined | T
   let error: undefined | ErrorResponse
+  let status: undefined | number
 
   try {
     let final = config
@@ -52,8 +62,9 @@ export const callWs = async <T extends any>(
         headers: { ...config.headers, ...headers },
       }
     }
-    const { data } = await axios(final)
+    const { data, status: s } = await axios(final)
     response = data
+    status = s
   } catch (ex) {
     const { response } = ex as AxiosError<ErrorResponse>
     if (response?.status === 500) {
@@ -61,9 +72,10 @@ export const callWs = async <T extends any>(
     } else {
       error = response?.data
     }
+    status = response?.status
   }
 
-  return { error, response }
+  return { error, response, status }
 }
 
 export default <T extends any = any>(props?: useAxiosProps): Response<T> => {
@@ -95,10 +107,12 @@ export default <T extends any = any>(props?: useAxiosProps): Response<T> => {
       if (!calling.current) {
         calling.current = true
         dispatch({ loading: true, error: undefined, response: undefined })
-        const { error, response } = await callWs(config, headers)
+        const { error, response, status } = await callWs(config, headers)
         dispatch({ loading: false, response, error })
         calling.current = false
+        return { response, error, status }
       }
+      return {}
     },
     [headers],
   )

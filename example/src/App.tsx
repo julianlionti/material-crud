@@ -1,7 +1,6 @@
 import React from 'react'
 import { BrowserRouter, Switch, Route, Link } from 'react-router-dom'
 import FormExample from './FormExample'
-import CrudExample from './CrudExample'
 import { CrudProvider } from 'material-crud'
 import Prueba from './Prueba'
 import TableExample from './TableExample'
@@ -49,7 +48,6 @@ const App = () => {
             )}
           />
           <Route path="/form" component={FormExample} />
-          <Route path="/crud" component={CrudExample} />
           <Route path="/table" component={TableExample} />
           <Route path="/child" component={ChildTable} />
           <Route
