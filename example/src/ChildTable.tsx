@@ -37,33 +37,20 @@ const campos = createFields(() => [
     title: 'Nombre',
     placeholder: 'Nombre de la categoría',
     type: Types.Input,
-    list: {
-      width: 3,
-      filter: true,
-      sort: true,
-      align: 'center',
-    },
+    list: { width: 3, sort: true, align: 'center' },
   },
   {
     id: 'descripcion',
     title: 'Descripción',
     placeholder: 'Descripción de la categoría',
     type: Types.Multiline,
-    list: {
-      width: 3,
-      filter: true,
-      sort: true,
-    },
+    list: { width: 3, sort: true },
   },
   {
     id: 'requiereNormativa',
     type: Types.Switch,
     title: 'Requiere normativa',
-    list: {
-      width: 3,
-      sort: true,
-      align: 'center',
-    },
+    list: { width: 3, sort: true, align: 'center' },
   },
 ])
 
@@ -75,23 +62,20 @@ export default () => {
       url={'http://localhost:5050/api/categoria'}
       gender="F"
       name="Categoria"
-      fields={campos}
       description={'Los productos tendrán asociada una o más categorías.'}
-      table={{
-        columns: campos,
-        height: height - 100,
-        edit: true,
-        deleteRow: true,
-        rowHeight: 80,
-        showSelecting: true,
-        // rightToolbar: () => {
-        //   return (
-        //     <IconButton size="small">
-        //       <FaTrash />
-        //     </IconButton>
-        //   )
-        // },
-      }}
+      columns={campos}
+      height={height - 100}
+      edit={true}
+      deleteRow={true}
+      rowHeight={80}
+      showSelecting={true}
+      // rightToolbar: () => {
+      //   return (
+      //     <IconButton size="small">
+      //       <FaTrash />
+      //     </IconButton>
+      //   )
+      // },
       response={{
         list: ({ data }) => ({
           items: data.docs,

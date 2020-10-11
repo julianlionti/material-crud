@@ -5,7 +5,6 @@ import { AlImagenProps } from '../Form/AlImagen'
 import { ComunesProps, Types } from '../Form/Types'
 import { CamposProps } from '../Form'
 import { useABM } from '../../utils/DataContext'
-import { ListChildComponentProps } from 'react-window'
 
 interface ComponentProps {
   rowData: any
@@ -14,18 +13,15 @@ interface ComponentProps {
 }
 
 export interface ColumnProps {
-  filter?: boolean
   sort?: boolean
   width?: number
   height?: number
   align?: 'center' | 'flex-start' | 'flex-end'
   cellComponent?: (props: ComponentProps) => ReactNode
   content?: (rowData: any) => ReactNode
-  fields?: CamposProps[]
 }
 
-export type FieldAndColProps = Exclude<ComunesProps, 'list'> &
-  ColumnProps & { type: Types }
+export type FieldAndColProps = Exclude<ComunesProps, 'list'> & ColumnProps & { type: Types }
 
 interface Props {
   rowHeight: number
@@ -67,11 +63,7 @@ export default memo((props: PropsWithChildren<Props>) => {
         )
       }
       case Types.Switch:
-        return cellData ? (
-          <FaCheck size={18} color="green" />
-        ) : (
-          <FaTimes size={18} color="red" />
-        )
+        return cellData ? <FaCheck size={18} color="green" /> : <FaTimes size={18} color="red" />
       default:
         return String(cellData)
     }

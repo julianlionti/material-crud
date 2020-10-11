@@ -26,24 +26,21 @@ export interface AlSelectProps extends ComunesProps {
 
 type SelectFilter = Filter<string>
 export default memo((props: AlSelectProps) => {
-  const { id, title, placeholder, validate, list, grow, options, loading, hide } = props
-  const [{ value }, { error, touched }, { setValue }] = useField<string | SelectFilter>(
-    id,
-  )
+  const { id, title, placeholder, validate, list, grow, options, loading, hide, filter } = props
+  const [{ value }, { error, touched }, { setValue }] = useField<string | SelectFilter>(id)
 
   const lang = useLang()
   const { select } = useFilters()
   const [anchorFilter, setAnchorFilter] = useState<HTMLElement | null>(null)
 
-  const isFiltering = list?.filter
-  const finalTitle = `${title} ${!list?.filter && validate ? '*' : ''}`
+  const finalTitle = `${title} ${filter && validate ? '*' : ''}`
 
   const finalValue = useMemo(() => {
-    if (isFiltering) {
+    if (filter) {
       return (value as SelectFilter).value
     }
     return value as string
-  }, [isFiltering, value])
+  }, [value, filter])
 
   return (
     <BaseInput grow={grow} ocultar={hide}>
@@ -52,7 +49,7 @@ export default memo((props: AlSelectProps) => {
           <InputLabel htmlFor={id}>{finalTitle}</InputLabel>
           <Select
             startAdornment={
-              list?.filter && (
+              filter && (
                 <Tooltip title={lang?.tooltips.defineFilter || 'Definir TIPO de filtro'}>
                   <IconButton onClick={(e) => setAnchorFilter(e.currentTarget)}>
                     {select!!.find((e) => e.id === (value as SelectFilter).filter)?.icon}
@@ -66,7 +63,7 @@ export default memo((props: AlSelectProps) => {
             id={`${id}-select`}
             value={finalValue}
             onChange={({ target: { value: valInput } }) => {
-              if (isFiltering) {
+              if (filter) {
                 setValue({
                   filter: (value as SelectFilter).filter,
                   value: valInput as string,
@@ -88,7 +85,7 @@ export default memo((props: AlSelectProps) => {
           {touched && error && <FormHelperText id={id}>{error}</FormHelperText>}
         </FormControl>
       </div>
-      {list?.filter && (
+      {filter && (
         <Menu anchorEl={anchorFilter} open={!!anchorFilter}>
           {select!!.map((e) => (
             <MenuItem

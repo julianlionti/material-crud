@@ -4,7 +4,6 @@ import { Button, CircularProgress, makeStyles } from '@material-ui/core'
 import * as Yup from 'yup'
 import { Types, BaseProps } from './Types'
 import AlCustom, { AlCustomProps } from './AlCustom'
-
 import AlInput, { AlInputProps } from './AlInput'
 import AlSelect, { AlSelectProps } from './AlSelect'
 import AlImagen, { AlImagenProps } from './AlImagen'
