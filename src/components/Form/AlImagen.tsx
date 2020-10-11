@@ -1,11 +1,5 @@
 import React, { useState, memo, useMemo, ReactNode, useCallback } from 'react'
-import {
-  makeStyles,
-  IconButton,
-  Typography,
-  CircularProgress,
-  Collapse,
-} from '@material-ui/core'
+import { makeStyles, IconButton, Typography, CircularProgress, Collapse } from '@material-ui/core'
 import { ReactComponent as Camara } from '../../assets/icons/camera.svg'
 import { useField } from 'formik'
 import { red } from '@material-ui/core/colors'
@@ -26,9 +20,7 @@ export default memo((props: AlImagenProps) => {
   const lang = useLang()
   const { id, loading, grow, baseURL, ImgButton, type, renderPreview } = props
   const [base64, setBase64] = useState<string | null>(null)
-  const [{ value }, { error }, { setValue, setTouched }] = useField<string | File | null>(
-    id,
-  )
+  const [{ value }, { error }, { setValue, setTouched }] = useField<string | File | null>(id)
   const [subiendo, setSubiendo] = useState(false)
 
   const camaraId = `camara-${id}`
@@ -66,11 +58,7 @@ export default memo((props: AlImagenProps) => {
       return <span>Es necesario renderizar el resultado con el 'renderPreview'</span>
     } else {
       if (ImgButton) return ImgButton
-      return isImage ? (
-        <FaCamera className={clases.icono} />
-      ) : (
-        <FaFile className={clases.icono} />
-      )
+      return isImage ? <FaCamera className={clases.icono} /> : <FaFile className={clases.icono} />
     }
   }, [srcFinal, value, isImage, ImgButton, clases, base64, id, renderPreview])
 

@@ -1,12 +1,4 @@
-import React, {
-  useMemo,
-  ReactNode,
-  useEffect,
-  useRef,
-  useCallback,
-  memo,
-  useState,
-} from 'react'
+import React, { useMemo, ReactNode, useEffect, useRef, useCallback, memo, useState } from 'react'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import { useField } from 'formik'
 import {
@@ -54,7 +46,7 @@ export default memo((props: AlAutocompleteProps) => {
     renderAggregate,
     grow,
     validate,
-    list,
+    filter,
   } = props
   const lang = useLang()
   const { autocomplete } = useFilters()
@@ -82,16 +74,15 @@ export default memo((props: AlAutocompleteProps) => {
     [value],
   )
 
-  const finalTitle = `${title} ${!list?.filter && validate ? '*' : ''}`
+  const finalTitle = `${title} ${filter && validate ? '*' : ''}`
 
-  const isFiltering = list?.filter
   const finalValue = useMemo(() => {
-    if (isFiltering) {
+    if (filter) {
       return (value as AutoFilter).value
     } else {
       return value as AutoValue
     }
-  }, [isFiltering, value])
+  }, [value])
 
   return (
     <BaseInput grow={grow}>
@@ -102,9 +93,9 @@ export default memo((props: AlAutocompleteProps) => {
         value={finalValue}
         noOptionsText={lang?.noOptions || 'Sin opciones'}
         onChange={(_, vals) => {
-          if (isFiltering) {
+          if (filter) {
             setValue({ filter: (value as AutoFilter).filter, value: vals })
-          } else if (!isFiltering) setValue(vals)
+          } else if (!filter) setValue(vals)
         }}
         onInputChange={(_, texto) => {
           if (texto.length > 0) onChangeText(texto)
@@ -117,15 +108,12 @@ export default memo((props: AlAutocompleteProps) => {
             InputProps={{
               ...InputProps,
               startAdornment: [
-                list?.filter && (
+                filter && (
                   <Tooltip
                     key="filter"
                     title={lang?.tooltips.defineFilter || 'Definir TIPO de filtro'}>
                     <IconButton onClick={(e) => setAnchorFilter(e.currentTarget)}>
-                      {
-                        autocomplete!!.find((e) => e.id === (value as AutoFilter).filter)
-                          ?.icon
-                      }
+                      {autocomplete!!.find((e) => e.id === (value as AutoFilter).filter)?.icon}
                     </IconButton>
                   </Tooltip>
                 ),
@@ -162,7 +150,7 @@ export default memo((props: AlAutocompleteProps) => {
           })}
         </Paper>
       )}
-      {list?.filter && (
+      {filter && (
         <Menu anchorEl={anchorFilter} open={!!anchorFilter}>
           {autocomplete!!.map((e) => (
             <MenuItem

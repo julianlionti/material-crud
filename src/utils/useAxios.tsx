@@ -12,10 +12,7 @@ export interface useAxiosProps {
   onError?: (error: Error) => void
 }
 
-export type CallProps = (
-  props: AxiosRequestConfig,
-  authorize?: boolean,
-) => Promise<CallResponse>
+export type CallProps = (props: AxiosRequestConfig, authorize?: boolean) => Promise<CallResponse>
 interface Response<T> extends Status<T> {
   call: CallProps
 }
@@ -46,10 +43,7 @@ const reducer = (status: Status, action: Status): Status => ({
   ...action,
 })
 
-export const callWs = async <T extends any>(
-  config: AxiosRequestConfig,
-  headers?: any | null,
-) => {
+export const callWs = async <T extends any>(config: AxiosRequestConfig, headers?: any | null) => {
   let response: undefined | T
   let error: undefined | ErrorResponse
   let status: undefined | number

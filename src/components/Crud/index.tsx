@@ -41,14 +41,13 @@ interface ResponseProps {
   edit: (data: any, responseWs?: any) => any
 }
 
-export interface CrudProps {
+export interface CrudProps extends TableProps {
   url: string
   name: string
   titleSize?: number
   gender?: 'M' | 'F'
   description: string
-  fields: CamposProps[]
-  table: TableProps
+  columns: CamposProps[]
   filtersPerRow?: number
   isFormData?: boolean
   onFinished?: (what: 'new' | 'update' | 'delete', genero?: 'M' | 'F') => void
@@ -132,32 +131,16 @@ const getData = async ({ call, response, replace, params, url }: DataCallProps) 
 
 export default memo((props: CrudProps) => {
   const lastFilter = useRef<any>({})
-  const {
-    url,
-    name,
-    gender,
-    description,
-    fields,
-    table,
-    filtersPerRow,
-    isFormData,
-    onFinished,
-    titleSize,
-    onError,
-    Left,
-    idInUrl,
-    response,
-    itemName,
-    interaction,
-    transformEdit,
-    transformFilter,
-  } = props
+
+  const { url, response, interaction, onFinished, onError } = props
+  const { Left, gender, description, isFormData, transformEdit, transformFilter } = props
+  const { name, columns, filtersPerRow, titleSize, idInUrl, itemName } = props
 
   const lang = useLang()
   const called = useRef(false)
 
   const { add, edit: editABM, replace, deleteCall, pagination, itemId } = useABM()
-  const { loading, response: responseWS, call } = useAxios<any>({ onError })
+  const { loading, call } = useAxios<any>({ onError })
 
   const [cartel, setCartel] = useState<CartelState>({ visible: false })
   const [toolbar, setToolbar] = useState(false)
@@ -245,9 +228,12 @@ export default memo((props: CrudProps) => {
   )
 
   const filters = useMemo(() => {
-    const items = fields
+    const items = columns
       .flat()
-      .filter((e) => e.list?.filter)
+      .filter((e) => {
+        if (e.type === Types.Expandable) return false
+        return e.filter
+      })
       .map((props) => {
         if (props.type !== Types.Expandable) {
           const { grow, ...etc } = props
@@ -260,11 +246,11 @@ export default memo((props: CrudProps) => {
     return new Array(Math.ceil(items.length / columnas))
       .fill(null)
       .map((_) => items.splice(0, columnas))
-  }, [filtersPerRow, fields])
+  }, [filtersPerRow, columns])
 
   const fieldsWithoutFilters = useMemo(
     () =>
-      fields
+      columns
         .filter((e) => {
           if (!Array.isArray(e)) {
             if (e.type === Types.Expandable) return false
@@ -284,10 +270,8 @@ export default memo((props: CrudProps) => {
           const { list, ...etc } = cam
           return etc
         }),
-    [fields],
+    [columns],
   )
-
-  // const order = useMemo(() => fields.flat().filter((e) => e.list?.sort), [fields])
 
   useEffect(() => {
     if (!called.current) {
@@ -357,7 +341,7 @@ export default memo((props: CrudProps) => {
       {loading && <LinearProgress />}
       <Collapse in={!editObj} timeout="auto" unmountOnExit>
         <AlTable
-          {...table}
+          {...props}
           loading={loading}
           onSort={(newSort) => {
             lastFilter.current = {
@@ -373,15 +357,14 @@ export default memo((props: CrudProps) => {
               [interaction?.perPage || lang?.pagination?.rowsPerPage || 'perPage']: perPage,
             })
           }}
-          columns={table.columns || fields}
           onEdit={(rowData) => {
-            const { onEdit } = table
+            const { onEdit } = props
             const editData = transformEdit ? transformEdit(rowData) : rowData
             if (onEdit) onEdit(editData)
             else onEditCall(editData)
           }}
           onDelete={(rowData) => {
-            const { onDelete } = table
+            const { onDelete } = props
             if (onDelete) onDelete(rowData)
             else onDeleteCall(rowData)
           }}
