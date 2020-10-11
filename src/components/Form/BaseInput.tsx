@@ -1,5 +1,6 @@
 import React, { memo, ReactNode } from 'react'
 import { makeStyles, Collapse } from '@material-ui/core'
+import AriaLabels from '../../utils/AriaLabels'
 
 interface Props {
   children: ReactNode
@@ -13,7 +14,7 @@ export default memo(({ children, grow, fullWidth, centrado, ocultar }: Props) =>
   const clases = useClases({ grow, fullWidth, centrado })
   return (
     <Collapse className={clases.input} in={!ocultar} unmountOnExit timeout="auto">
-      {children}
+      <div aria-label={AriaLabels.BaseInput}> {children}</div>
     </Collapse>
   )
 })

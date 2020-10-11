@@ -1,11 +1,10 @@
 import { createTranslation } from './index'
 
 export const esAR = createTranslation({
-  showCards: 'Cartas',
   listOf: 'Listado de',
+  add: 'Agregar nuev',
   new: 'Nuev',
   edit: 'Editar',
-  add: 'Agregar nuev',
   delete: 'Borrar',
   crudCol: 'Acciones',
   selected: 'seleccionados',
@@ -20,10 +19,10 @@ export const esAR = createTranslation({
     greater: 'Mayor',
     lower: 'Menor',
   },
-  filters: 'filtros',
-  sort: 'Orgenar',
   open: 'Abrir',
   close: 'Cerrar',
+  filters: 'filtros',
+  sort: 'Orgenar',
   seeMore: 'Ver más',
   noOptions: 'Sin opciones',
   noResults: 'No se encontraron resultados',
@@ -52,4 +51,5 @@ export const esAR = createTranslation({
     cancel: 'Cancelar',
     accept: 'Aceptar',
   },
+  serverError: 'Error en el servidor',
 })

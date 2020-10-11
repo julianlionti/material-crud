@@ -9,29 +9,29 @@ import React, {
   useState,
 } from 'react'
 import { Translations } from '../translate'
+import { enUS } from '../translate/en_us'
 
 interface Context<T = any> {
   user?: T | null
   headers?: {} | null
-  lang?: Translations | null
+  lang: Translations
 }
 
-interface ProviderProps<T> extends Context<T> {
+interface ProviderProps<T> {
   children: ReactNode
   onUser?: (user: T | null) => void
+  user?: T | null
+  headers?: {} | null
+  lang?: Translations
 }
 
 const CrudContext = createContext<[Context, Dispatch<SetStateAction<Context>>]>([
-  {},
+  { lang: enUS },
   () => {},
 ])
 
-export const CrudProvider = <T extends any>({
-  children,
-  onUser,
-  ...context
-}: ProviderProps<T>) => {
-  const state = useState<Context<T>>(context)
+export const CrudProvider = <T extends any>({ children, onUser, ...context }: ProviderProps<T>) => {
+  const state = useState<Context<T>>({ ...context, lang: context.lang || enUS })
   const [{ user }] = state
   useEffect(() => {
     if (onUser && user !== undefined) {
@@ -49,10 +49,9 @@ export const useLang = () => {
 export const useUser = <T extends any = any>() => {
   const [configuration, setConfiguration] = useContext(CrudContext)
 
-  const setUser = useCallback(
-    (user: T | null) => setConfiguration((conf) => ({ ...conf, user })),
-    [setConfiguration],
-  )
+  const setUser = useCallback((user: T | null) => setConfiguration((conf) => ({ ...conf, user })), [
+    setConfiguration,
+  ])
 
   const setHeaders = useCallback(
     (headers: any) => setConfiguration((conf) => ({ ...conf, headers })),

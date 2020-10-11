@@ -42,7 +42,7 @@ const App = () => {
                   <Link to="/child">ChildTable</Link>
                 </li>
                 <li>
-                  <Link to="/prueba">Test Component</Link>
+                  <Link to="/prueba">Prueba</Link>
                 </li>
               </ul>
             )}
@@ -50,14 +50,7 @@ const App = () => {
           <Route path="/form" component={FormExample} />
           <Route path="/table" component={TableExample} />
           <Route path="/child" component={ChildTable} />
-          <Route
-            path="/prueba"
-            component={(props: any) => (
-              <CrudProvider>
-                <Prueba height={350} deleteRow edit {...props} />
-              </CrudProvider>
-            )}
-          />
+          <Route path="/prueba" component={Prueba} />
         </Switch>
       </BrowserRouter>
     </CrudProvider>

@@ -26,19 +26,14 @@ export interface CRUD {
   cardWidth: number
 }
 
-interface ListConfiguration extends PaginationProps {
-  data: string
-  items: string
-}
-
 interface OnFlyResponse extends PaginationProps {
   items: any[]
 }
 
 interface ResponseProps {
   list: (data: any) => OnFlyResponse
-  new: (data: any, responseWs?: any) => any
-  edit: (data: any, responseWs?: any) => any
+  new?: (data: any, responseWs?: any) => any
+  edit?: (data: any, responseWs?: any) => any
 }
 
 export interface CrudProps extends TableProps {
@@ -103,11 +98,11 @@ const postData = async (props: NoGetCallProps) => {
     if (isDelete) {
       deleteCall(finalId)
       setCartel({ visible: false })
-    } else if (editing) {
-      const item = response?.edit(data, responseWs)
+    } else if (editing && response.edit) {
+      const item = response.edit(data, responseWs)
       editABM({ id: finalId, item: { ...item, edited: true } })
       setEditObj(null)
-    } else {
+    } else if (response.new) {
       const item = response?.new(data, responseWs)
       add([item])
       setEditObj(null)
@@ -210,10 +205,10 @@ export default memo((props: CrudProps) => {
       setCartel({
         visible: true,
         contenido:
-          itemName && lang?.delExplanation
+          itemName && lang.delExplanation
             ? lang.delExplanation(it[itemName])
             : "Para setear este texto es necesario incluir el 'itemName' y 'lang'",
-        titulo: `${lang?.delete || 'Borrar'} ${name}`,
+        titulo: `${lang.delete} ${name}`,
         onCerrar: (aceptado: boolean) => {
           if (aceptado) {
             const data = { [itemId]: it[itemId] }
@@ -265,9 +260,14 @@ export default memo((props: CrudProps) => {
                 if (e.type === Types.Expandable) return false
                 return e.edit !== false
               })
-              .map(({ list, ...etc }) => etc)
+              .map((e) => {
+                if (e.type === Types.Expandable) return e
+                const { filter, ...etc } = e
+                return etc
+              })
           }
-          const { list, ...etc } = cam
+          if (cam.type === Types.Expandable) return cam
+          const { filter, ...etc } = cam
           return etc
         }),
     [columns],
@@ -287,7 +287,7 @@ export default memo((props: CrudProps) => {
           <div className={classes.leftComponent}>
             {Left && <div hidden={loading}>{Left}</div>}
             <Typography gutterBottom={false} variant="h1" className={classes.title}>{`${
-              toolbar ? lang?.filter || 'Filtrar' : lang?.listOf || 'Listado de '
+              toolbar ? lang.filter : lang.listOf
             } ${name}`}</Typography>
           </div>
           <div>
@@ -298,9 +298,7 @@ export default memo((props: CrudProps) => {
                 disabled={!!editObj}
                 className={classes.colapseBtn}
                 onClick={() => setToolbar((t) => !t)}>
-                {`${toolbar ? lang?.close || 'Cerrar' : lang?.open || 'Abrir'} ${
-                  lang?.filters || 'filtros'
-                }`}
+                {`${toolbar ? lang.close : lang.open} ${lang.filters}`}
               </Button>
             )}
             <Button
@@ -309,16 +307,14 @@ export default memo((props: CrudProps) => {
               variant="outlined"
               className={classes.nuevoBtn}
               onClick={() => setEditObj({})}>
-              {`${lang?.add || 'Agregar nuev'}${
-                gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''
-              } ${name}`}
+              {`${lang.add}${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''} ${name}`}
             </Button>
           </div>
         </div>
         {filters && (
           <Collapse in={toolbar} timeout="auto" unmountOnExit>
             <Formulario
-              accept={lang?.filter || 'Filtrar'}
+              accept={lang.filter}
               fields={filters}
               onSubmit={(filtros) => {
                 lastFilter.current = {
@@ -353,8 +349,8 @@ export default memo((props: CrudProps) => {
           onChangePagination={(page, perPage) => {
             getDataCall({
               ...interactions,
-              [interaction?.page || lang?.pagination?.page || 'page']: page,
-              [interaction?.perPage || lang?.pagination?.rowsPerPage || 'perPage']: perPage,
+              [interaction?.page || lang.pagination?.page || 'page']: page,
+              [interaction?.perPage || lang.pagination?.rowsPerPage || 'perPage']: perPage,
             })
           }}
           onEdit={(rowData) => {
@@ -375,8 +371,8 @@ export default memo((props: CrudProps) => {
           onClose={() => setEditObj(null)}
           title={`${
             editing
-              ? lang?.edit || 'Editar '
-              : lang?.new
+              ? lang.edit
+              : lang.new
               ? `${lang.new}${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
               : `Nuev${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
           } ${name}`}
@@ -386,12 +382,8 @@ export default memo((props: CrudProps) => {
             loading={loading}
             accept={
               editing
-                ? lang?.edit || 'Editar'
-                : lang?.add
-                ? `${lang?.add || 'Agregar nuev'}${
-                    gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''
-                  } ${name}`
-                : 'Agregar'
+                ? lang.edit
+                : `${lang.add}${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''} ${name}`
             }
             fields={fieldsWithoutFilters}
             onSubmit={(vals) => {

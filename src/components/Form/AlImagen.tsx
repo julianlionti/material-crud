@@ -39,13 +39,13 @@ export default memo((props: AlImagenProps) => {
 
   const renderExplanation = useCallback(() => {
     if (value === null && isImage) {
-      return lang?.inputs?.image.new || 'Haga click en la camara para subir una imagen:'
+      return lang.inputs!!.image.new
     } else if (value === null && !isImage) {
-      return lang?.inputs?.file.new || 'Haga click abajo para subir una imagen:'
+      return lang.inputs!!.file.new
     } else if (value !== null && isImage) {
-      return lang?.inputs?.image.edit || 'Haga click en el icono para subir un archivo:'
+      return lang.inputs!!.image.edit
     } else {
-      return lang?.inputs?.file.edit || 'Haga click abajo para editar el archivo:'
+      return lang.inputs!!.file.edit
     }
   }, [value, isImage, lang])
 

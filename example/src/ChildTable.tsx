@@ -8,6 +8,7 @@ const campos = createFields(() => [
     id: 'normativas',
     type: Types.Expandable,
     title: 'Normativas',
+    filter: true,
     list: {
       align: 'flex-start',
       width: 1,
@@ -37,6 +38,7 @@ const campos = createFields(() => [
     title: 'Nombre',
     placeholder: 'Nombre de la categoría',
     type: Types.Input,
+    filter: true,
     list: { width: 3, sort: true, align: 'center' },
   },
   {
@@ -44,12 +46,14 @@ const campos = createFields(() => [
     title: 'Descripción',
     placeholder: 'Descripción de la categoría',
     type: Types.Multiline,
+    filter: true,
     list: { width: 3, sort: true },
   },
   {
     id: 'requiereNormativa',
     type: Types.Switch,
     title: 'Requiere normativa',
+    filter: true,
     list: { width: 3, sort: true, align: 'center' },
   },
 ])
@@ -60,7 +64,6 @@ export default () => {
   return (
     <Crud
       url={'http://localhost:5050/api/categoria'}
-      gender="F"
       name="Categoria"
       description={'Los productos tendrán asociada una o más categorías.'}
       columns={campos}

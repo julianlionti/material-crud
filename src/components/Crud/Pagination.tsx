@@ -20,7 +20,9 @@ export default memo(({ onChange }: Props) => {
     <div style={{ width: '100%' }} className={classes.pagContainer}>
       <Collapse in={!!totalDocs} timeout="auto">
         <div style={{ display: 'flex', alignItems: 'center', padding: 8 }}>
-          <Typography>{`${lang?.pagination?.totalCount} ${totalDocs} - ${lang?.pagination?.rowsPerPage}:`}</Typography>
+          <Typography>{`${lang.pagination!!.totalCount} ${totalDocs} - ${
+            lang.pagination!!.rowsPerPage
+          }:`}</Typography>
           <Select
             className={classes.perPage}
             value={limit}
@@ -30,7 +32,7 @@ export default memo(({ onChange }: Props) => {
                 {String(e)}
               </MenuItem>
             ))}
-            <MenuItem value={-1}>{lang?.pagination?.all || 'TODOS'}</MenuItem>
+            <MenuItem value={-1}>{lang.pagination!!.all}</MenuItem>
           </Select>
         </div>
       </Collapse>

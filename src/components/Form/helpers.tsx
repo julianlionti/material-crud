@@ -22,6 +22,11 @@ export const generateDefault = (item: TodosProps): DefResponse => {
       case Types.Switch: {
         return { value: false, filter: 'equal' }
       }
+      case Types.Multiline:
+      case Types.Email:
+      case Types.Phone:
+      case Types.Input:
+        return { value: '', filter: 'contains' }
       default:
         return { value: '', filter: 'equal' }
     }
