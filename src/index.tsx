@@ -1,4 +1,3 @@
-import { CRUD as CrudItem } from './components/Crud'
 import Form, { createFields } from './components/Form'
 import { Types } from './components/Form/Types'
 
@@ -7,16 +6,20 @@ import Dialog from './components/UI/Dialog'
 import { createTranslation } from './translate'
 
 import { DataProvider, useABM } from './utils/DataContext'
-import useAxios, { callWs, useAxiosProps } from './utils/useAxios'
+import useAxios, { callWs } from './utils/useAxios'
 import useWindowSize from './utils/useWindowSize'
-import { CustomComponentProps } from './components/Form/AlCustom'
 
 import { CrudProvider, useUser, useLang } from './utils/CrudContext'
-import AlTable, { TableProps } from './components/Crud/TableWindow'
+import AlTable from './components/Crud/TableWindow'
 import Crud from './components/Crud/WithProvider'
 
 import { esAR } from './translate/es_ar'
 import { enUS } from './translate/en_us'
+
+export type { CRUD as CrudItem } from './components/Crud'
+export type { CustomComponentProps } from './components/Form/AlCustom'
+export type { TableProps } from './components/Crud/TableWindow'
+export type { useAxiosProps } from './utils/useAxios'
 
 export {
   Crud,
@@ -31,14 +34,10 @@ export {
   Types,
   createFields,
   createTranslation,
-  CrudItem,
-  CustomComponentProps,
   CrudProvider,
   useUser,
   useLang,
-  TableProps,
   AlTable as CrudTable,
-  useAxiosProps,
   esAR,
   enUS,
 }

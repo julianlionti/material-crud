@@ -10,7 +10,7 @@ import {
 import { Types } from '../Form/Types'
 import { FieldAndColProps } from './CustomCell'
 
-interface SortProps {
+export interface SortProps {
   [key: string]: 1 | -1 | 0
 }
 
@@ -59,8 +59,7 @@ export default ({ col, onSort, children, rowHeight }: Props) => {
           return setSort((orden) => {
             const final: SortProps = {
               ...orden,
-              [col.id!!]:
-                orden[col.id!!] === undefined ? 1 : orden[col.id!!] === 1 ? -1 : 0,
+              [col.id!!]: orden[col.id!!] === undefined ? 1 : orden[col.id!!] === 1 ? -1 : 0,
             }
             Object.keys(final).forEach((el) => {
               if (final[el] === 0) {

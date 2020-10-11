@@ -5,12 +5,13 @@ import { FaPlus, FaTrash } from 'react-icons/fa'
 import BaseInput from './BaseInput'
 import AlInput from './AlInput'
 import { Types, ComunesProps } from './Types'
-import { generateDefault, TodosProps } from '.'
+import { TodosProps } from '.'
 import AlSelect from './AlSelect'
 import AlImagen from './AlImagen'
 import AlAutocomplete from './AlAutocomplete'
 import AlSwitch from './AlSwitch'
 import AlCustom from './AlCustom'
+import { multipleDefault } from './helpers'
 
 type ValuesProps = { [key: string]: any }
 
@@ -18,9 +19,6 @@ export interface AlMultipleProps extends ComunesProps {
   type: Types.Multiple
   configuration: TodosProps[]
 }
-
-export const valDefault = (conf: TodosProps[]) =>
-  conf.flat().reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it) }), {})
 
 export default memo((props: AlMultipleProps) => {
   const { id, title, grow, hide, configuration, loading } = props
@@ -36,7 +34,7 @@ export default memo((props: AlMultipleProps) => {
           <Typography variant="body1">{`${title} (${valFinal?.length})`}</Typography>
           <IconButton
             disabled={loading}
-            onClick={() => setValue([...valFinal, valDefault(configuration)])}>
+            onClick={() => setValue([...valFinal, multipleDefault(configuration)])}>
             <FaPlus />
           </IconButton>
         </div>
