@@ -4,7 +4,6 @@ import { Button, CircularProgress, makeStyles } from '@material-ui/core'
 import * as Yup from 'yup'
 import { Types, BaseProps } from './Types'
 import AlCustom, { AlCustomProps } from './AlCustom'
-
 import AlInput, { AlInputProps } from './AlInput'
 import AlSelect, { AlSelectProps } from './AlSelect'
 import AlImagen, { AlImagenProps } from './AlImagen'
@@ -65,15 +64,15 @@ export default memo((props: Props) => {
           return <AlSelect key={campo.id} {...campo} loading={loading} hide={hidden} />
         case Types.File:
         case Types.Image:
-          return <AlImagen key={campo.id} {...campo} loading={loading} />
+          return <AlImagen key={campo.id} {...campo} loading={loading} hide={hidden} />
         case Types.Autocomplete:
-          return <AlAutocomplete key={campo.id} {...campo} loading={loading} />
+          return <AlAutocomplete key={campo.id} {...campo} loading={loading} hide={hidden} />
         case Types.Switch:
-          return <AlSwitch key={campo.id} {...campo} loading={loading} />
+          return <AlSwitch key={campo.id} {...campo} loading={loading} hide={hidden} />
         case Types.Multiple:
           return <AlMultiple key={campo.id} {...campo} loading={loading} hide={hidden} />
         case Types.Custom:
-          return <AlCustom key={campo.id} {...campo} loading={loading} />
+          return <AlCustom key={campo.id} {...campo} loading={loading} hide={hidden} />
         default:
           return null
       }

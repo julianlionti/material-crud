@@ -10,28 +10,27 @@ export interface AlSwitchProps extends ComunesProps {
 }
 type SwitchFilter = Filter<boolean>
 export default memo((props: AlSwitchProps) => {
-  const { id, title, grow, list, loading } = props
+  const { id, title, grow, hide, loading, filter } = props
   const filterOptions = useFilters()
   const [{ value }, { error }, { setValue }] = useField<boolean | SwitchFilter>(id)
 
-  const isFiltering = !!list?.filter
   const finalValue = useMemo(() => {
-    if (isFiltering) {
+    if (filter) {
       return (value as SwitchFilter).value
     }
 
     return value as boolean
-  }, [isFiltering, value])
+  }, [value, filter])
 
   return (
-    <BaseInput grow={grow} centrado>
+    <BaseInput grow={grow} centrado ocultar={hide}>
       <FormControlLabel
         disabled={loading}
         control={
           <Switch
             checked={finalValue}
             onChange={(_, value) => {
-              if (isFiltering) {
+              if (filter) {
                 setValue({ filter: 'equal', value })
               } else {
                 setValue(value)

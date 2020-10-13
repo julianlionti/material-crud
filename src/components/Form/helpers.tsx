@@ -7,7 +7,8 @@ export const multipleDefault = (conf: TodosProps[]) =>
 
 export type DefResponse = boolean | null | '' | any[] | Filter
 export const generateDefault = (item: TodosProps): DefResponse => {
-  if (item.list?.filter) {
+  if (item.type === Types.Expandable) return null
+  if (item.filter) {
     switch (item.type) {
       case Types.Autocomplete: {
         if (item.multiple) return { value: [], filter: 'contains' }

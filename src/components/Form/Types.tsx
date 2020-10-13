@@ -39,6 +39,7 @@ export interface ComunesProps extends BaseProps {
   depends?: (props: any) => boolean
   hide?: boolean
   edit?: boolean
+  filter?: boolean
 }
 
 export interface Interactions {

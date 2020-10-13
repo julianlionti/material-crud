@@ -1,7 +1,6 @@
 import React, { memo, ReactNode, useCallback, useMemo, useRef, useState } from 'react'
 import { Collapse, lighten, LinearProgress, makeStyles, Paper, Typography } from '@material-ui/core'
 import { VariableSizeList as List } from 'react-window'
-
 import { useABM } from '../../utils/DataContext'
 import { CamposProps } from '../Form'
 import { FieldAndColProps } from './CustomCell'
@@ -13,7 +12,7 @@ import AutoSizer from 'react-virtualized-auto-sizer'
 
 export interface TableProps {
   height: number
-  columns?: CamposProps[]
+  columns: CamposProps[]
   headerHeight?: number
   rowHeight?: number
   edit?: boolean
@@ -32,9 +31,6 @@ export interface TableProps {
 
 interface Props extends TableProps {
   loading?: boolean
-  columns: CamposProps[]
-  onEdit: (row: any) => void
-  onDelete: (row: any) => void
   headerClassName?: string
   onChangePagination: (page: number, perPage: number) => void
   onSort: (sort: SortProps) => void
