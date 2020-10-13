@@ -57,6 +57,11 @@ const campos = createFields(() => [
     list: { width: 3, sort: true, align: 'center' },
   },
   {
+    id: 'pass',
+    type: Types.Secure,
+    title: 'Requiere normativa',
+  },
+  {
     id: 'normativa',
     type: Types.File,
     title: 'Normativa',

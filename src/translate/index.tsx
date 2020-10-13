@@ -25,6 +25,8 @@ export interface Translations {
   loading: string
   selected: string
   tooltips: {
+    showPass: string
+    hidePass: string
     defineFilter: string
     cancel: string
   }

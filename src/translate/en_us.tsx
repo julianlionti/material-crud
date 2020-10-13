@@ -27,6 +27,8 @@ export const enUS = createTranslation({
   noResults: 'No results',
   loading: 'Loading...',
   tooltips: {
+    showPass: 'Mostrar contraseña',
+    hidePass: 'Ocultar contraseña',
     defineFilter: 'Define filter Type',
     cancel: 'Cancel',
   },
