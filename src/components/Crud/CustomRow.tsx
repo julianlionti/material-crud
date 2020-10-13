@@ -53,7 +53,7 @@ export default memo((props: Props) => {
 
     if (rowData.child) {
       return (
-        <CustomCell rowIndex={index!!} rowHeight={rowData.height}>
+        <CustomCell rowIndex={index!!} rowHeight={rowData.height} isChild>
           {rowData.child(list[index!! - 1])}
         </CustomCell>
       )
