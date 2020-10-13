@@ -28,6 +28,8 @@ export const esAR = createTranslation({
   noResults: 'No se encontraron resultados',
   loading: 'Cargando...',
   tooltips: {
+    showPass: 'Mostrar contraseña',
+    hidePass: 'Ocultar contraseña',
     defineFilter: 'Definit TIPO de filtro',
     cancel: 'Cancelar',
   },

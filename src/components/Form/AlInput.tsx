@@ -12,7 +12,15 @@ import {
   Tooltip,
 } from '@material-ui/core'
 import { useField, useFormikContext } from 'formik'
-import { FaArrowRight, FaNotEqual, FaEquals, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
+import {
+  FaArrowRight,
+  FaNotEqual,
+  FaEquals,
+  FaChevronLeft,
+  FaChevronRight,
+  FaEye,
+  FaEyeSlash,
+} from 'react-icons/fa'
 import BaseInput from './BaseInput'
 import { Types, ComunesProps } from './Types'
 import { useLang } from '../../utils/CrudContext'
@@ -53,6 +61,7 @@ export default memo((props: AlInputProps) => {
     hide,
     filter,
   } = props
+  const [hasSecure, setHasSecure] = useState(true)
   const lang = useLang()
   const filterOptions = useFilters()
   const [anchorFilter, setAnchorFilter] = useState<HTMLElement | null>(null)
@@ -91,8 +100,9 @@ export default memo((props: AlInputProps) => {
     switch (type) {
       case Types.Email:
         return 'email'
-      case Types.Secure:
-        return 'password'
+      case Types.Secure: {
+        return hasSecure ? 'password' : undefined
+      }
       case Types.Number:
         return 'number'
       case Types.Phone:
@@ -100,9 +110,7 @@ export default memo((props: AlInputProps) => {
       default:
         return undefined
     }
-  }, [type])
-
-  // type === Types.Number || type === Types.Phone ? 'number' : undefined
+  }, [type, hasSecure])
 
   return (
     <BaseInput grow={grow} fullWidth={fullWidth} ocultar={hide}>
@@ -119,6 +127,15 @@ export default memo((props: AlInputProps) => {
               <Tooltip aria-label={AriaLabels.BtnFilterTypes} title={lang.tooltips.defineFilter}>
                 <IconButton onClick={(e) => setAnchorFilter(e.currentTarget)}>
                   {filterType.find((e) => e.id === (value as InputFilter).filter)?.icon}
+                </IconButton>
+              </Tooltip>
+            )
+          }
+          endAdornment={
+            Types.Secure === type && (
+              <Tooltip title={hasSecure ? lang.tooltips.showPass : lang.tooltips.hidePass}>
+                <IconButton onClick={() => setHasSecure((hs) => !hs)}>
+                  {hasSecure ? <FaEye /> : <FaEyeSlash />}
                 </IconButton>
               </Tooltip>
             )
