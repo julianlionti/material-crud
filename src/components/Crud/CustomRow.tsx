@@ -6,6 +6,7 @@ import { useLang } from '../../utils/CrudContext'
 import { useABM } from '../../utils/DataContext'
 import CustomCell, { FieldAndColProps } from './CustomCell'
 import CustomHeader, { SortProps } from './CustomHeader'
+import AriaLabels from '../../utils/AriaLabels'
 
 interface Props extends Partial<ListChildComponentProps> {
   rowHeight: number
@@ -52,7 +53,7 @@ export default memo((props: Props) => {
 
     if (rowData.child) {
       return (
-        <CustomCell rowIndex={index!!} rowHeight={rowData.height}>
+        <CustomCell rowIndex={index!!} rowHeight={rowData.height} isChild>
           {rowData.child(list[index!! - 1])}
         </CustomCell>
       )
@@ -119,7 +120,7 @@ export default memo((props: Props) => {
     if (isHeader)
       return (
         <CustomHeader
-          col={{ width: 0.5, title: lang?.crudCol, align: 'flex-end' }}
+          col={{ width: 0.5, title: lang.crudCol, align: 'flex-end' }}
           rowHeight={rowHeight}
         />
       )
@@ -127,14 +128,14 @@ export default memo((props: Props) => {
     return (
       <CustomCell col={{ width: 0.5, align: 'flex-end' }} rowHeight={rowHeight} rowIndex={index!!}>
         {onEdit && (
-          <Tooltip title={lang?.edit || 'Edit'}>
+          <Tooltip title={lang.edit}>
             <IconButton size="small" onClick={() => onEdit(rowData)}>
               <FaEdit />
             </IconButton>
           </Tooltip>
         )}
         {onDelete && (
-          <Tooltip title={lang?.delete || 'Delete'}>
+          <Tooltip title={lang.delete}>
             <IconButton size="small" onClick={() => onDelete(rowData)}>
               <FaTrash />
             </IconButton>
@@ -146,6 +147,7 @@ export default memo((props: Props) => {
 
   return (
     <TableRow
+      aria-label={isHeader ? AriaLabels.RowHeader : AriaLabels.RowContent}
       component="div"
       className={`${classes.row} ${(isHeader && customClassName) || ''}`}
       style={style}>

@@ -1,6 +1,7 @@
 import { useReducer, useRef, useCallback, useEffect } from 'react'
 import axios, { AxiosRequestConfig, AxiosError } from 'axios'
-import { useUser } from './CrudContext'
+import { useLang, useUser } from './CrudContext'
+import { Translations } from '../translate'
 
 export interface Error {
   message: string
@@ -43,7 +44,11 @@ const reducer = (status: Status, action: Status): Status => ({
   ...action,
 })
 
-export const callWs = async <T extends any>(config: AxiosRequestConfig, headers?: any | null) => {
+export const callWs = async <T extends any>(
+  config: AxiosRequestConfig,
+  headers?: any | null,
+  lang?: Translations,
+) => {
   let response: undefined | T
   let error: undefined | ErrorResponse
   let status: undefined | number
@@ -62,9 +67,9 @@ export const callWs = async <T extends any>(config: AxiosRequestConfig, headers?
   } catch (ex) {
     const { response } = ex as AxiosError<ErrorResponse>
     if (response?.status === 500) {
-      error = { error: { code: 500, message: 'Error en el servidor' } }
+      error = { error: { code: 500, message: lang?.serverError || 'Error en el servidor' } }
     } else {
-      error = response?.data
+      error = response?.data || { error: { code: 501, message: 'Error' } }
     }
     status = response?.status
   }
@@ -74,11 +79,11 @@ export const callWs = async <T extends any>(config: AxiosRequestConfig, headers?
 
 export default <T extends any = any>(props?: useAxiosProps): Response<T> => {
   const { onInit, onError } = props || {}
-  // const { enqueueSnackbar } = useSnackbar()
   const onInitRef = useRef(false)
   const calling = useRef(false)
   const [state, dispatch] = useReducer(reducer, initial)
   const { headers } = useUser()
+  const lang = useLang()
 
   const { error } = state
   useEffect(() => {
@@ -101,14 +106,14 @@ export default <T extends any = any>(props?: useAxiosProps): Response<T> => {
       if (!calling.current) {
         calling.current = true
         dispatch({ loading: true, error: undefined, response: undefined })
-        const { error, response, status } = await callWs(config, headers)
+        const { error, response, status } = await callWs(config, headers, lang)
         dispatch({ loading: false, response, error })
         calling.current = false
         return { response, error, status }
       }
       return {}
     },
-    [headers],
+    [headers, lang],
   )
 
   useEffect(() => {

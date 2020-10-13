@@ -17,6 +17,7 @@ import { Types, ComunesProps, OpcionesProps } from './Types'
 import useFilters, { Filter } from '../../utils/useFilters'
 import { FaCamera } from 'react-icons/fa'
 import { useLang } from '../../utils/CrudContext'
+import AriaLabels from '../../utils/AriaLabels'
 
 export interface AlSelectProps extends ComunesProps {
   type: Types.Options
@@ -50,7 +51,7 @@ export default memo((props: AlSelectProps) => {
           <Select
             startAdornment={
               filter && (
-                <Tooltip title={lang?.tooltips.defineFilter || 'Definir TIPO de filtro'}>
+                <Tooltip aria-label={AriaLabels.BtnFilterTypes} title={lang.tooltips.defineFilter}>
                   <IconButton onClick={(e) => setAnchorFilter(e.currentTarget)}>
                     {select!!.find((e) => e.id === (value as SelectFilter).filter)?.icon}
                   </IconButton>

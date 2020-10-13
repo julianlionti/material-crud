@@ -18,7 +18,7 @@ export interface AlImagenProps extends ComunesProps {
 
 export default memo((props: AlImagenProps) => {
   const lang = useLang()
-  const { id, loading, grow, baseURL, ImgButton, type, renderPreview, hide } = props
+  const { id, loading, grow, baseURL, ImgButton, type, renderPreview, hide, accept } = props
   const [base64, setBase64] = useState<string | null>(null)
   const [{ value }, { error }, { setValue, setTouched }] = useField<string | File | null>(id)
   const [subiendo, setSubiendo] = useState(false)
@@ -39,13 +39,13 @@ export default memo((props: AlImagenProps) => {
 
   const renderExplanation = useCallback(() => {
     if (value === null && isImage) {
-      return lang?.inputs?.image.new || 'Haga click en la camara para subir una imagen:'
+      return lang.inputs!!.image.new
     } else if (value === null && !isImage) {
-      return lang?.inputs?.file.new || 'Haga click abajo para subir una imagen:'
+      return lang.inputs!!.file.new
     } else if (value !== null && isImage) {
-      return lang?.inputs?.image.edit || 'Haga click en el icono para subir un archivo:'
+      return lang.inputs!!.image.edit
     } else {
-      return lang?.inputs?.file.edit || 'Haga click abajo para editar el archivo:'
+      return lang.inputs!!.file.edit
     }
   }, [value, isImage, lang])
 
@@ -86,7 +86,7 @@ export default memo((props: AlImagenProps) => {
       </Collapse>
       <input
         type="file"
-        accept="image/*"
+        accept={accept || 'image/*'}
         disabled={loading}
         className={clases.input}
         id={camaraId}

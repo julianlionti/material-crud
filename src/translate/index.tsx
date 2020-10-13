@@ -1,5 +1,4 @@
 export interface Translations {
-  showCards: string
   listOf: string
   new: string
   edit: string
@@ -40,6 +39,7 @@ export interface Translations {
     file: { new: string; edit: string }
   }
   dialog?: { cancel: string; accept: string }
+  serverError: string
 }
 
 export const createTranslation = (props: Translations) => props
