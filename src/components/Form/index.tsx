@@ -58,6 +58,7 @@ export default memo((props: Props) => {
         case Types.Email:
         case Types.Multiline:
         case Types.Number:
+        case Types.Secure:
         case Types.Phone:
           return <AlInput key={campo.id} {...campo} loading={loading} hide={hidden} />
         case Types.Options:
