@@ -25,6 +25,7 @@ const campos = createFields(() => [
       id: 'username',
       title: 'Usuario',
       type: Types.Input,
+      filter: true,
       validate: Yup.string().required(),
       list: { width: 20, sort: true },
     },
@@ -65,25 +66,12 @@ const campos = createFields(() => [
     filter: true,
     edit: false,
   },
-  // {
-  //   id: 'normativas',
-  //   type: Types.Multiple,
-  //   title: 'Normativas necesarias',
-  //   depends: ({ requiereNormativa }: any) => requiereNormativa === true,
-  //   configuration: [
-  //     {
-  //       id: 'normativa',
-  //       type: Types.Input,
-  //       title: 'Normativa necesaria',
-  //       placeholder: 'Nombre de la normativa vigente',
-  //     },
-  //   ],
-  //   list: {
-  //     width: 30,
-  //     // filter: true,
-  //     sort: true,
-  //   },
-  // },
+  {
+    id: 'normativas',
+    type: Types.Input,
+    title: 'Normativas necesarias',
+    depends: ({ active }: any) => active,
+  },
 ])
 
 export default () => {
@@ -101,7 +89,7 @@ export default () => {
       height={height - 200}
       edit
       deleteRow
-      // hideSelecting: true,
+      // hideSelecting,
       rightToolbar={({ rowsSelected, list, deleteCall, editCall, clearSelected }) => (
         <Tooltip title="Delete">
           <IconButton
