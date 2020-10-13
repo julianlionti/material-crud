@@ -20,5 +20,9 @@ export interface AlCustomProps extends NoTitle {
 export default memo((props: AlCustomProps) => {
   const { grow, component, id } = props
   const field = useField(id)
-  return <BaseInput grow={grow}>{component({ props, field })}</BaseInput>
+  return (
+    <BaseInput grow={grow} ocultar={hide}>
+      {component({ props, field })}
+    </BaseInput>
+  )
 })

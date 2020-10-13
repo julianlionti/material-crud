@@ -64,15 +64,15 @@ export default memo((props: Props) => {
           return <AlSelect key={campo.id} {...campo} loading={loading} hide={hidden} />
         case Types.File:
         case Types.Image:
-          return <AlImagen key={campo.id} {...campo} loading={loading} />
+          return <AlImagen key={campo.id} {...campo} loading={loading} hide={hidden} />
         case Types.Autocomplete:
-          return <AlAutocomplete key={campo.id} {...campo} loading={loading} />
+          return <AlAutocomplete key={campo.id} {...campo} loading={loading} hide={hidden} />
         case Types.Switch:
-          return <AlSwitch key={campo.id} {...campo} loading={loading} />
+          return <AlSwitch key={campo.id} {...campo} loading={loading} hide={hidden} />
         case Types.Multiple:
           return <AlMultiple key={campo.id} {...campo} loading={loading} hide={hidden} />
         case Types.Custom:
-          return <AlCustom key={campo.id} {...campo} loading={loading} />
+          return <AlCustom key={campo.id} {...campo} loading={loading} hide={hidden} />
         default:
           return null
       }

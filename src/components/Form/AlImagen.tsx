@@ -63,7 +63,7 @@ export default memo((props: AlImagenProps) => {
   }, [srcFinal, value, isImage, ImgButton, clases, base64, id, renderPreview])
 
   return (
-    <BaseInput grow={grow}>
+    <BaseInput grow={grow} ocultar={hide}>
       <Collapse in={!subiendo} timeout="auto">
         <div className={clases.contenedor}>
           {subiendo && <CircularProgress />}

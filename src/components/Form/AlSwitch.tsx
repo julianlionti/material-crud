@@ -23,7 +23,7 @@ export default memo((props: AlSwitchProps) => {
   }, [value, filter])
 
   return (
-    <BaseInput grow={grow} centrado>
+    <BaseInput grow={grow} centrado ocultar={hide}>
       <FormControlLabel
         disabled={loading}
         control={

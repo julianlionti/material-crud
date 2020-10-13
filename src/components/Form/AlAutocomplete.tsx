@@ -47,6 +47,7 @@ export default memo((props: AlAutocompleteProps) => {
     grow,
     validate,
     filter,
+    hide,
   } = props
   const lang = useLang()
   const { autocomplete } = useFilters()
@@ -82,10 +83,10 @@ export default memo((props: AlAutocompleteProps) => {
     } else {
       return value as AutoValue
     }
-  }, [value])
+  }, [value, filter])
 
   return (
-    <BaseInput grow={grow}>
+    <BaseInput grow={grow} ocultar={hide}>
       <Autocomplete
         loadingText={lang?.loading || 'Cargando...'}
         loading={loading}
