@@ -56,6 +56,22 @@ const campos = createFields(() => [
     filter: true,
     list: { width: 3, sort: true, align: 'center' },
   },
+  {
+    id: 'normativa',
+    type: Types.File,
+    title: 'Normativa',
+    baseURL: 'imagenProducto',
+    accept: 'application/msword, application/pdf',
+    renderPreview: (data) => {
+      return (
+        <div style={{ padding: 8 }}>
+          <iframe src={data!!} title="Normativa" />
+        </div>
+      )
+    },
+
+    list: { width: 60 },
+  },
 ])
 
 export default () => {
@@ -94,6 +110,7 @@ export default () => {
         sort: 'ordenado',
       }}
       itemId="_id"
+      idInUrl
       itemName="nombre"
       onError={(err) => console.log(err)}
     />

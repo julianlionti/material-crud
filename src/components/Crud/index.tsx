@@ -88,8 +88,9 @@ const postData = async (props: NoGetCallProps) => {
   if ((editing || isDelete) && idInUrl && url?.slice(-1) !== '/')
     finalURL = finalURL + '/' + finalId
 
+  const method = isDelete ? 'DELETE' : editing && idInUrl ? 'PUT' : 'POST'
   const { response: responseWs, status } = await call({
-    method: isDelete ? 'DELETE' : editing && idInUrl ? 'PUT' : 'POST',
+    method,
     url: finalURL,
     data,
   })
