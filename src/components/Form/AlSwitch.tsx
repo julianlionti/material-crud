@@ -10,7 +10,7 @@ export interface AlSwitchProps extends ComunesProps {
 }
 type SwitchFilter = Filter<boolean>
 export default memo((props: AlSwitchProps) => {
-  const { id, title, grow, list, loading, filter } = props
+  const { id, title, grow, hide, loading, filter } = props
   const filterOptions = useFilters()
   const [{ value }, { error }, { setValue }] = useField<boolean | SwitchFilter>(id)
 

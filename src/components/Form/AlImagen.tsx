@@ -18,7 +18,7 @@ export interface AlImagenProps extends ComunesProps {
 
 export default memo((props: AlImagenProps) => {
   const lang = useLang()
-  const { id, loading, grow, baseURL, ImgButton, type, renderPreview } = props
+  const { id, loading, grow, baseURL, ImgButton, type, renderPreview, hide } = props
   const [base64, setBase64] = useState<string | null>(null)
   const [{ value }, { error }, { setValue, setTouched }] = useField<string | File | null>(id)
   const [subiendo, setSubiendo] = useState(false)
