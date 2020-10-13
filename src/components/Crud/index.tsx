@@ -85,8 +85,10 @@ const postData = async (props: NoGetCallProps) => {
   const { call, response, editABM, add, deleteCall, setEditObj, setCartel } = props
   const finalId = data[itemId]
   let finalURL = url
-  if ((editing || isDelete) && idInUrl && url?.slice(-1) !== '/')
-    finalURL = finalURL + '/' + finalId
+  if ((editing || isDelete) && idInUrl) {
+    if (url.slice(-1) === '/') finalURL = finalURL + finalId
+    else finalURL = finalURL + '/' + finalId
+  }
 
   const method = isDelete ? 'DELETE' : editing && idInUrl ? 'PUT' : 'POST'
   const { response: responseWs, status } = await call({
