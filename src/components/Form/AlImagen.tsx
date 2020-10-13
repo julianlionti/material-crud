@@ -18,7 +18,7 @@ export interface AlImagenProps extends ComunesProps {
 
 export default memo((props: AlImagenProps) => {
   const lang = useLang()
-  const { id, loading, grow, baseURL, ImgButton, type, renderPreview } = props
+  const { id, loading, grow, baseURL, ImgButton, type, renderPreview, accept } = props
   const [base64, setBase64] = useState<string | null>(null)
   const [{ value }, { error }, { setValue, setTouched }] = useField<string | File | null>(id)
   const [subiendo, setSubiendo] = useState(false)
@@ -86,7 +86,7 @@ export default memo((props: AlImagenProps) => {
       </Collapse>
       <input
         type="file"
-        accept="image/*"
+        accept={accept || 'image/*'}
         disabled={loading}
         className={clases.input}
         id={camaraId}
