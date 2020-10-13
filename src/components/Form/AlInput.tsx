@@ -19,7 +19,13 @@ import { useLang } from '../../utils/CrudContext'
 import useFilters, { Filter } from '../../utils/useFilters'
 import AriaLabels from '../../utils/AriaLabels'
 
-export type InputsTypes = Types.Input | Types.Email | Types.Multiline | Types.Number | Types.Phone
+export type InputsTypes =
+  | Types.Input
+  | Types.Email
+  | Types.Multiline
+  | Types.Number
+  | Types.Phone
+  | Types.Secure
 
 export interface AlInputProps extends ComunesProps {
   type: InputsTypes
@@ -81,6 +87,23 @@ export default memo((props: AlInputProps) => {
     }
   }, [type, filterOptions])
 
+  const inputType = useMemo(() => {
+    switch (type) {
+      case Types.Email:
+        return 'email'
+      case Types.Secure:
+        return 'password'
+      case Types.Number:
+        return 'number'
+      case Types.Phone:
+        return 'tel'
+      default:
+        return undefined
+    }
+  }, [type])
+
+  // type === Types.Number || type === Types.Phone ? 'number' : undefined
+
   return (
     <BaseInput grow={grow} fullWidth={fullWidth} ocultar={hide}>
       <FormControl
@@ -119,7 +142,7 @@ export default memo((props: AlInputProps) => {
             }
           }}
           placeholder={placeholder}
-          type={type === Types.Number || type === Types.Phone ? 'number' : undefined}
+          type={inputType}
           label={finalTitle}
           inputProps={{ maxLength: max || undefined }}
         />
