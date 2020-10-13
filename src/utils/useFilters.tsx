@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useMemo } from 'react'
 import {
   FaArrowRight,
   FaChevronLeft,
@@ -41,69 +41,65 @@ export interface FilterResponse {
 const defIconSize = 16
 export default (): FilterResponse => {
   const lang = useLang()
+
+  const contains = useMemo<FilterMenu>(
+    () => ({
+      id: 'contains',
+      text: lang.filterOptions!!.contains,
+      icon: <FaInbox size={defIconSize} />,
+    }),
+    [lang],
+  )
+
+  const startsWith = useMemo<FilterMenu>(
+    () => ({
+      id: 'startsWith',
+      text: lang.filterOptions!!.startsWith,
+      icon: <FaArrowRight size={defIconSize} />,
+    }),
+    [lang],
+  )
+
+  const equal = useMemo<FilterMenu>(
+    () => ({
+      id: 'equal',
+      text: lang.filterOptions!!.equal,
+      icon: <FaEquals size={defIconSize} />,
+    }),
+    [lang],
+  )
+
+  const different = useMemo<FilterMenu>(
+    () => ({
+      id: 'different',
+      text: lang.filterOptions!!.different,
+      icon: <FaNotEqual size={defIconSize} />,
+    }),
+    [lang],
+  )
+
+  const greater = useMemo<FilterMenu>(
+    () => ({
+      id: 'greater',
+      text: lang.filterOptions!!.greater,
+      icon: <FaChevronRight size={defIconSize} />,
+    }),
+    [lang],
+  )
+
+  const lower = useMemo<FilterMenu>(
+    () => ({
+      id: 'lower',
+      text: lang.filterOptions!!.lower,
+      icon: <FaChevronLeft size={defIconSize} />,
+    }),
+    [lang],
+  )
+
   return {
-    text: [
-      {
-        id: 'startsWith',
-        text: lang?.filterOptions?.startsWith || 'Starts with',
-        icon: <FaArrowRight size={defIconSize} />,
-      },
-      {
-        id: 'equal',
-        text: lang?.filterOptions?.equal || 'Equal',
-        icon: <FaEquals size={defIconSize} />,
-      },
-      {
-        id: 'different',
-        text: lang?.filterOptions?.different || 'Different',
-        icon: <FaNotEqual size={defIconSize} />,
-      },
-    ],
-    numeric: [
-      {
-        id: 'equal',
-        text: lang?.filterOptions?.equal || 'Equal',
-        icon: <FaEquals size={defIconSize} />,
-      },
-      {
-        id: 'greater',
-        text: lang?.filterOptions?.greater || 'Greater',
-        icon: <FaChevronRight size={defIconSize} />,
-      },
-      {
-        id: 'lower',
-        text: lang?.filterOptions?.lower || 'Lower',
-        icon: <FaChevronLeft size={defIconSize} />,
-      },
-    ],
-    autocomplete: [
-      {
-        id: 'equal',
-        text: lang?.filterOptions?.equal || 'Equal',
-        icon: <FaEquals size={defIconSize} />,
-      },
-      {
-        id: 'contains',
-        text: lang?.filterOptions?.contains || 'Contains',
-        icon: <FaInbox size={defIconSize} />,
-      },
-      {
-        id: 'different',
-        text: lang?.filterOptions?.different || 'Different',
-        icon: <FaNotEqual size={defIconSize} />,
-      },
-    ],
-    select: [
-      {
-        id: 'equal',
-        text: lang?.filterOptions?.equal || 'Equal',
-        icon: <FaEquals size={defIconSize} />,
-      },
-      {
-        id: 'different',
-        text: lang?.filterOptions?.different || 'Different',
-        icon: <FaNotEqual size={defIconSize} />,
-      },
-    ],
+    text: [contains, startsWith, equal, different],
+    numeric: [equal, greater, lower],
+    autocomplete: [contains, equal, different],
+    select: [equal, different],
   }
 }

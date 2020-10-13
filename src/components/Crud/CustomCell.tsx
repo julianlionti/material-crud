@@ -30,11 +30,12 @@ interface Props {
   children?: ReactNode
   onExpand?: () => void
   expanded?: boolean
+  isChild?: boolean
 }
 
 export default memo((props: PropsWithChildren<Props>) => {
-  const { children, rowHeight, col, rowIndex, onExpand, expanded } = props
-  const classes = useClasses({ height: rowHeight, grow: col?.width, align: col?.align })
+  const { children, rowHeight, col, rowIndex, onExpand, expanded, isChild } = props
+  const classes = useClasses({ height: rowHeight, grow: col?.width, align: col?.align, isChild })
   const { list } = useABM()
   const rowData = list[rowIndex]
   const cellData = useMemo(() => {
@@ -77,12 +78,12 @@ export default memo((props: PropsWithChildren<Props>) => {
 })
 
 const useClasses = makeStyles((theme) => ({
-  cell: ({ grow, height, align }: any) => ({
+  cell: ({ grow, height, align, isChild }: any) => ({
     flexGrow: grow || 1,
     flex: 1,
     display: 'flex',
     justifyContent: align || 'flex-start',
-    alignItems: 'center',
+    alignItems: isChild ? 'start' : 'center',
     height,
   }),
 }))

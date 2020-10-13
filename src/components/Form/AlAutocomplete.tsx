@@ -18,6 +18,7 @@ import BaseInput from './BaseInput'
 import { OpcionesProps, Types, ComunesProps } from './Types'
 import { useLang } from '../../utils/CrudContext'
 import useFilters, { Filter } from '../../utils/useFilters'
+import AriaLabels from '../../utils/AriaLabels'
 
 export interface AlAutocompleteProps extends ComunesProps {
   type: Types.Autocomplete
@@ -88,11 +89,11 @@ export default memo((props: AlAutocompleteProps) => {
   return (
     <BaseInput grow={grow} ocultar={hide}>
       <Autocomplete
-        loadingText={lang?.loading || 'Cargando...'}
+        loadingText={lang.loading}
         loading={loading}
         options={options}
         value={finalValue}
-        noOptionsText={lang?.noOptions || 'Sin opciones'}
+        noOptionsText={lang.noOptions}
         onChange={(_, vals) => {
           if (filter) {
             setValue({ filter: (value as AutoFilter).filter, value: vals })
@@ -111,8 +112,9 @@ export default memo((props: AlAutocompleteProps) => {
               startAdornment: [
                 filter && (
                   <Tooltip
+                    aria-label={AriaLabels.BtnFilterTypes}
                     key="filter"
-                    title={lang?.tooltips.defineFilter || 'Definir TIPO de filtro'}>
+                    title={lang.tooltips.defineFilter}>
                     <IconButton onClick={(e) => setAnchorFilter(e.currentTarget)}>
                       {autocomplete!!.find((e) => e.id === (value as AutoFilter).filter)?.icon}
                     </IconButton>

@@ -101,7 +101,7 @@ export default memo((props: Props) => {
       <Collapse in={rowsSelected.length > 0} timeout="auto" unmountOnExit>
         <div className={classes.selected}>
           <Typography style={{ flex: 1 }} color="inherit" variant="subtitle1" component="div">
-            {rowsSelected.length} {lang?.selected}
+            {rowsSelected.length} {lang.selected}
           </Typography>
           {rightToolbar &&
             rightToolbar({
@@ -127,7 +127,7 @@ export default memo((props: Props) => {
       />
       {!loading && list.length === 0 && (
         <div className={classes.noResult}>
-          <Typography>{lang?.noResults}</Typography>
+          <Typography>{lang.noResults}</Typography>
         </div>
       )}
       <div style={{ flex: 1 }}>

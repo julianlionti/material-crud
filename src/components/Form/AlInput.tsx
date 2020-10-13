@@ -17,6 +17,7 @@ import BaseInput from './BaseInput'
 import { Types, ComunesProps } from './Types'
 import { useLang } from '../../utils/CrudContext'
 import useFilters, { Filter } from '../../utils/useFilters'
+import AriaLabels from '../../utils/AriaLabels'
 
 export type InputsTypes = Types.Input | Types.Email | Types.Multiline | Types.Number | Types.Phone
 
@@ -92,14 +93,14 @@ export default memo((props: AlInputProps) => {
           id={id}
           startAdornment={
             filter && (
-              <Tooltip title={lang?.tooltips.defineFilter || 'Definir TIPO de filtro'}>
+              <Tooltip aria-label={AriaLabels.BtnFilterTypes} title={lang.tooltips.defineFilter}>
                 <IconButton onClick={(e) => setAnchorFilter(e.currentTarget)}>
                   {filterType.find((e) => e.id === (value as InputFilter).filter)?.icon}
                 </IconButton>
               </Tooltip>
             )
           }
-          multiline={filter && type === Types.Multiline}
+          multiline={!filter && type === Types.Multiline}
           rows={type === Types.Multiline ? 4 : undefined}
           value={finalValue}
           onChange={({ target }) => {

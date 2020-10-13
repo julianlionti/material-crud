@@ -54,7 +54,7 @@ export default memo(({ show, onClose, title, content, loading }: Props) => {
             if (onClose) onClose(false)
           }}
           color="primary">
-          {lang?.dialog?.cancel || 'Cancelar'}
+          {lang.dialog!!.cancel}
         </Button>
         <Button
           onClick={() => {
@@ -62,7 +62,7 @@ export default memo(({ show, onClose, title, content, loading }: Props) => {
           }}
           color="primary"
           autoFocus>
-          {lang?.dialog?.accept || 'Accept'}
+          {lang.dialog!!.accept}
         </Button>
       </DialogActions>
     </Dialog>
