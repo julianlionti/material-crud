@@ -27,6 +27,7 @@ interface Status<T = any> {
   loading?: boolean
   error?: ErrorResponse
   response?: T
+  status?: number
 }
 
 export interface CallResponse<T = any> {
@@ -97,7 +98,7 @@ export default <T extends any = any>(props?: useAxiosProps): Response<T> => {
         })
       }
 
-      dispatch({ error: undefined })
+      dispatch({ error: undefined, status: undefined })
     }
   }, [error, onError])
 
@@ -105,9 +106,9 @@ export default <T extends any = any>(props?: useAxiosProps): Response<T> => {
     async (config: AxiosRequestConfig) => {
       if (!calling.current) {
         calling.current = true
-        dispatch({ loading: true, error: undefined, response: undefined })
+        dispatch({ loading: true, error: undefined, response: undefined, status: undefined })
         const { error, response, status } = await callWs(config, headers, lang)
-        dispatch({ loading: false, response, error })
+        dispatch({ loading: false, response, error, status: status })
         calling.current = false
         return { response, error, status }
       }
