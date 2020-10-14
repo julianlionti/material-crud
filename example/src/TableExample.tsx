@@ -81,7 +81,7 @@ export default () => {
 
   return (
     <Crud
-      url="http://localhost:5050/api/user"
+      url="http://localhost:5050/api/user/"
       // gender="F"
       name="Category"
       description="Los productos tendrán asociada una o más categorías."
@@ -89,6 +89,7 @@ export default () => {
       height={height - 200}
       edit
       deleteRow
+      idInUrl
       // hideSelecting,
       rightToolbar={({ rowsSelected, list, deleteCall, editCall, clearSelected }) => (
         <Tooltip title="Delete">

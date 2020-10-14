@@ -86,7 +86,7 @@ const postData = async (props: NoGetCallProps) => {
   const finalId = data[itemId]
   let finalURL = url
   if ((editing || isDelete) && idInUrl) {
-    finalURL = `${url.slice(-1) === '/' ? '' : '/'}${finalId}`
+    finalURL = `${finalURL}${finalURL.substring(url.length - 1) === '/' ? '' : '/'}${finalId}/`
   }
 
   const method = isDelete ? 'DELETE' : editing && idInUrl ? 'PUT' : 'POST'
