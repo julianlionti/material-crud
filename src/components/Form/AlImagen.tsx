@@ -10,7 +10,7 @@ import { FaCamera, FaFile } from 'react-icons/fa'
 
 export interface AlImagenProps extends ComunesProps {
   type: Types.Image | Types.File
-  baseURL: string
+  baseURL?: string
   ImgButton?: ReactNode
   accept?: string
   renderPreview?: (base64: string | null) => ReactNode
@@ -53,7 +53,7 @@ export default memo((props: AlImagenProps) => {
     if (srcFinal && isImage) {
       return <img height={300} alt={id} src={srcFinal} />
     } else if (value && !isImage && renderPreview) {
-      return renderPreview(base64)
+      return renderPreview(base64 || srcFinal)
     } else if (value && !isImage && !renderPreview) {
       return <span>Es necesario renderizar el resultado con el 'renderPreview'</span>
     } else {
