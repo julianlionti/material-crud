@@ -363,7 +363,7 @@ export default memo((props: CrudProps) => {
           onEdit={(rowData) => {
             const { onEdit } = props
             if (onEdit) onEdit(rowData)
-            else onEditCall(editData)
+            else onEditCall(rowData)
           }}
           onDelete={(rowData) => {
             const { onDelete } = props
