@@ -39,6 +39,7 @@ interface ResponseProps {
 export interface CrudProps extends TableProps {
   url: string
   name: string
+  title?: string
   titleSize?: number
   gender?: 'M' | 'F'
   description: string
@@ -141,7 +142,7 @@ const getData = async ({ call, response, replace, params, url, transform }: Data
 export default memo((props: CrudProps) => {
   const lastFilter = useRef<any>({})
 
-  const { url, response, interaction, onFinished, onError } = props
+  const { url, response, interaction, onFinished, onError, title } = props
   const { Left, gender, description, isFormData, transform, transformFilter } = props
   const { name, columns, filtersPerRow, titleSize, idInUrl, itemName } = props
 
@@ -303,7 +304,7 @@ export default memo((props: CrudProps) => {
           <div className={classes.leftComponent}>
             {Left && <div hidden={loading}>{Left}</div>}
             <Typography gutterBottom={false} variant="h1" className={classes.title}>{`${
-              toolbar ? lang.filter : lang.listOf
+              toolbar ? lang.filter : title || lang.listOf
             } ${name}`}</Typography>
           </div>
           <div>

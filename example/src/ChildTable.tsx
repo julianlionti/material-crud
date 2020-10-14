@@ -8,6 +8,7 @@ import { createFields, Crud, Types, useWindowSize } from 'material-crud'
 const NormativasTable = memo(({ rowData }: any) => {
   return (
     <Crud
+      title={'Vamo Racing'}
       onError={(err) => console.log(err)}
       description={`Agregar normativa correspondiente a la Categoría ${rowData.nombre}`}
       name="Normativa"
