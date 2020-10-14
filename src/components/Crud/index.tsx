@@ -305,7 +305,7 @@ export default memo((props: CrudProps) => {
             {Left && <div hidden={loading}>{Left}</div>}
             <Typography gutterBottom={false} variant="h1" className={classes.title}>{`${
               toolbar ? lang.filter : title || lang.listOf
-            } ${name}`}</Typography>
+            } ${title ? '' : name}`}</Typography>
           </div>
           <div>
             {Object.keys(filters || {}).length > 0 && (
