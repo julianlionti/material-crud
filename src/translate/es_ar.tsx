@@ -46,7 +46,7 @@ export const esAR = createTranslation({
     },
     file: {
       new: 'Haga click en la Icono para subir un Archivo.',
-      edit: 'Haga click en el archivo para editarlo.',
+      edit: 'Haga click ACA para editarlo.',
     },
   },
   dialog: {

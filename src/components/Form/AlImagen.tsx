@@ -67,8 +67,10 @@ export default memo((props: AlImagenProps) => {
       <Collapse in={!subiendo} timeout="auto">
         <div className={clases.contenedor}>
           {subiendo && <CircularProgress />}
-          <Typography variant="body1">{renderExplanation()}</Typography>
-          <label htmlFor={camaraId}>
+          <label htmlFor={camaraId} className={clases.lblContainer}>
+            <Typography className={clases.pointer} onClick={() => setTouched(true)} variant="body1">
+              {renderExplanation()}
+            </Typography>
             <IconButton
               disabled={loading}
               color="primary"
@@ -124,5 +126,12 @@ const useClases = makeStyles(() => ({
   },
   textoError: {
     color: red[500],
+  },
+  lblContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  pointer: {
+    cursor: 'pointer',
   },
 }))
