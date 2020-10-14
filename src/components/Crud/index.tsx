@@ -55,7 +55,6 @@ export interface CrudProps extends TableProps {
   itemId?: 'id' | '_id' | string
   itemName?: string // PAra borrar
   transform?: (what: 'query' | 'new' | 'update', rowData: any) => Object
-  transformFilter?: (row: any) => {} // Para manipular lo q se envia
 }
 
 interface DataCallProps {
@@ -143,7 +142,7 @@ export default memo((props: CrudProps) => {
   const lastFilter = useRef<any>({})
 
   const { url, response, interaction, onFinished, onError, title } = props
-  const { Left, gender, description, isFormData, transform, transformFilter } = props
+  const { Left, gender, description, isFormData, transform } = props
   const { name, columns, filtersPerRow, titleSize, idInUrl, itemName } = props
 
   const lang = useLang()
@@ -339,11 +338,7 @@ export default memo((props: CrudProps) => {
                   [interaction?.filter || 'filter']: filtros,
                   [interaction?.page || 'page']: 1,
                 }
-
-                const finalParams = transformFilter
-                  ? transformFilter(lastFilter.current)
-                  : lastFilter.current
-                getDataCall(finalParams)
+                getDataCall(lastFilter.current)
               }}
               noValidate
             />

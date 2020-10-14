@@ -83,5 +83,11 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "@date-io/core": "^2.10.6",
+    "@date-io/moment": "1.x",
+    "@material-ui/pickers": "^3.2.10",
+    "moment": "^2.29.1"
+  }
 }

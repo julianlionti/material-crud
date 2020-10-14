@@ -36,6 +36,7 @@ export interface FilterResponse {
   numeric?: FilterMenu[]
   autocomplete?: FilterMenu[]
   select?: FilterMenu[]
+  date?: FilterMenu[]
 }
 
 const defIconSize = 16
@@ -101,5 +102,6 @@ export default (): FilterResponse => {
     numeric: [equal, greater, lower],
     autocomplete: [contains, equal, different],
     select: [equal, different],
+    date: [equal, different, greater, lower],
   }
 }

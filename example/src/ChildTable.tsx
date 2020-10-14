@@ -108,6 +108,7 @@ export default () => {
             sort: true,
           },
         },
+        { id: 'fecha', type: Types.Date, title: 'Fecha', filter: true },
         {
           id: 'requiereNormativa',
           type: Types.Switch,
