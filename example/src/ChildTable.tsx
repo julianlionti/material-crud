@@ -1,105 +1,153 @@
-import React from 'react'
-import { Crud, createFields, Types, useWindowSize } from 'material-crud'
-import { IconButton } from '@material-ui/core'
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
+import React, { memo, useMemo } from 'react'
+import * as Yup from 'yup'
 
-const campos = createFields(() => [
-  {
-    id: 'normativas',
-    type: Types.Expandable,
-    title: 'Normativas',
-    filter: true,
-    list: {
-      align: 'flex-start',
-      width: 1,
-      height: 250,
-      cellComponent: ({ expandRow, isExpanded }) => (
-        <IconButton onClick={expandRow}>
-          {isExpanded ? <FaChevronUp /> : <FaChevronDown />}
-        </IconButton>
-      ),
-      content: (rowData) => {
-        return (
-          <div
-            style={{
-              display: 'flex',
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <span>Hije</span>
-          </div>
-        )
-      },
-    },
-  },
-  {
-    id: 'nombre',
-    title: 'Nombre',
-    placeholder: 'Nombre de la categoría',
-    type: Types.Input,
-    filter: true,
-    list: { width: 3, sort: true, align: 'center' },
-  },
-  {
-    id: 'descripcion',
-    title: 'Descripción',
-    placeholder: 'Descripción de la categoría',
-    type: Types.Multiline,
-    filter: true,
-    list: { width: 3, sort: true },
-  },
-  {
-    id: 'requiereNormativa',
-    type: Types.Switch,
-    title: 'Requiere normativa',
-    filter: true,
-    list: { width: 3, sort: true, align: 'center' },
-  },
-  {
-    id: 'pass',
-    type: Types.Secure,
-    title: 'Requiere normativa',
-  },
-  {
-    id: 'normativa',
-    type: Types.File,
-    title: 'Normativa',
-    baseURL: 'imagenProducto',
-    accept: 'application/msword, application/pdf',
-    renderPreview: (data) => {
-      return (
-        <div style={{ padding: 8 }}>
-          <iframe src={data!!} title="Normativa" />
-        </div>
-      )
-    },
+import { Tooltip, IconButton } from '@material-ui/core'
+import { FaWpforms } from 'react-icons/fa'
+import { createFields, Crud, Types, useWindowSize } from 'material-crud'
 
-    list: { width: 60 },
-  },
-])
+const NormativasTable = memo(({ rowData }: any) => {
+  return (
+    <Crud
+      onError={(err) => console.log(err)}
+      description={`Agregar normativa correspondiente a la Categoría ${rowData.nombre}`}
+      name="Normativa"
+      gender="F"
+      url={'http://localhost:5050/api/normativa'}
+      columns={[
+        {
+          id: 'nombre',
+          type: Types.Input,
+          title: 'Nombre',
+          list: { width: 40 },
+        },
+        {
+          id: 'normativa',
+          type: Types.File,
+          title: 'Normativa',
+          baseURL: 'imagenProducto',
+          accept: 'application/pdf',
+          help: 'Subir la normativa en formato PDF',
+          list: { width: 60 },
+          renderPreview: (base64) => {
+            return <iframe title={'Normativa'} width="100%" src={base64!!} />
+          },
+        },
+      ]}
+      height={270}
+      itemId="_id"
+      itemName="nombre"
+      rowHeight={80}
+      response={{
+        list: ({ data }) => ({
+          items: data.docs,
+          ...data,
+        }),
+        new: (data, { item }) => item,
+        edit: (data, { item }) => ({ item }),
+      }}
+      interaction={{
+        page: 'pagina',
+        perPage: 'porPagina',
+        filter: 'filtros',
+        sort: 'ordenado',
+      }}
+      isFormData
+      transform={(_, data) => ({ ...data, categoriaId: rowData._id })}
+    />
+  )
+})
 
 export default () => {
   const { height } = useWindowSize()
 
+  const campos = useMemo(
+    () =>
+      createFields(() => [
+        {
+          id: 'normativas',
+          type: Types.Expandable,
+          title: 'Normativas',
+          list: {
+            height: 600,
+            cellComponent: ({ rowData, expandRow }) => {
+              const { requiereNormativa } = rowData
+              return (
+                <Tooltip
+                  title={requiereNormativa ? 'Agregar normativas' : 'Se debe editar la categoría'}>
+                  <span>
+                    <IconButton onClick={expandRow} disabled={!requiereNormativa}>
+                      <FaWpforms />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              )
+            },
+            content: (rowData: any) => <NormativasTable rowData={rowData} />,
+          },
+        },
+        {
+          id: 'nombre',
+          title: 'Nombre',
+          placeholder: 'Nombre de la categoría',
+          type: Types.Input,
+          validate: Yup.string().required(),
+          filter: true,
+          list: {
+            sort: true,
+          },
+        },
+        {
+          id: 'descripcion',
+          title: 'Descripción',
+          placeholder: 'Descripción de la categoría',
+          type: Types.Multiline,
+          validate: Yup.string().max(450),
+          filter: true,
+          list: {
+            sort: true,
+          },
+        },
+        {
+          id: 'requiereNormativa',
+          type: Types.Switch,
+          title: 'Requiere normativa',
+          list: { sort: true, align: 'center' },
+        },
+        // {
+        //   id: 'normativas',
+        //   type: Types.Multiple,
+        //   title: 'Normativas necesarias',
+        //   depends: ({ requiereNormativa }: Categoria) => requiereNormativa === true,
+        //   configuration: [
+        //     {
+        //       id: 'normativa',
+        //       type: Types.Input,
+        //       title: 'Normativa necesaria',
+        //       placeholder: 'Nombre de la normativa vigente',
+        //     },
+        //   ],
+        //   list: {
+        //     align: 'center',
+        //     cellComponent: ({ normativas }: any) => (
+        //       <span style={{ whiteSpace: 'normal' }}>
+        //         {normativas?.map((e: any) => e.normativa).join(' - ') || ' - '}
+        //       </span>
+        //     ),
+        //   },
+        // },
+      ]),
+    [],
+  )
+
   return (
     <Crud
       url={'http://localhost:5050/api/categoria'}
+      gender="F"
       name="Categoria"
-      description={'Los productos tendrán asociada una o más categorías.'}
       columns={campos}
-      height={height - 100}
-      edit={true}
-      deleteRow={true}
-      rowHeight={80}
-      showSelecting={true}
-      // rightToolbar: () => {
-      //   return (
-      //     <IconButton size="small">
-      //       <FaTrash />
-      //     </IconButton>
-      //   )
-      // },
+      height={height - 190}
+      rowHeight={45}
+      description={'Los productos tendrán asociada una o más categorías.'}
       response={{
         list: ({ data }) => ({
           items: data.docs,
@@ -114,10 +162,10 @@ export default () => {
         filter: 'filtros',
         sort: 'ordenado',
       }}
-      itemId="_id"
-      idInUrl
       itemName="nombre"
       onError={(err) => console.log(err)}
+      edit
+      deleteRow
     />
   )
 }

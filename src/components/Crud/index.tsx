@@ -80,18 +80,25 @@ interface NoGetCallProps extends DataCallProps {
   deleteCall: (id: string) => void
   setCartel: (value: React.SetStateAction<CartelState>) => void
   transform?: (what: 'query' | 'new' | 'update', rowData: any) => Object
+  isFormData?: boolean
 }
 
 const postData = async (props: NoGetCallProps) => {
   const { url, data, editing, idInUrl, itemId, onFinished, isDelete, gender, transform } = props
-  const { call, response, editABM, add, deleteCall, setEditObj, setCartel } = props
+  const { call, response, editABM, add, deleteCall, setEditObj, setCartel, isFormData } = props
   const finalId = data[itemId]
   let finalURL = url
   if ((editing || isDelete) && idInUrl) {
     finalURL = `${url.slice(-1) === '/' ? '' : '/'}${finalId}`
   }
 
-  const finalData = transform ? transform(editing ? 'update' : 'new', data) : data
+  let finalData = transform ? transform(editing ? 'update' : 'new', data) : data
+  if (isFormData) {
+    finalData = serialize(finalData, {
+      indices: true,
+      allowEmptyArrays: true,
+    })
+  }
 
   const method = isDelete ? 'DELETE' : editing && idInUrl ? 'PUT' : 'POST'
   const { response: responseWs, status } = await call({
@@ -174,6 +181,7 @@ export default memo((props: CrudProps) => {
         setCartel,
         isDelete,
         transform,
+        isFormData,
       }),
     [
       call,
@@ -191,6 +199,7 @@ export default memo((props: CrudProps) => {
       deleteCall,
       setCartel,
       transform,
+      isFormData,
     ],
   )
 
@@ -392,16 +401,7 @@ export default memo((props: CrudProps) => {
                 : `${lang.add}${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''} ${name}`
             }
             fields={fieldsWithoutFilters}
-            onSubmit={(vals) => {
-              let data = vals
-              if (isFormData) {
-                data = serialize(vals, {
-                  indices: true,
-                  allowEmptyArrays: true,
-                })
-              }
-              postDataCall(data)
-            }}
+            onSubmit={(vals) => postDataCall(vals)}
           />
         </CenteredCard>
       </Collapse>
