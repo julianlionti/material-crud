@@ -69,12 +69,12 @@ export default memo((props: PropsWithChildren<Props>) => {
         const format = (col as AlDateProps).format
         if (format) return moment(cellData).format(format)
 
-        return String(cellData)
+        return String(cellData || '-')
       }
       case Types.Switch:
         return cellData ? <FaCheck size={18} color="green" /> : <FaTimes size={18} color="red" />
       default:
-        return String(cellData)
+        return String(cellData || '-')
     }
   }, [cellData, col, rowHeight, rowData, children, expanded, onExpand])
 

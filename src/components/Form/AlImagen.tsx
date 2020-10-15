@@ -18,7 +18,19 @@ export interface AlImagenProps extends ComunesProps {
 
 export default memo((props: AlImagenProps) => {
   const lang = useLang()
-  const { id, loading, grow, baseURL, ImgButton, type, renderPreview, hide, accept } = props
+  const {
+    id,
+    loading,
+    grow,
+    baseURL,
+    ImgButton,
+    type,
+    renderPreview,
+    hide,
+    accept,
+    title,
+    validate,
+  } = props
   const [base64, setBase64] = useState<string | null>(null)
   const [{ value }, { error, touched }, { setValue, setTouched }] = useField<string | File | null>(
     id,
@@ -64,8 +76,16 @@ export default memo((props: AlImagenProps) => {
     }
   }, [srcFinal, value, isImage, ImgButton, clases, base64, id, renderPreview])
 
+  const finalTitle = useMemo<string>(() => {
+    const mandatory = !!validate?.describe().tests.find((e) => e.name === 'required')
+
+    const valor = value as string
+    return `${title} ${mandatory ? '*' : ''}`
+  }, [title, value, validate])
+
   return (
     <BaseInput grow={grow} ocultar={hide}>
+      <Typography>{finalTitle}</Typography>
       <Collapse in={!subiendo} timeout="auto">
         <div className={clases.contenedor}>
           {subiendo && <CircularProgress />}

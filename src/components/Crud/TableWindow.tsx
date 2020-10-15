@@ -71,7 +71,7 @@ export default memo((props: Props) => {
     [columns],
   )
 
-  const classes = useClasses({ height, finalRowHeight, rowsLength: list.length })
+  const classes = useClasses({ height })
 
   const headerSelected = useMemo(() => {
     if (rowsSelected.length === 0) return false
@@ -170,10 +170,8 @@ export default memo((props: Props) => {
 })
 
 const useClasses = makeStyles((theme) => ({
-  container: ({ height, finalRowHeight, rowsLength }: any) => ({
-    minHeight: 250,
-    height: finalRowHeight * rowsLength,
-    maxHeight: height,
+  container: ({ height }: any) => ({
+    height: height,
     display: 'flex',
     flexDirection: 'column',
   }),
