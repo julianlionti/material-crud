@@ -45,7 +45,7 @@ export const generateDefault = (item: TodosProps): DefResponse => {
     case Types.Image:
       return null
     case Types.Date:
-      return moment()
+      return null
     default:
       return ''
   }
