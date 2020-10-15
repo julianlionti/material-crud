@@ -28,7 +28,19 @@ export default (props: AlDateProps) => {
 
   const [anchorFilter, setAnchorFilter] = useState<HTMLElement | null>(null)
 
-  const { DateProps, id, title, grow, fullWidth, hide, locale, help, format, filter } = props
+  const {
+    DateProps,
+    id,
+    title,
+    grow,
+    fullWidth,
+    hide,
+    locale,
+    help,
+    format,
+    filter,
+    loading,
+  } = props
   const [{ value }, { error, touched }, { setTouched, setValue }] = useField<
     DateValue | DateFilter
   >(id)
@@ -53,6 +65,7 @@ export default (props: AlDateProps) => {
       <BaseInput grow={grow} fullWidth={fullWidth} ocultar={hide}>
         <DatePicker
           autoOk
+          disabled={loading}
           error={!!error && touched}
           variant="inline"
           inputVariant="outlined"
