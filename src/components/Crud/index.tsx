@@ -55,6 +55,7 @@ export interface CrudProps extends TableProps {
   itemId?: 'id' | '_id' | string
   itemName?: string // PAra borrar
   transform?: (what: 'query' | 'new' | 'update', rowData: any) => Object
+  transformToEdit?: (props: any) => any
 }
 
 interface DataCallProps {
@@ -142,7 +143,7 @@ export default memo((props: CrudProps) => {
   const lastFilter = useRef<any>({})
 
   const { url, response, interaction, onFinished, onError, title } = props
-  const { Left, gender, description, isFormData, transform } = props
+  const { Left, gender, description, isFormData, transform, transformToEdit } = props
   const { name, columns, filtersPerRow, titleSize, idInUrl, itemName } = props
 
   const lang = useLang()
@@ -214,7 +215,15 @@ export default memo((props: CrudProps) => {
     [interaction, pagination],
   )
 
-  const onEditCall = useCallback((item) => setEditObj(item), [])
+  const onEditCall = useCallback(
+    (item) => {
+      let finalItem = item
+      if (transformToEdit) finalItem = transformToEdit(item)
+      setEditObj(finalItem)
+    },
+    [transformToEdit],
+  )
+
   const onDeleteCall = useCallback(
     (item) => {
       const it = item
