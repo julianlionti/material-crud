@@ -30,6 +30,7 @@ export default () => {
         loading={loading}
         fields={[
           { id: 'prueba', type: Types.Input, title: 'Prueba' },
+          { id: 'fecha', type: Types.Date, title: 'Fecha' },
           {
             id: 'custom',
             type: Types.Custom,

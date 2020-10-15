@@ -17,6 +17,7 @@ export enum Types {
   Custom,
   Expandable,
   Secure,
+  Date,
 }
 
 export interface OpcionesProps {

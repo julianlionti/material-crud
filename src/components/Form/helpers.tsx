@@ -1,11 +1,12 @@
 import { TodosProps } from '.'
 import { Filter } from '../../utils/useFilters'
 import { Types } from './Types'
+import moment, { Moment } from 'moment'
 
 export const multipleDefault = (conf: TodosProps[]) =>
   conf.flat().reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it) }), {})
 
-export type DefResponse = boolean | null | '' | any[] | Filter
+export type DefResponse = boolean | null | '' | any[] | Filter | Moment
 export const generateDefault = (item: TodosProps): DefResponse => {
   if (item.type === Types.Expandable) return null
   if (item.filter) {
@@ -42,6 +43,8 @@ export const generateDefault = (item: TodosProps): DefResponse => {
     case Types.Multiple:
       return [multipleDefault(item.configuration)]
     case Types.Image:
+      return null
+    case Types.Date:
       return null
     default:
       return ''

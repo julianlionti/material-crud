@@ -83,5 +83,11 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "@date-io/date-fns": "1.x",
+    "@material-ui/pickers": "^3.2.10",
+    "date-fns": "^2.16.1",
+    "moment": "^2.29.1"
+  }
 }

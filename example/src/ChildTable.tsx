@@ -6,6 +6,7 @@ import { FaWpforms } from 'react-icons/fa'
 import { createFields, Crud, Types, useWindowSize } from 'material-crud'
 
 const NormativasTable = memo(({ rowData }: any) => {
+  
   return (
     <Crud
       title={'Vamo Racing'}
@@ -108,6 +109,7 @@ export default () => {
             sort: true,
           },
         },
+        { id: 'fecha', type: Types.Date, title: 'Fecha', filter: true },
         {
           id: 'requiereNormativa',
           type: Types.Switch,

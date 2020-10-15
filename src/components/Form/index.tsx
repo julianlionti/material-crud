@@ -11,6 +11,7 @@ import AlAutocomplete, { AlAutocompleteProps } from './AlAutocomplete'
 import AlSwitch, { AlSwitchProps } from './AlSwitch'
 import AlMultiple, { AlMultipleProps } from './AlMultiple'
 import { generateDefault } from './helpers'
+import AlDate, { AlDateProps } from './AlDate'
 
 Yup.setLocale({
   string: {
@@ -29,6 +30,7 @@ export type TodosProps =
   | AlSwitchProps
   | AlMultipleProps
   | AlCustomProps
+  | AlDateProps
   | ({ type: Types.Expandable } & BaseProps)
 
 export type CamposProps = TodosProps | TodosProps[]
@@ -74,6 +76,8 @@ export default memo((props: Props) => {
           return <AlMultiple key={campo.id} {...campo} loading={loading} hide={hidden} />
         case Types.Custom:
           return <AlCustom key={campo.id} {...campo} loading={loading} hide={hidden} />
+        case Types.Date:
+          return <AlDate key={campo.id} {...campo} loading={loading} hide={hidden} />
         default:
           return null
       }
