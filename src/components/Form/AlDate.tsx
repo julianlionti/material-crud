@@ -26,29 +26,32 @@ export default (props: AlDateProps) => {
   const [anchorFilter, setAnchorFilter] = useState<HTMLElement | null>(null)
 
   const { id, title, grow, fullWidth, hide, locale, help, format, filter } = props
-  const [{ value }, { error }, { setValue }] = useField<MaterialUiPickersDate | DateFilter>(id)
+  const [{ value }, { error, touched }, { setTouched, setValue }] = useField<
+    MaterialUiPickersDate | DateFilter
+  >(id)
 
   return (
     <MuiPickersUtilsProvider utils={MomentUtils} locale={locale || 'en'}>
       <BaseInput grow={grow} fullWidth={fullWidth} ocultar={hide}>
         <DatePicker
           autoOk
-          error={!!error}
+          error={!!error && touched}
           variant="inline"
           inputVariant="outlined"
           format={format || 'DD/MM/YYYY'}
           label={title}
-          helperText={error || help}
+          helperText={(touched && error) || help}
           fullWidth={fullWidth || true}
           value={value}
           onChange={(val) => {
-            if (typeof value !== 'object') {
-              setValue(val)
-            } else {
+            setTouched(true)
+            if (filter) {
               setValue({
                 filter: (value as DateFilter).filter,
                 value: val,
               })
+            } else {
+              setValue(val)
             }
           }}
           animateYearScrolling
