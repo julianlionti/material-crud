@@ -1,16 +1,24 @@
 import { DatePicker, DatePickerProps, MuiPickersUtilsProvider } from '@material-ui/pickers'
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date'
+// import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date'
 import React, { useMemo, useState } from 'react'
 import BaseInput from './BaseInput'
 import { ComunesProps, Types } from './Types'
-import MomentUtils from '@date-io/moment'
-import 'moment/locale/es'
+import DateFnsUtils from '@date-io/date-fns'
+// import 'moment/locale/es'
 import { useField } from 'formik'
 import { IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip } from '@material-ui/core'
 import useFilters, { Filter } from '../../utils/useFilters'
 import { useLang } from '../../utils/CrudContext'
 import AriaLabels from '../../utils/AriaLabels'
-import moment from 'moment'
+import enLocale from 'date-fns/locale/en-US'
+import esLocale from 'date-fns/locale/es'
+
+const localeWrapper = {
+  en: enLocale,
+  es: esLocale,
+}
+
+// import moment from 'moment'
 
 export interface AlDateProps extends ComunesProps {
   type: Types.Date
@@ -20,7 +28,7 @@ export interface AlDateProps extends ComunesProps {
   DateProps?: DatePickerProps
 }
 
-type DateValue = string | null
+type DateValue = Date | null
 type DateFilter = Filter<DateValue>
 export default (props: AlDateProps) => {
   const lang = useLang()
@@ -45,23 +53,20 @@ export default (props: AlDateProps) => {
     DateValue | DateFilter
   >(id)
 
-  const finalFormat = format || 'DD/MM/YYYY'
+  const finalFormat = format || 'dd/MM/yyyy'
 
   const finalValue = useMemo(() => {
     let actualVal: DateValue = null
     if (filter) {
       actualVal = (value as DateFilter).value
     } else {
-      actualVal = value !== null ? (value as string) : null
+      actualVal = value !== null ? (value as Date) : null
     }
-
-    if (!actualVal) return actualVal
-    return moment(actualVal, finalFormat)
-  }, [value, filter, finalFormat])
-  console.log(finalValue)
-
+    return actualVal
+  }, [value, filter])
+  console.log(value)
   return (
-    <MuiPickersUtilsProvider utils={MomentUtils} locale={locale || 'en'}>
+    <MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeWrapper[locale || 'es']}>
       <BaseInput grow={grow} fullWidth={fullWidth} ocultar={hide}>
         <DatePicker
           autoOk
@@ -79,11 +84,10 @@ export default (props: AlDateProps) => {
             if (filter) {
               setValue({
                 filter: (value as DateFilter).filter,
-                value: val?.format(finalFormat) || null,
+                value: val,
               })
             } else {
-              console.log(val, val?.format(finalFormat))
-              setValue(val?.format(finalFormat) || null)
+              setValue(val)
             }
           }}
           animateYearScrolling

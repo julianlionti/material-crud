@@ -6,6 +6,7 @@ import { FaWpforms } from 'react-icons/fa'
 import { createFields, Crud, Types, useWindowSize } from 'material-crud'
 
 const NormativasTable = memo(({ rowData }: any) => {
+  
   return (
     <Crud
       title={'Vamo Racing'}

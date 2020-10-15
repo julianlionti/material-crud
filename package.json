@@ -85,9 +85,9 @@
     "dist"
   ],
   "dependencies": {
-    "@date-io/core": "^2.10.6",
-    "@date-io/moment": "1.x",
+    "@date-io/date-fns": "1.x",
     "@material-ui/pickers": "^3.2.10",
+    "date-fns": "^2.16.1",
     "moment": "^2.29.1"
   }
 }
