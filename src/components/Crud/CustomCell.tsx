@@ -5,6 +5,8 @@ import { AlImagenProps } from '../Form/AlImagen'
 import { ComunesProps, Types } from '../Form/Types'
 import { CamposProps } from '../Form'
 import { useABM } from '../../utils/DataContext'
+import { AlDateProps } from '../Form/AlDate'
+import moment from 'moment'
 
 interface ComponentProps {
   rowData: any
@@ -62,6 +64,12 @@ export default memo((props: PropsWithChildren<Props>) => {
             style={{ height: finalSize, width: finalSize }}
           />
         )
+      }
+      case Types.Date: {
+        const format = (col as AlDateProps).format
+        if (format) return moment(cellData).format(format)
+
+        return String(cellData)
       }
       case Types.Switch:
         return cellData ? <FaCheck size={18} color="green" /> : <FaTimes size={18} color="red" />
