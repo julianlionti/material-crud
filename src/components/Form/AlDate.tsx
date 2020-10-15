@@ -1,4 +1,4 @@
-import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
+import { DatePicker, DatePickerProps, MuiPickersUtilsProvider } from '@material-ui/pickers'
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date'
 import React, { useMemo, useState } from 'react'
 import BaseInput from './BaseInput'
@@ -17,6 +17,7 @@ export interface AlDateProps extends ComunesProps {
   fullWidth?: boolean
   locale?: 'en' | 'es'
   format?: string
+  DateProps?: DatePickerProps
 }
 
 type DateValue = string | null
@@ -27,7 +28,7 @@ export default (props: AlDateProps) => {
 
   const [anchorFilter, setAnchorFilter] = useState<HTMLElement | null>(null)
 
-  const { id, title, grow, fullWidth, hide, locale, help, format, filter } = props
+  const { DateProps, id, title, grow, fullWidth, hide, locale, help, format, filter } = props
   const [{ value }, { error, touched }, { setTouched, setValue }] = useField<
     DateValue | DateFilter
   >(id)
@@ -81,6 +82,7 @@ export default (props: AlDateProps) => {
               </Tooltip>
             ),
           }}
+          {...DateProps}
         />
         {filter && (
           <Menu anchorEl={anchorFilter} open={!!anchorFilter}>
