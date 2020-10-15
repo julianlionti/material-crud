@@ -36,12 +36,17 @@ export default (props: AlDateProps) => {
   const finalFormat = format || 'DD/MM/YYYY'
 
   const finalValue = useMemo(() => {
+    let actualVal: DateValue = null
     if (filter) {
-      return (value as DateFilter).value
+      actualVal = (value as DateFilter).value
+    } else {
+      actualVal = value !== null ? (value as string) : null
     }
 
-    return value !== null ? moment(value as string).format(finalFormat) : null
-  }, [])
+    if (!actualVal) return actualVal
+    return moment(actualVal, finalFormat)
+  }, [value, filter, finalFormat])
+  console.log(finalValue)
 
   return (
     <MuiPickersUtilsProvider utils={MomentUtils} locale={locale || 'en'}>
@@ -51,7 +56,7 @@ export default (props: AlDateProps) => {
           error={!!error && touched}
           variant="inline"
           inputVariant="outlined"
-          format={format || 'DD/MM/YYYY'}
+          format={finalFormat}
           label={title}
           helperText={(touched && error) || help}
           fullWidth={fullWidth || true}
@@ -61,10 +66,11 @@ export default (props: AlDateProps) => {
             if (filter) {
               setValue({
                 filter: (value as DateFilter).filter,
-                value: val?.format(format) || null,
+                value: val?.format(finalFormat) || null,
               })
             } else {
-              setValue(val?.format(format) || null)
+              console.log(val, val?.format(finalFormat))
+              setValue(val?.format(finalFormat) || null)
             }
           }}
           animateYearScrolling
