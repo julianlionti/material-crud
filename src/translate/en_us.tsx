@@ -45,7 +45,7 @@ export const enUS = createTranslation({
     },
     file: {
       new: 'Click on the icon to upload a file.',
-      edit: 'Click on the file to edit it.',
+      edit: 'Click on HERE to edit it.',
     },
   },
   dialog: {

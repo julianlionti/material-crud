@@ -10,7 +10,7 @@ import { FaCamera, FaFile } from 'react-icons/fa'
 
 export interface AlImagenProps extends ComunesProps {
   type: Types.Image | Types.File
-  baseURL: string
+  baseURL?: string
   ImgButton?: ReactNode
   accept?: string
   renderPreview?: (base64: string | null) => ReactNode
@@ -53,7 +53,7 @@ export default memo((props: AlImagenProps) => {
     if (srcFinal && isImage) {
       return <img height={300} alt={id} src={srcFinal} />
     } else if (value && !isImage && renderPreview) {
-      return renderPreview(base64)
+      return renderPreview(base64 || srcFinal)
     } else if (value && !isImage && !renderPreview) {
       return <span>Es necesario renderizar el resultado con el 'renderPreview'</span>
     } else {
@@ -67,8 +67,10 @@ export default memo((props: AlImagenProps) => {
       <Collapse in={!subiendo} timeout="auto">
         <div className={clases.contenedor}>
           {subiendo && <CircularProgress />}
-          <Typography variant="body1">{renderExplanation()}</Typography>
-          <label htmlFor={camaraId}>
+          <label htmlFor={camaraId} className={clases.lblContainer}>
+            <Typography className={clases.pointer} onClick={() => setTouched(true)} variant="body1">
+              {renderExplanation()}
+            </Typography>
             <IconButton
               disabled={loading}
               color="primary"
@@ -124,5 +126,12 @@ const useClases = makeStyles(() => ({
   },
   textoError: {
     color: red[500],
+  },
+  lblContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  pointer: {
+    cursor: 'pointer',
   },
 }))

@@ -39,6 +39,7 @@ interface ResponseProps {
 export interface CrudProps extends TableProps {
   url: string
   name: string
+  title?: string
   titleSize?: number
   gender?: 'M' | 'F'
   description: string
@@ -53,7 +54,7 @@ export interface CrudProps extends TableProps {
   interaction?: Interactions
   itemId?: 'id' | '_id' | string
   itemName?: string // PAra borrar
-  transformEdit?: (row: any) => Object // Para el editar
+  transform?: (what: 'query' | 'new' | 'update', rowData: any) => Object
   transformFilter?: (row: any) => {} // Para manipular lo q se envia
 }
 
@@ -63,6 +64,7 @@ interface DataCallProps {
   response: ResponseProps
   replace: (props: ReplaceProps) => void
   params?: any
+  transform?: (what: 'query' | 'new' | 'update', rowData: any) => Object
 }
 
 interface NoGetCallProps extends DataCallProps {
@@ -78,22 +80,32 @@ interface NoGetCallProps extends DataCallProps {
   add: (items: object[]) => void
   deleteCall: (id: string) => void
   setCartel: (value: React.SetStateAction<CartelState>) => void
+  transform?: (what: 'query' | 'new' | 'update', rowData: any) => Object
+  isFormData?: boolean
 }
 
 const postData = async (props: NoGetCallProps) => {
-  const { url, data, editing, idInUrl, itemId, onFinished, isDelete, gender } = props
-  const { call, response, editABM, add, deleteCall, setEditObj, setCartel } = props
+  const { url, data, editing, idInUrl, itemId, onFinished, isDelete, gender, transform } = props
+  const { call, response, editABM, add, deleteCall, setEditObj, setCartel, isFormData } = props
   const finalId = data[itemId]
   let finalURL = url
   if ((editing || isDelete) && idInUrl) {
     finalURL = `${finalURL}${finalURL.substring(url.length - 1) === '/' ? '' : '/'}${finalId}/`
   }
 
+  let finalData = transform ? transform(editing ? 'update' : 'new', data) : data
+  if (isFormData) {
+    finalData = serialize(finalData, {
+      indices: true,
+      allowEmptyArrays: true,
+    })
+  }
+
   const method = isDelete ? 'DELETE' : editing && idInUrl ? 'PUT' : 'POST'
   const { response: responseWs, status } = await call({
     method,
     url: finalURL,
-    data,
+    data: finalData,
   })
 
   if (status!! >= 200 && status!! < 300) {
@@ -113,11 +125,12 @@ const postData = async (props: NoGetCallProps) => {
   }
 }
 
-const getData = async ({ call, response, replace, params, url }: DataCallProps) => {
+const getData = async ({ call, response, replace, params, url, transform }: DataCallProps) => {
+  const finalParams = transform ? transform('query', params) : params
   const { response: responseWs, status } = await call({
     method: 'GET',
     url,
-    params,
+    params: finalParams,
   })
 
   if (status!! >= 200 && status!! < 300) {
@@ -129,8 +142,8 @@ const getData = async ({ call, response, replace, params, url }: DataCallProps) 
 export default memo((props: CrudProps) => {
   const lastFilter = useRef<any>({})
 
-  const { url, response, interaction, onFinished, onError } = props
-  const { Left, gender, description, isFormData, transformEdit, transformFilter } = props
+  const { url, response, interaction, onFinished, onError, title } = props
+  const { Left, gender, description, isFormData, transform, transformFilter } = props
   const { name, columns, filtersPerRow, titleSize, idInUrl, itemName } = props
 
   const lang = useLang()
@@ -145,12 +158,10 @@ export default memo((props: CrudProps) => {
 
   const editing = useMemo(() => (editObj ? Object.keys(editObj!!).length > 0 : false), [editObj])
 
-  const getDataCall = useCallback((params) => getData({ call, params, replace, response, url }), [
-    call,
-    replace,
-    response,
-    url,
-  ])
+  const getDataCall = useCallback(
+    (params) => getData({ call, params, replace, response, url, transform }),
+    [call, replace, response, url, transform],
+  )
   const postDataCall = useCallback(
     (data, isDelete = false) =>
       postData({
@@ -170,6 +181,8 @@ export default memo((props: CrudProps) => {
         deleteCall,
         setCartel,
         isDelete,
+        transform,
+        isFormData,
       }),
     [
       call,
@@ -186,6 +199,8 @@ export default memo((props: CrudProps) => {
       setEditObj,
       deleteCall,
       setCartel,
+      transform,
+      isFormData,
     ],
   )
 
@@ -289,8 +304,8 @@ export default memo((props: CrudProps) => {
           <div className={classes.leftComponent}>
             {Left && <div hidden={loading}>{Left}</div>}
             <Typography gutterBottom={false} variant="h1" className={classes.title}>{`${
-              toolbar ? lang.filter : lang.listOf
-            } ${name}`}</Typography>
+              toolbar ? lang.filter : title || lang.listOf
+            } ${title ? '' : name}`}</Typography>
           </div>
           <div>
             {Object.keys(filters || {}).length > 0 && (
@@ -357,9 +372,8 @@ export default memo((props: CrudProps) => {
           }}
           onEdit={(rowData) => {
             const { onEdit } = props
-            const editData = transformEdit ? transformEdit(rowData) : rowData
-            if (onEdit) onEdit(editData)
-            else onEditCall(editData)
+            if (onEdit) onEdit(rowData)
+            else onEditCall(rowData)
           }}
           onDelete={(rowData) => {
             const { onDelete } = props
@@ -388,16 +402,7 @@ export default memo((props: CrudProps) => {
                 : `${lang.add}${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''} ${name}`
             }
             fields={fieldsWithoutFilters}
-            onSubmit={(vals) => {
-              let data = vals
-              if (isFormData) {
-                data = serialize(vals, {
-                  indices: true,
-                  allowEmptyArrays: true,
-                })
-              }
-              postDataCall(data)
-            }}
+            onSubmit={(vals) => postDataCall(vals)}
           />
         </CenteredCard>
       </Collapse>
