@@ -20,7 +20,9 @@ export default memo((props: AlImagenProps) => {
   const lang = useLang()
   const { id, loading, grow, baseURL, ImgButton, type, renderPreview, hide, accept } = props
   const [base64, setBase64] = useState<string | null>(null)
-  const [{ value }, { error }, { setValue, setTouched }] = useField<string | File | null>(id)
+  const [{ value }, { error, touched }, { setValue, setTouched }] = useField<string | File | null>(
+    id,
+  )
   const [subiendo, setSubiendo] = useState(false)
 
   const camaraId = `camara-${id}`
@@ -79,7 +81,7 @@ export default memo((props: AlImagenProps) => {
               {renderContent()}
             </IconButton>
           </label>
-          {!!error && (
+          {!!error && touched && (
             <Typography variant="caption" className={clases.textoError}>
               {error}
             </Typography>

@@ -1,6 +1,6 @@
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import BaseInput from './BaseInput'
 import { ComunesProps, Types } from './Types'
 import MomentUtils from '@date-io/moment'
@@ -10,6 +10,7 @@ import { IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip } from 
 import useFilters, { Filter } from '../../utils/useFilters'
 import { useLang } from '../../utils/CrudContext'
 import AriaLabels from '../../utils/AriaLabels'
+import moment from 'moment'
 
 export interface AlDateProps extends ComunesProps {
   type: Types.Date
@@ -18,7 +19,8 @@ export interface AlDateProps extends ComunesProps {
   format?: string
 }
 
-type DateFilter = Filter<MaterialUiPickersDate>
+type DateValue = string | null
+type DateFilter = Filter<DateValue>
 export default (props: AlDateProps) => {
   const lang = useLang()
   const { date } = useFilters()
@@ -27,8 +29,18 @@ export default (props: AlDateProps) => {
 
   const { id, title, grow, fullWidth, hide, locale, help, format, filter } = props
   const [{ value }, { error, touched }, { setTouched, setValue }] = useField<
-    MaterialUiPickersDate | DateFilter
+    DateValue | DateFilter
   >(id)
+
+  const finalFormat = format || 'DD/MM/YYYY'
+
+  const finalValue = useMemo(() => {
+    if (filter) {
+      return (value as DateFilter).value
+    }
+
+    return value !== null ? moment(value as string).format(finalFormat) : null
+  }, [])
 
   return (
     <MuiPickersUtilsProvider utils={MomentUtils} locale={locale || 'en'}>
@@ -42,16 +54,16 @@ export default (props: AlDateProps) => {
           label={title}
           helperText={(touched && error) || help}
           fullWidth={fullWidth || true}
-          value={value}
+          value={finalValue}
           onChange={(val) => {
             setTouched(true)
             if (filter) {
               setValue({
                 filter: (value as DateFilter).filter,
-                value: val,
+                value: val?.format(format) || null,
               })
             } else {
-              setValue(val)
+              setValue(val?.format(format) || null)
             }
           }}
           animateYearScrolling
