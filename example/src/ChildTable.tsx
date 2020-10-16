@@ -6,7 +6,6 @@ import { FaWpforms } from 'react-icons/fa'
 import { createFields, Crud, Types, useWindowSize } from 'material-crud'
 
 const NormativasTable = memo(({ rowData }: any) => {
-  
   return (
     <Crud
       title={'Vamo Racing'}
@@ -93,7 +92,7 @@ export default () => {
           placeholder: 'Nombre de la categoría',
           type: Types.Input,
           validate: Yup.string().required(),
-          filter: true,
+          // filter: true,
           list: {
             sort: true,
           },
@@ -104,12 +103,12 @@ export default () => {
           placeholder: 'Descripción de la categoría',
           type: Types.Multiline,
           validate: Yup.string().max(450),
-          filter: true,
+          // filter: true,
           list: {
             sort: true,
           },
         },
-        { id: 'fecha', type: Types.Date, title: 'Fecha', filter: true },
+        { id: 'fecha', type: Types.Date, title: 'Fecha' /*filter: true*/ },
         {
           id: 'requiereNormativa',
           type: Types.Switch,
@@ -148,6 +147,12 @@ export default () => {
       gender="F"
       name="Categoria"
       columns={campos}
+      noTitle
+      actions={{
+        new: true,
+        edit: true,
+        delete: true,
+      }}
       height={height - 190}
       rowHeight={45}
       description={'Los productos tendrán asociada una o más categorías.'}
@@ -167,8 +172,6 @@ export default () => {
       }}
       itemName="nombre"
       onError={(err) => console.log(err)}
-      edit
-      deleteRow
     />
   )
 }

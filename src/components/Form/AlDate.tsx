@@ -64,7 +64,7 @@ export default (props: AlDateProps) => {
     }
     return actualVal
   }, [value, filter])
-  console.log(value)
+
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeWrapper[locale || 'es']}>
       <BaseInput grow={grow} fullWidth={fullWidth} ocultar={hide}>

@@ -17,14 +17,7 @@ import CenteredCard from '../UI/CenteredCard'
 import AlTable, { TableProps } from '../Crud/TableWindow'
 import { Interactions, Types } from '../Form/Types'
 import { useLang } from '../../utils/CrudContext'
-
-export interface CRUD {
-  onEdit?: () => void
-  onDelete?: () => void
-  edited?: boolean
-  deleted?: boolean
-  cardWidth: number
-}
+import Toolbar from './Toolbar'
 
 interface OnFlyResponse extends PaginationProps {
   items: any[]
@@ -56,6 +49,7 @@ export interface CrudProps extends TableProps {
   itemName?: string // PAra borrar
   transform?: (what: 'query' | 'new' | 'update', rowData: any) => Object
   transformToEdit?: (props: any) => any
+  noTitle?: boolean
 }
 
 interface DataCallProps {
@@ -127,11 +121,13 @@ const postData = async (props: NoGetCallProps) => {
 
 const getData = async ({ call, response, replace, params, url, transform }: DataCallProps) => {
   const finalParams = transform ? transform('query', params) : params
+  console.log(finalParams)
   const { response: responseWs, status } = await call({
     method: 'GET',
     url,
     params: finalParams,
   })
+  console.log(responseWs, status)
 
   if (status!! >= 200 && status!! < 300) {
     const { items, ...data } = response?.list(responseWs) || { page: 1 }
@@ -142,9 +138,9 @@ const getData = async ({ call, response, replace, params, url, transform }: Data
 export default memo((props: CrudProps) => {
   const lastFilter = useRef<any>({})
 
-  const { url, response, interaction, onFinished, onError, title } = props
+  const { url, response, interaction, onFinished, onError, title, noTitle } = props
   const { Left, gender, description, isFormData, transform, transformToEdit } = props
-  const { name, columns, filtersPerRow, titleSize, idInUrl, itemName } = props
+  const { name, columns, filtersPerRow, titleSize, idInUrl, itemName, actions } = props
 
   const lang = useLang()
   const called = useRef(false)
@@ -307,54 +303,31 @@ export default memo((props: CrudProps) => {
 
   return (
     <div className={classes.contenedor}>
-      <Collapse in={!editObj} timeout="auto" unmountOnExit>
-        <div className={classes.toolbarContainer}>
-          <div className={classes.leftComponent}>
-            {Left && <div hidden={loading}>{Left}</div>}
-            <Typography gutterBottom={false} variant="h1" className={classes.title}>{`${
-              toolbar ? lang.filter : title || lang.listOf
-            } ${title ? '' : name}`}</Typography>
-          </div>
-          <div>
-            {Object.keys(filters || {}).length > 0 && (
-              <Button
-                color="primary"
-                endIcon={<FaFilter />}
-                disabled={!!editObj}
-                className={classes.colapseBtn}
-                onClick={() => setToolbar((t) => !t)}>
-                {`${toolbar ? lang.close : lang.open} ${lang.filters}`}
-              </Button>
-            )}
-            <Button
-              disabled={!!editObj}
-              color="primary"
-              variant="outlined"
-              className={classes.nuevoBtn}
-              onClick={() => setEditObj({})}>
-              {`${lang.add}${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''} ${name}`}
-            </Button>
-          </div>
-        </div>
-        {filters && (
-          <Collapse in={toolbar} timeout="auto" unmountOnExit>
-            <Formulario
-              accept={lang.filter}
-              fields={filters}
-              onSubmit={(filtros) => {
-                lastFilter.current = {
-                  ...lastFilter.current,
-                  [interaction?.filter || 'filter']: filtros,
-                  [interaction?.page || 'page']: 1,
-                }
-                getDataCall(lastFilter.current)
-              }}
-              noValidate
-            />
-          </Collapse>
-        )}
-      </Collapse>
-      <Divider className={classes.divisor} />
+      {(!noTitle || Object.keys(filters).length || actions?.new) && (
+        <Toolbar
+          filters={filters}
+          editObj={editObj}
+          Left={Left}
+          gender={gender}
+          onNew={() => setEditObj({})}
+          loading={loading}
+          noTitle={noTitle}
+          title={title}
+          actions={actions}
+          show={toolbar}
+          titleSize={titleSize}
+          name={name}
+          handleShow={() => setToolbar((t) => !t)}
+          onFilter={(filters) => {
+            lastFilter.current = {
+              ...lastFilter.current,
+              [interaction?.filter || 'filter']: filters,
+              [interaction?.page || 'page']: 1,
+            }
+            getDataCall(lastFilter.current)
+          }}
+        />
+      )}
       {loading && <LinearProgress />}
       <Collapse in={!editObj} timeout="auto" unmountOnExit>
         <AlTable
@@ -374,16 +347,8 @@ export default memo((props: CrudProps) => {
               [interaction?.perPage || lang.pagination?.rowsPerPage || 'perPage']: perPage,
             })
           }}
-          onEdit={(rowData) => {
-            const { onEdit } = props
-            if (onEdit) onEdit(rowData)
-            else onEditCall(rowData)
-          }}
-          onDelete={(rowData) => {
-            const { onDelete } = props
-            if (onDelete) onDelete(rowData)
-            else onDeleteCall(rowData)
-          }}
+          onEdit={(rowData) => onEditCall(rowData)}
+          onDelete={(rowData) => onDeleteCall(rowData)}
         />
       </Collapse>
       <Collapse in={!!editObj} timeout="auto" unmountOnExit>
@@ -426,33 +391,9 @@ const useClasses = makeStyles((tema) => ({
     width: '85%',
     margin: '0 auto',
   },
-  title: ({ titleSize }: any) => ({
-    fontSize: titleSize || 26,
-  }),
-  toolbarContainer: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: tema.spacing(1),
-    paddingLeft: tema.spacing(2),
-    paddingRight: tema.spacing(2),
-  },
-  leftComponent: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  colapseBtn: {
-    marginLeft: tema.spacing(2),
-  },
-  nuevoBtn: {
-    marginLeft: tema.spacing(2),
-  },
   colapseContainer: {
     display: 'flex',
     alignItems: 'center',
-  },
-  divisor: {
-    marginBottom: tema.spacing(3),
   },
   items: {
     display: 'flex',

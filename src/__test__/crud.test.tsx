@@ -1,5 +1,13 @@
 import React from 'react'
-import { act, cleanup, fireEvent, render, queryByLabelText, waitFor } from '@testing-library/react'
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  queryByLabelText,
+  waitFor,
+  screen,
+} from '@testing-library/react'
 import Crud from '../components/Crud/WithProvider'
 import { createFields } from '../components/Form'
 import { Types } from '../components/Form/Types'
@@ -11,6 +19,9 @@ import MockAdapter from 'axios-mock-adapter'
 import Axios from 'axios'
 import { fakeData } from './generators'
 
+jest.mock('react-virtualized-auto-sizer', () => ({ children }: any) =>
+  children({ height: 600, width: 600 }),
+)
 jest.setTimeout(30000)
 var mock = new MockAdapter(Axios)
 mock.onGet().reply(200, fakeData())
@@ -67,8 +78,6 @@ describe('CrudComponent FakeData AlimentAPP', () => {
           response={{
             list: ({ data }) => ({ items: data.docs, ...data }),
           }}
-          edit
-          deleteRow
         />
       </CrudProvider>,
     )
@@ -117,6 +126,6 @@ describe('CrudComponent FakeData AlimentAPP', () => {
     // await new Promise((resolve) => setTimeout(resolve, 20000))
     // await act(async () => {})
     const rows = crudElement.queryAllByLabelText(AriaLabels.RowContent)
-    console.log(rows.length)
+    expect(rows.length).toBe(10)
   })
 })

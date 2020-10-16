@@ -1,8 +1,7 @@
 import React from 'react'
-import { enUS, createFields, Types, CrudProvider, Crud } from 'material-crud'
+import { createFields, Types, Crud } from 'material-crud'
 
 export default () => {
-  const currentLang = enUS
   const description = 'Crud de prueba'
   const name = 'Prueba'
   const url = 'http://localhost:5050/api/categoria'
@@ -39,19 +38,16 @@ export default () => {
   ])
 
   return (
-    <CrudProvider lang={currentLang}>
-      <Crud
-        itemId="_id"
-        height={500}
-        url={url}
-        description={description}
-        name={name}
-        columns={fields}
-        response={{
-          list: ({ data }) => ({ items: data.docs, ...data }),
-        }}
-        edit
-      />
-    </CrudProvider>
+    <Crud
+      itemId="_id"
+      height={500}
+      url={url}
+      description={description}
+      name={name}
+      columns={fields}
+      response={{
+        list: ({ data }) => ({ items: data.docs, ...data }),
+      }}
+    />
   )
 }
