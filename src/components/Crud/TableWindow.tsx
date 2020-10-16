@@ -10,15 +10,18 @@ import { useLang } from '../../utils/CrudContext'
 import CustomRow from './CustomRow'
 import AutoSizer from 'react-virtualized-auto-sizer'
 
+export interface ActionProps {
+  new?: boolean
+  edit?: boolean
+  delete?: boolean
+}
+
 export interface TableProps {
   height: number
   columns: CamposProps[]
   headerHeight?: number
   rowHeight?: number
-  edit?: boolean
-  onEdit?: (row: any) => void
-  deleteRow?: boolean
-  onDelete?: (row: any) => void
+  actions?: ActionProps
   showSelecting?: boolean
   rightToolbar?: (props: {
     rowsSelected: any[]
@@ -34,14 +37,15 @@ interface Props extends TableProps {
   headerClassName?: string
   onChangePagination: (page: number, perPage: number) => void
   onSort: (sort: SortProps) => void
+  onEdit?: (row: any) => void
+  onDelete?: (row: any) => void
 }
 
 export default memo((props: Props) => {
   const {
     columns,
     height,
-    edit,
-    deleteRow,
+    actions,
     onDelete,
     onEdit,
     rowHeight,
@@ -120,8 +124,8 @@ export default memo((props: Props) => {
         onSelect={selectRow}
         selected={headerSelected}
         onSort={onSort}
-        onEdit={edit && onEdit}
-        onDelete={deleteRow && onDelete}
+        onEdit={actions?.edit && onEdit}
+        onDelete={actions?.delete && onDelete}
         showSelecting={showSelecting}
         isHeader
       />
@@ -149,8 +153,8 @@ export default memo((props: Props) => {
                   onSelect={selectRow}
                   selected={rowsSelected.some((e) => e[itemId] === list[props.index][itemId])}
                   onExpanded={(index) => listRef.current!!.resetAfterIndex(index)}
-                  onEdit={edit && onEdit}
-                  onDelete={deleteRow && onDelete}
+                  onEdit={actions?.edit && onEdit}
+                  onDelete={actions?.delete && onDelete}
                   showSelecting={showSelecting}
                 />
               )}

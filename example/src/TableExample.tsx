@@ -87,8 +87,6 @@ export default () => {
       description="Los productos tendrán asociada una o más categorías."
       columns={campos}
       height={height - 200}
-      edit
-      deleteRow
       idInUrl
       // hideSelecting,
       rightToolbar={({ rowsSelected, list, deleteCall, editCall, clearSelected }) => (

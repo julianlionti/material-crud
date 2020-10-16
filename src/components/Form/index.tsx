@@ -42,13 +42,14 @@ export interface Props {
   loading?: boolean
   intials?: any
   noValidate?: boolean
+  inline?: boolean
 }
 
 export const createFields = (props: () => CamposProps[]) => props()
 
 export default memo((props: Props) => {
-  const { fields, onSubmit, accept, loading, intials, noValidate } = props
-  const classes = useClases()
+  const { fields, onSubmit, accept, loading, intials, noValidate, inline } = props
+  const classes = useClases({ inline })
 
   const renderInput = useCallback(
     (campo: TodosProps, values: any) => {
@@ -137,11 +138,11 @@ export default memo((props: Props) => {
 })
 
 const useClases = makeStyles((tema) => ({
-  container: {
+  container: ({ inline }: any) => ({
     flex: 1,
     display: 'flex',
-    flexDirection: 'column',
-  },
+    flexDirection: inline ? 'row' : 'column',
+  }),
   btn: {
     marginTop: tema.spacing(2),
     marginBottom: tema.spacing(2),
