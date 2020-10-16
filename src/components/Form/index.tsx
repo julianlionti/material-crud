@@ -12,6 +12,7 @@ import AlSwitch, { AlSwitchProps } from './AlSwitch'
 import AlMultiple, { AlMultipleProps } from './AlMultiple'
 import { generateDefault } from './helpers'
 import AlDate, { AlDateProps } from './AlDate'
+import AlDropFiles, { AlDropFilesProps } from './AlDropFiles'
 
 Yup.setLocale({
   string: {
@@ -31,6 +32,7 @@ export type TodosProps =
   | AlMultipleProps
   | AlCustomProps
   | AlDateProps
+  | AlDropFilesProps
   | ({ type: Types.Expandable } & BaseProps)
 
 export type CamposProps = TodosProps | TodosProps[]
@@ -79,6 +81,8 @@ export default memo((props: Props) => {
           return <AlCustom key={campo.id} {...campo} loading={loading} hide={hidden} />
         case Types.Date:
           return <AlDate key={campo.id} {...campo} loading={loading} hide={hidden} />
+        case Types.Draggable:
+          return <AlDropFiles key={campo.id} {...campo} loading={loading} hide={hidden} />
         default:
           return null
       }
