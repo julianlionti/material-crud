@@ -31,10 +31,14 @@ export default memo(({ title, id, accept, grow, hide, ImgIcon, multiple }: AlDro
   const [{ value }, { error, touched }, { setValue, setTouched }] = useField<File[]>(id)
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: (aceptados) => {
-      var ids = new Set(value.map((d) => d.name))
-      var merged = [...value, ...aceptados.filter((d) => !ids.has(d.name))]
-      setValue(merged)
+    onDrop: (accepted) => {
+      if (multiple) {
+        var ids = new Set(value.map((d) => d.name))
+        var merged = [...value, ...accepted.filter((d) => !ids.has(d.name))]
+        setValue(merged)
+      } else {
+        setValue(accepted)
+      }
     },
   })
 
@@ -66,7 +70,7 @@ export default memo(({ title, id, accept, grow, hide, ImgIcon, multiple }: AlDro
             {value.map((e) => (
               <Paper elevation={3} key={e.name} style={{ padding: 8, margin: 8 }}>
                 <div className={classes.paperRoot}>
-                  <div style={{ whiteSpace: 'nowrap', textOverflow: 'clip', width: '70%' }}>
+                  <div className={classes.textContainer}>
                     <div className={classes.imgContainer2}>{ImgIcon || <FaFile />}</div>
                     <Typography variant="subtitle2" noWrap>
                       {e.name}
@@ -135,13 +139,17 @@ const useClasses = makeStyles((theme) => ({
   },
   paperRoot: {
     display: 'flex',
-    alignItems: 'center',
     flex: 1,
     width: 120,
     height: 90,
   },
   error: {
     color: theme.palette.error.main,
+  },
+  textContainer: {
+    whiteSpace: 'nowrap',
+    textOverflow: 'clip',
+    width: '70%',
   },
   imgContainer: {
     width: 80,
