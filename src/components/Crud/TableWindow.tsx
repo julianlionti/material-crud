@@ -71,7 +71,12 @@ export default memo((props: Props) => {
       columns!
         .flat()
         .filter((e) => e.list)
-        .map((e): FieldAndColProps => ({ ...e, title: e.title || '', ...e.list!! })),
+        .map(
+          (e): FieldAndColProps => {
+            if (typeof e.title === 'string') return { ...e, title: e.title || '', ...e.list!! }
+            return { ...e, title: '', ...e.list }
+          },
+        ),
     [columns],
   )
 
