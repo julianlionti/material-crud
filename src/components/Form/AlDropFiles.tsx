@@ -55,6 +55,7 @@ export default memo(({ title, id, accept, grow, hide, ImgIcon, multiple }: AlDro
         <div {...getRootProps({ className: classes.dropzone })}>
           <input
             {...getInputProps({
+              name: id,
               accept,
               multiple,
               onChange: () => {
