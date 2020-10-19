@@ -59,15 +59,15 @@ export default memo(({ title, id, accept, grow, hide, ImgIcon, multiple }: AlDro
             })}
           />
           <Typography>Arrastre el archivo AQUI</Typography>
-          {ImgIcon || <FaFile height={80} width={80} className={classes.verticalSpace} />}
+          <div className={classes.imgContainer}>
+            {ImgIcon || <FaFile className={classes.verticalSpace} />}
+          </div>
           <div className={classes.valContainer}>
             {value.map((e) => (
               <Paper elevation={3} key={e.name} style={{ padding: 8, margin: 8 }}>
                 <div className={classes.paperRoot}>
                   <div style={{ whiteSpace: 'nowrap', textOverflow: 'clip', width: '70%' }}>
-                    <div style={{ textAlign: 'center' }}>
-                      {ImgIcon || <FaFile height={30} width={30} />}
-                    </div>
+                    <div className={classes.imgContainer2}>{ImgIcon || <FaFile />}</div>
                     <Typography variant="subtitle2" noWrap>
                       {e.name}
                     </Typography>
@@ -142,5 +142,14 @@ const useClasses = makeStyles((theme) => ({
   },
   error: {
     color: theme.palette.error.main,
+  },
+  imgContainer: {
+    width: 80,
+    height: 80,
+  },
+  imgContainer2: {
+    width: 30,
+    height: 30,
+    textAlign: 'center',
   },
 }))
