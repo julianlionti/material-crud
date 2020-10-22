@@ -16,7 +16,7 @@ import Crud from './components/Crud/WithProvider'
 import { esAR } from './translate/es_ar'
 import { enUS } from './translate/en_us'
 
-export type { CRUD as CrudItem } from './components/Crud'
+// export type { CRUD as CrudItem } from './components/Crud'
 export type { CustomComponentProps } from './components/Form/AlCustom'
 export type { TableProps } from './components/Crud/TableWindow'
 export type { useAxiosProps } from './utils/useAxios'
