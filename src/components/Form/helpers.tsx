@@ -46,6 +46,8 @@ export const generateDefault = (item: TodosProps): DefResponse => {
       return null
     case Types.Date:
       return null
+    case Types.Draggable:
+      return []
     default:
       return ''
   }

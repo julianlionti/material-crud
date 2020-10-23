@@ -12,6 +12,8 @@ import AlSwitch, { AlSwitchProps } from './AlSwitch'
 import AlMultiple, { AlMultipleProps } from './AlMultiple'
 import { generateDefault } from './helpers'
 import AlDate, { AlDateProps } from './AlDate'
+import AlDropFiles, { AlDropFilesProps } from './AlDropFiles'
+import { serialize } from 'object-to-formdata'
 
 Yup.setLocale({
   string: {
@@ -31,6 +33,7 @@ export type TodosProps =
   | AlMultipleProps
   | AlCustomProps
   | AlDateProps
+  | AlDropFilesProps
   | ({ type: Types.Expandable } & BaseProps)
 
 export type CamposProps = TodosProps | TodosProps[]
@@ -43,12 +46,13 @@ export interface Props {
   intials?: any
   noValidate?: boolean
   inline?: boolean
+  isFormData?: boolean
 }
 
 export const createFields = (props: () => CamposProps[]) => props()
 
 export default memo((props: Props) => {
-  const { fields, onSubmit, accept, loading, intials, noValidate, inline } = props
+  const { fields, onSubmit, accept, loading, intials, noValidate, inline, isFormData } = props
   const classes = useClases({ inline })
 
   const renderInput = useCallback(
@@ -79,6 +83,8 @@ export default memo((props: Props) => {
           return <AlCustom key={campo.id} {...campo} loading={loading} hide={hidden} />
         case Types.Date:
           return <AlDate key={campo.id} {...campo} loading={loading} hide={hidden} />
+        case Types.Draggable:
+          return <AlDropFiles key={campo.id} {...campo} loading={loading} hide={hidden} />
         default:
           return null
       }
@@ -106,7 +112,14 @@ export default memo((props: Props) => {
       initialValues={Object.keys(intials || {}).length > 0 ? intials : defaultValues}
       validationSchema={noValidate ? null : Yup.object().shape(valSchema)}
       onSubmit={(vals, helpers) => {
-        if (onSubmit) onSubmit(vals, helpers)
+        let finalData = vals
+        if (isFormData)
+          finalData = serialize(vals, {
+            indices: true,
+            allowEmptyArrays: true,
+          })
+
+        if (onSubmit) onSubmit(finalData, helpers)
       }}>
       {({ submitForm, values }) => (
         <div className={classes.container}>

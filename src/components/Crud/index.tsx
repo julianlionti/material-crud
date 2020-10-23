@@ -88,7 +88,7 @@ const postData = async (props: NoGetCallProps) => {
   }
 
   let finalData = transform ? transform(editing ? 'update' : 'new', data) : data
-  if (isFormData) {
+  if (isFormData && !isDelete) {
     finalData = serialize(finalData, {
       indices: true,
       allowEmptyArrays: true,

@@ -18,6 +18,7 @@ export enum Types {
   Expandable,
   Secure,
   Date,
+  Draggable,
 }
 
 export interface OpcionesProps {
