@@ -1,13 +1,5 @@
 import React, { useState, useEffect, useRef, ReactNode, useCallback, memo, useMemo } from 'react'
-import {
-  Typography,
-  Divider,
-  Collapse,
-  makeStyles,
-  Button,
-  LinearProgress,
-} from '@material-ui/core'
-import { FaFilter } from 'react-icons/fa'
+import { Collapse, makeStyles, LinearProgress } from '@material-ui/core'
 import Formulario, { CamposProps } from '../Form'
 import useAxios, { CallProps, Error } from '../../utils/useAxios'
 import { PaginationProps, ReplaceProps, useABM } from '../../utils/DataContext'

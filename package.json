@@ -33,7 +33,6 @@
     "yup": "^0.29.3"
   },
   "devDependencies": {
-    "@material-ui/core": "^4.11.0",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@testing-library/dom": "^7.24.5",
     "@testing-library/jest-dom": "^5.11.4",
