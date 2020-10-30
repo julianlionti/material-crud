@@ -26,15 +26,16 @@
   },
   "peerDependencies": {
     "@material-ui/core": "^4.11.0",
+    "@material-ui/lab": "^4.0.0-alpha.56",
+    "@material-ui/pickers": "^3.2.10",
     "formik": "^2.1.5",
-    "moment": "^2.28.0",
+    "moment": "^2.29.1",
     "react": "^16.0.0",
+    "react-dropzone": "^11.2.1",
     "react-icons": "^3.11.0",
     "yup": "^0.29.3"
   },
   "devDependencies": {
-    "@material-ui/core": "^4.11.0",
-    "@material-ui/lab": "^4.0.0-alpha.56",
     "@testing-library/dom": "^7.24.5",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.0.4",
@@ -86,9 +87,6 @@
   ],
   "dependencies": {
     "@date-io/date-fns": "1.x",
-    "@material-ui/pickers": "^3.2.10",
-    "date-fns": "^2.16.1",
-    "moment": "^2.29.1",
-    "react-dropzone": "^11.2.0"
+    "date-fns": "^2.16.1"
   }
 }
