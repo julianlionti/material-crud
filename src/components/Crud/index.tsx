@@ -1,13 +1,5 @@
 import React, { useState, useEffect, useRef, ReactNode, useCallback, memo, useMemo } from 'react'
-import {
-  Typography,
-  Divider,
-  Collapse,
-  makeStyles,
-  Button,
-  LinearProgress,
-} from '@material-ui/core'
-import { FaFilter } from 'react-icons/fa'
+import { Collapse, makeStyles, LinearProgress } from '@material-ui/core'
 import Formulario, { CamposProps } from '../Form'
 import useAxios, { CallProps, Error } from '../../utils/useAxios'
 import { PaginationProps, ReplaceProps, useABM } from '../../utils/DataContext'
@@ -49,6 +41,7 @@ export interface CrudProps extends TableProps {
   itemName?: string // PAra borrar
   transform?: (what: 'query' | 'new' | 'update', rowData: any) => Object
   transformToEdit?: (props: any) => any
+  transformFilter?: (props: any) => any
   noTitle?: boolean
 }
 
@@ -138,7 +131,7 @@ const getData = async ({ call, response, replace, params, url, transform }: Data
 export default memo((props: CrudProps) => {
   const lastFilter = useRef<any>({})
 
-  const { url, response, interaction, onFinished, onError, title, noTitle } = props
+  const { url, response, interaction, onFinished, onError, title, noTitle, transformFilter } = props
   const { Left, gender, description, isFormData, transform, transformToEdit } = props
   const { name, columns, filtersPerRow, titleSize, idInUrl, itemName, actions } = props
 
@@ -319,9 +312,12 @@ export default memo((props: CrudProps) => {
           name={name}
           handleShow={() => setToolbar((t) => !t)}
           onFilter={(filters) => {
+            let finalFilters = filters
+            if (transformFilter) finalFilters = transformFilter(filters)
+
             lastFilter.current = {
               ...lastFilter.current,
-              [interaction?.filter || 'filter']: filters,
+              [interaction?.filter || 'filter']: finalFilters,
               [interaction?.page || 'page']: 1,
             }
             getDataCall(lastFilter.current)
