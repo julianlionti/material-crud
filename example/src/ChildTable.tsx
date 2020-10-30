@@ -32,7 +32,6 @@ export default () => {
           onAddItem: (e) => {
             console.log(e)
             setAnchorEl(e)
-            console.log('Agregar item')
           },
           placeholder: 'Seleccione una opción',
           list: { width: 40 },

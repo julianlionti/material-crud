@@ -114,13 +114,11 @@ const postData = async (props: NoGetCallProps) => {
 
 const getData = async ({ call, response, replace, params, url, transform }: DataCallProps) => {
   const finalParams = transform ? transform('query', params) : params
-  console.log(finalParams)
   const { response: responseWs, status } = await call({
     method: 'GET',
     url,
     params: finalParams,
   })
-  console.log(responseWs, status)
 
   if (status!! >= 200 && status!! < 300) {
     const { items, ...data } = response?.list(responseWs) || { page: 1 }

@@ -54,7 +54,6 @@ export const useABM = <T extends object>() => {
   const add = useCallback(
     (items: T[]) => {
       setConfig((acc) => {
-        console.log(acc)
         const list = [
           ...items.filter(
             (it: any) => !acc.list.some((ac: any) => ac[acc.itemId] === it[acc.itemId]),
