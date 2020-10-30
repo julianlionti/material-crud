@@ -3,6 +3,7 @@ export interface Translations {
   new: string
   edit: string
   add: string
+  addItem: string
   delete: string
   crudCol: string
   delExplanation: (name: string) => string
