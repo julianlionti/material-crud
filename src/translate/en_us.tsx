@@ -3,6 +3,7 @@ import { createTranslation } from '.'
 export const enUS = createTranslation({
   listOf: 'List of',
   add: 'Add',
+  addItem: 'Add item',
   new: 'New',
   edit: 'Edit',
   delete: 'Delete',

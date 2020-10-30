@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useState } from 'react'
+import React, { memo, MouseEvent, useCallback, useMemo, useRef, useState } from 'react'
 import {
   FormControl,
   InputLabel,
@@ -10,12 +10,13 @@ import {
   ListItemText,
   IconButton,
   Tooltip,
+  makeStyles,
 } from '@material-ui/core'
 import { useField } from 'formik'
 import BaseInput from './BaseInput'
 import { Types, ComunesProps, OpcionesProps } from './Types'
 import useFilters, { Filter } from '../../utils/useFilters'
-import { FaCamera } from 'react-icons/fa'
+import { FaPlus } from 'react-icons/fa'
 import { useLang } from '../../utils/CrudContext'
 import AriaLabels from '../../utils/AriaLabels'
 
@@ -23,11 +24,25 @@ export interface AlSelectProps extends ComunesProps {
   type: Types.Options
   placeholder: string
   options: OpcionesProps[]
+  onAddItem?: (props: HTMLDivElement) => void
 }
 
 type SelectFilter = Filter<string>
 export default memo((props: AlSelectProps) => {
-  const { id, title, placeholder, validate, list, grow, options, loading, hide, filter } = props
+  const inputRef = useRef<any>()
+  const {
+    id,
+    title,
+    placeholder,
+    validate,
+    list,
+    grow,
+    options,
+    loading,
+    hide,
+    filter,
+    onAddItem,
+  } = props
   const [{ value }, { error, touched }, { setValue }] = useField<string | SelectFilter>(id)
 
   const lang = useLang()
@@ -43,9 +58,26 @@ export default memo((props: AlSelectProps) => {
     return value as string
   }, [value, filter])
 
+  const selectItem = useCallback(
+    (valInput: string) => {
+      const finalValInput = valInput === '-1' ? '' : valInput
+      if (filter) {
+        setValue({
+          filter: (value as SelectFilter).filter,
+          value: finalValInput,
+        })
+      } else {
+        setValue(finalValInput)
+      }
+    },
+    [filter, setValue, value],
+  )
+
+  const classes = useClasses()
+
   return (
     <BaseInput grow={grow} ocultar={hide}>
-      <div style={{ display: 'flex' }}>
+      <div style={{ display: 'flex' }} ref={(e) => (inputRef.current = e)}>
         <FormControl fullWidth error={touched && !!error} variant="outlined">
           <InputLabel htmlFor={id}>{finalTitle}</InputLabel>
           <Select
@@ -63,16 +95,7 @@ export default memo((props: AlSelectProps) => {
             labelId={id}
             id={`${id}-select`}
             value={finalValue}
-            onChange={({ target: { value: valInput } }) => {
-              if (filter) {
-                setValue({
-                  filter: (value as SelectFilter).filter,
-                  value: valInput as string,
-                })
-              } else {
-                setValue(valInput as string)
-              }
-            }}
+            onChange={({ target: { value: valInput } }) => selectItem(valInput as string)}
             label={finalTitle}>
             <MenuItem value="">
               <em>{placeholder || 'Seleccione una opción'}</em>
@@ -82,6 +105,12 @@ export default memo((props: AlSelectProps) => {
                 {e.title || e.id}
               </MenuItem>
             ))}
+            {onAddItem && (
+              <MenuItem value="-1" onClick={(e) => onAddItem(inputRef.current)}>
+                <FaPlus className={classes.addIcon} />
+                <em>{lang.addItem}</em>
+              </MenuItem>
+            )}
           </Select>
           {touched && error && <FormHelperText id={id}>{error}</FormHelperText>}
         </FormControl>
@@ -105,3 +134,9 @@ export default memo((props: AlSelectProps) => {
     </BaseInput>
   )
 })
+
+const useClasses = makeStyles((theme) => ({
+  addIcon: {
+    marginRight: theme.spacing(1),
+  },
+}))
