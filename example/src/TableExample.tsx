@@ -1,11 +1,11 @@
 import React from 'react'
 import * as Yup from 'yup'
-import { Crud, createFields, Types, useWindowSize, useAxios } from 'material-crud'
+import { Crud, createFields, FormTypes, useWindowSize, useAxios } from 'material-crud'
 import { IconButton, makeStyles, Tooltip } from '@material-ui/core'
 import { FaTrash } from 'react-icons/fa'
 // import { useSnackbar } from 'notistack'
 
-const campos = createFields(() => [
+/*const campos = createFields(() => [
   [
     {
       id: 'active',
@@ -73,6 +73,7 @@ const campos = createFields(() => [
     depends: ({ active }: any) => active,
   },
 ])
+*/
 
 export default () => {
   const { height } = useWindowSize()
@@ -85,10 +86,9 @@ export default () => {
       // gender="F"
       name="Category"
       description="Los productos tendrán asociada una o más categorías."
-      columns={campos}
+      columns={[]}
       height={height - 200}
       idInUrl
-      // hideSelecting,
       rightToolbar={({ rowsSelected, list, deleteCall, editCall, clearSelected }) => (
         <Tooltip title="Delete">
           <IconButton

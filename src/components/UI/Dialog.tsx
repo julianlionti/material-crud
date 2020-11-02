@@ -10,8 +10,8 @@ import {
   LinearProgress,
   makeStyles,
 } from '@material-ui/core'
-import { TransitionProps } from '@material-ui/core/transitions'
 import { grey } from '@material-ui/core/colors'
+import { TransitionProps } from '@material-ui/core/transitions'
 import { useLang } from '../../utils/CrudContext'
 
 export interface CartelState {

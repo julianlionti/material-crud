@@ -1,15 +1,14 @@
 import React, { useState, memo, useMemo, ReactNode, useCallback } from 'react'
 import { makeStyles, IconButton, Typography, CircularProgress, Collapse } from '@material-ui/core'
-import { ReactComponent as Camara } from '../../assets/icons/camera.svg'
-import { useField } from 'formik'
 import { red } from '@material-ui/core/colors'
-import BaseInput from './BaseInput'
-import { Types, ComunesProps } from './Types'
-import { useLang } from '../../utils/CrudContext'
+import { useField } from 'formik'
 import { FaCamera, FaFile } from 'react-icons/fa'
+import { useLang } from '../../utils/CrudContext'
+import BaseInput from './BaseInput'
+import { FormTypes, ComunesProps } from './FormTypes'
 
 export interface AlImagenProps extends ComunesProps {
-  type: Types.Image | Types.File
+  type: FormTypes.Image | FormTypes.File
   baseURL?: string
   ImgButton?: ReactNode
   accept?: string
@@ -49,7 +48,7 @@ export default memo((props: AlImagenProps) => {
     return null
   }, [base64, baseURL, value])
 
-  const isImage = type === Types.Image
+  const isImage = type === FormTypes.Image
 
   const renderExplanation = useCallback(() => {
     if (value === null && isImage) {

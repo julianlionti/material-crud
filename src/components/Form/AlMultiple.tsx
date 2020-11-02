@@ -1,22 +1,22 @@
+import React, { memo, useMemo } from 'react'
 import { IconButton, makeStyles, Paper, Typography } from '@material-ui/core'
 import { useField } from 'formik'
-import React, { memo, useMemo } from 'react'
 import { FaPlus, FaTrash } from 'react-icons/fa'
-import BaseInput from './BaseInput'
-import AlInput from './AlInput'
-import { Types, ComunesProps } from './Types'
 import { TodosProps } from '.'
-import AlSelect from './AlSelect'
-import AlImagen from './AlImagen'
 import AlAutocomplete from './AlAutocomplete'
-import AlSwitch from './AlSwitch'
 import AlCustom from './AlCustom'
+import AlImagen from './AlImagen'
+import AlInput from './AlInput'
+import AlSelect from './AlSelect'
+import AlSwitch from './AlSwitch'
+import BaseInput from './BaseInput'
+import { FormTypes, ComunesProps } from './FormTypes'
 import { multipleDefault } from './helpers'
 
 type ValuesProps = { [key: string]: any }
 
 export interface AlMultipleProps extends ComunesProps {
-  type: Types.Multiple
+  type: FormTypes.Multiple
   configuration: TodosProps[]
 }
 
@@ -42,11 +42,11 @@ export default memo((props: AlMultipleProps) => {
           <div key={index} className={classes.horizontal}>
             {configuration.flat().map(({ id: colId, ...etc }) => {
               switch (etc.type) {
-                case Types.Input:
-                case Types.Email:
-                case Types.Multiline:
-                case Types.Number:
-                case Types.Phone:
+                case FormTypes.Input:
+                case FormTypes.Email:
+                case FormTypes.Multiline:
+                case FormTypes.Number:
+                case FormTypes.Phone:
                   return (
                     <AlInput
                       loading={loading}
@@ -55,7 +55,7 @@ export default memo((props: AlMultipleProps) => {
                       {...etc}
                     />
                   )
-                case Types.Options:
+                case FormTypes.Options:
                   return (
                     <AlSelect
                       loading={loading}
@@ -64,7 +64,7 @@ export default memo((props: AlMultipleProps) => {
                       {...etc}
                     />
                   )
-                case Types.Image:
+                case FormTypes.Image:
                   return (
                     <AlImagen
                       loading={loading}
@@ -73,7 +73,7 @@ export default memo((props: AlMultipleProps) => {
                       {...etc}
                     />
                   )
-                case Types.Autocomplete:
+                case FormTypes.Autocomplete:
                   return (
                     <AlAutocomplete
                       loading={loading}
@@ -82,7 +82,7 @@ export default memo((props: AlMultipleProps) => {
                       {...etc}
                     />
                   )
-                case Types.Switch:
+                case FormTypes.Switch:
                   return (
                     <AlSwitch
                       loading={loading}
@@ -91,7 +91,7 @@ export default memo((props: AlMultipleProps) => {
                       {...etc}
                     />
                   )
-                case Types.Custom:
+                case FormTypes.Custom:
                   return (
                     <AlCustom
                       loading={loading}

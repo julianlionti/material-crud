@@ -1,12 +1,12 @@
 import React, { memo, useMemo } from 'react'
 import { Collapse, FormControlLabel, Switch, Typography } from '@material-ui/core'
 import { useField } from 'formik'
-import BaseInput from './BaseInput'
-import { ComunesProps, Types } from './Types'
 import useFilters, { Filter } from '../../utils/useFilters'
+import BaseInput from './BaseInput'
+import { ComunesProps, FormTypes } from './FormTypes'
 
 export interface AlSwitchProps extends ComunesProps {
-  type: Types.Switch
+  type: FormTypes.Switch
 }
 type SwitchFilter = Filter<boolean>
 export default memo((props: AlSwitchProps) => {

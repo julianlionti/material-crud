@@ -1,16 +1,16 @@
-import { Checkbox, IconButton, makeStyles, TableRow, Tooltip } from '@material-ui/core'
 import React, { memo, useCallback, useMemo } from 'react'
+import { Checkbox, IconButton, makeStyles, TableRow, Tooltip } from '@material-ui/core'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { ListChildComponentProps } from 'react-window'
+import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 import { useABM } from '../../utils/DataContext'
-import CustomCell, { FieldAndColProps } from './CustomCell'
+import CustomCell from './CustomCell'
 import CustomHeader, { SortProps } from './CustomHeader'
-import AriaLabels from '../../utils/AriaLabels'
+import { TableTypes } from './TableTypes'
 
 interface Props extends Partial<ListChildComponentProps> {
   rowHeight: number
-  columns: FieldAndColProps[]
   customClassName?: string
   onSelect: (rowData: any) => void | null
   selected?: boolean
@@ -28,7 +28,6 @@ export default memo((props: Props) => {
     style,
     customClassName,
     onSort,
-    columns,
     onSelect,
     selected,
     rowHeight,
@@ -40,7 +39,7 @@ export default memo((props: Props) => {
   } = props
 
   const lang = useLang()
-  const { list, insertIndex, removeIndex, itemId } = useABM()
+  const { list, insertIndex, removeIndex, itemId, columns, fields, extraActions } = useABM()
   const classes = useClasses({ index, height: rowHeight })
   const rowData = useMemo(() => list[index!!], [list, index])
 
@@ -66,11 +65,15 @@ export default memo((props: Props) => {
         onExpand={() => {
           if (onExpanded) onExpanded(index!!)
           if (nextIsChild) return removeIndex((index || 0) + 1)
-          insertIndex(index!! + 1, {
-            [itemId]: col.id + 'child',
-            child: col.content,
-            height: col.height,
-          })
+
+          switch (col.type) {
+            case TableTypes.Custom:
+              insertIndex(index!! + 1, {
+                [itemId]: col.id + 'child',
+                child: col.content,
+                height: col.height,
+              })
+          }
         }}
         rowIndex={index!!}
         rowHeight={rowHeight}
@@ -115,7 +118,9 @@ export default memo((props: Props) => {
 
   const renderCrud = useCallback(() => {
     if (rowData?.child) return null
-    if (!onEdit && !onDelete) return null
+    if (!onEdit && !onDelete && (!extraActions || (extraActions && extraActions.length === 0)))
+      return null
+    if (!fields) return null
 
     if (isHeader)
       return (
@@ -127,6 +132,7 @@ export default memo((props: Props) => {
 
     return (
       <CustomCell col={{ width: 0.5, align: 'flex-end' }} rowHeight={rowHeight} rowIndex={index!!}>
+        {extraActions}
         {onEdit && (
           <Tooltip title={lang.edit}>
             <IconButton size="small" onClick={() => onEdit(rowData)}>
@@ -143,7 +149,7 @@ export default memo((props: Props) => {
         )}
       </CustomCell>
     )
-  }, [isHeader, rowHeight, lang, index, onEdit, onDelete, rowData])
+  }, [isHeader, rowHeight, lang, index, onEdit, onDelete, rowData, fields, extraActions])
 
   return (
     <TableRow

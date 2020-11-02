@@ -7,8 +7,17 @@ import React, {
   Dispatch,
   SetStateAction,
 } from 'react'
+import { CamposProps } from '../components/Form'
+import { ColumnsProps } from '../components/Table/TableTypes'
 
-interface ProviderProps {
+export interface DataConfigProps {
+  columns: ColumnsProps[]
+  filters?: CamposProps[]
+  fields?: CamposProps[]
+  extraActions?: ReactNode[]
+}
+
+interface ProviderProps extends DataConfigProps {
   children: ReactNode
   itemId?: 'id' | '_id' | string
 }
@@ -27,7 +36,7 @@ export interface PaginationProps {
   totalPages?: number
 }
 
-interface ContextProps<T = any> {
+interface ContextProps<T = any> extends DataConfigProps {
   list: T[]
   pagination: PaginationProps
   itemId: 'id' | '_id' | string
@@ -39,17 +48,31 @@ const intials: ContextProps = {
   list: [],
   pagination: { page: 1, limit: 10 },
   itemId: '_id',
+  columns: [],
 }
 
 const DataContext = createContext<Context>([intials, () => {}])
 
-export const DataProvider = ({ children, itemId }: ProviderProps) => {
-  const status = useState<ContextProps>({ ...intials, itemId: itemId || '_id' })
+export const DataProvider = (props: ProviderProps) => {
+  const { children, itemId, fields, filters, columns, extraActions } = props
+  const status = useState<ContextProps>({
+    ...intials,
+    itemId: itemId || '_id',
+    fields,
+    filters,
+    columns,
+    extraActions,
+  })
   return <DataContext.Provider value={status}>{children}</DataContext.Provider>
 }
 
 export const useABM = <T extends object>() => {
   const [config, setConfig] = useContext(DataContext) as Context
+
+  const setIsLoading = useCallback(
+    (isLoading: boolean) => setConfig((acc) => ({ ...acc, isLoading })),
+    [setConfig],
+  )
 
   const add = useCallback(
     (items: T[]) => {
@@ -75,15 +98,14 @@ export const useABM = <T extends object>() => {
 
   const edit = useCallback(
     ({ id, item }: { id: string; item: T }) => {
-      setConfig(({ list, pagination, itemId }) => {
-        const index = list.findIndex((e: any) => e[itemId] === id)
+      setConfig(({ list, ...etc }) => {
+        const index = list.findIndex((e: any) => e[etc.itemId] === id)
         return {
-          itemId,
+          ...etc,
           list: list.map((e, i) => {
             if (i === index) return item
             else return e
           }),
-          pagination,
         }
       })
     },
@@ -103,15 +125,14 @@ export const useABM = <T extends object>() => {
 
   const replace = useCallback(
     ({ pagination, items }: ReplaceProps) =>
-      setConfig((acc) => ({ pagination, list: items, itemId: acc.itemId })),
+      setConfig((acc) => ({ ...acc, pagination, list: items })),
     [setConfig],
   )
 
   const insertIndex = useCallback(
     (index: number, item: {}) => {
-      setConfig(({ list, pagination, itemId }) => ({
-        itemId,
-        pagination,
+      setConfig(({ list, ...etc }) => ({
+        ...etc,
         list: [...list.slice(0, index), item, ...list.slice(index)],
       }))
     },
@@ -128,5 +149,5 @@ export const useABM = <T extends object>() => {
     [setConfig],
   )
 
-  return { add, edit, deleteCall, replace, insertIndex, removeIndex, ...config }
+  return { add, edit, deleteCall, replace, insertIndex, removeIndex, ...config, setIsLoading }
 }

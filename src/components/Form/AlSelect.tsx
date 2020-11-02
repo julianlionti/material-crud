@@ -13,15 +13,15 @@ import {
   makeStyles,
 } from '@material-ui/core'
 import { useField } from 'formik'
-import BaseInput from './BaseInput'
-import { Types, ComunesProps, OpcionesProps } from './Types'
-import useFilters, { Filter } from '../../utils/useFilters'
 import { FaPlus } from 'react-icons/fa'
-import { useLang } from '../../utils/CrudContext'
 import AriaLabels from '../../utils/AriaLabels'
+import { useLang } from '../../utils/CrudContext'
+import useFilters, { Filter } from '../../utils/useFilters'
+import BaseInput from './BaseInput'
+import { FormTypes, ComunesProps, OpcionesProps } from './FormTypes'
 
 export interface AlSelectProps extends ComunesProps {
-  type: Types.Options
+  type: FormTypes.Options
   placeholder: string
   options: OpcionesProps[]
   onAddItem?: (props: HTMLDivElement) => void
@@ -35,7 +35,6 @@ export default memo((props: AlSelectProps) => {
     title,
     placeholder,
     validate,
-    list,
     grow,
     options,
     loading,

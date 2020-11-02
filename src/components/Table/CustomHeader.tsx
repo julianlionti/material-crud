@@ -1,5 +1,5 @@
-import { Button, makeStyles, TableCell } from '@material-ui/core'
 import React, { ReactNode, useCallback, useState } from 'react'
+import { Button, makeStyles, TableCell } from '@material-ui/core'
 import {
   FaSortAlphaDown,
   FaSortAlphaUp,
@@ -7,15 +7,14 @@ import {
   FaSortNumericDown,
   FaSortNumericUpAlt,
 } from 'react-icons/fa'
-import { Types } from '../Form/Types'
-import { FieldAndColProps } from './CustomCell'
+import { ColumnsProps, TableTypes } from './TableTypes'
 
 export interface SortProps {
   [key: string]: 1 | -1 | 0
 }
 
 interface Props {
-  col?: Partial<FieldAndColProps>
+  col?: Partial<ColumnsProps>
   onSort?: (newSort: SortProps) => void
   children?: ReactNode
   rowHeight: number
@@ -27,15 +26,15 @@ export default ({ col, onSort, children, rowHeight }: Props) => {
   const [sort, setSort] = useState<SortProps>({})
 
   const renderIcono = useCallback(
-    ({ id, type, sort: colSort }: Partial<FieldAndColProps>) => {
+    ({ id, type, sort: colSort }: Partial<ColumnsProps>) => {
       if (!colSort) return null
       if (!sort) return <FaSortAmountDownAlt fontSize={icono} />
       switch (sort[id!!]) {
         case 1:
-          if (type === Types.Number) return <FaSortNumericDown fontSize={icono} />
+          if (type === TableTypes.Number) return <FaSortNumericDown fontSize={icono} />
           return <FaSortAlphaDown fontSize={icono} />
         case -1:
-          if (type === Types.Number) return <FaSortNumericUpAlt fontSize={icono} />
+          if (type === TableTypes.Number) return <FaSortNumericUpAlt fontSize={icono} />
           return <FaSortAlphaUp fontSize={icono} />
         default:
           return <FaSortAmountDownAlt fontSize={icono} />

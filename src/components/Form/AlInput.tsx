@@ -21,19 +21,19 @@ import {
   FaEye,
   FaEyeSlash,
 } from 'react-icons/fa'
-import BaseInput from './BaseInput'
-import { Types, ComunesProps } from './Types'
+import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 import useFilters, { Filter } from '../../utils/useFilters'
-import AriaLabels from '../../utils/AriaLabels'
+import BaseInput from './BaseInput'
+import { FormTypes, ComunesProps } from './FormTypes'
 
 export type InputsTypes =
-  | Types.Input
-  | Types.Email
-  | Types.Multiline
-  | Types.Number
-  | Types.Phone
-  | Types.Secure
+  | FormTypes.Input
+  | FormTypes.Email
+  | FormTypes.Multiline
+  | FormTypes.Number
+  | FormTypes.Phone
+  | FormTypes.Secure
 
 export interface AlInputProps extends ComunesProps {
   type: InputsTypes
@@ -89,7 +89,7 @@ export default memo((props: AlInputProps) => {
 
   const filterType = useMemo(() => {
     switch (type) {
-      case Types.Number:
+      case FormTypes.Number:
         return filterOptions.numeric!!
       default:
         return filterOptions.text!!
@@ -98,14 +98,14 @@ export default memo((props: AlInputProps) => {
 
   const inputType = useMemo(() => {
     switch (type) {
-      case Types.Email:
+      case FormTypes.Email:
         return 'email'
-      case Types.Secure: {
+      case FormTypes.Secure: {
         return hasSecure ? 'password' : undefined
       }
-      case Types.Number:
+      case FormTypes.Number:
         return 'number'
-      case Types.Phone:
+      case FormTypes.Phone:
         return 'tel'
       default:
         return undefined
@@ -132,7 +132,7 @@ export default memo((props: AlInputProps) => {
             )
           }
           endAdornment={
-            Types.Secure === type && (
+            FormTypes.Secure === type && (
               <Tooltip title={hasSecure ? lang.tooltips.showPass : lang.tooltips.hidePass}>
                 <IconButton onClick={() => setHasSecure((hs) => !hs)}>
                   {hasSecure ? <FaEye /> : <FaEyeSlash />}
@@ -140,8 +140,8 @@ export default memo((props: AlInputProps) => {
               </Tooltip>
             )
           }
-          multiline={!filter && type === Types.Multiline}
-          rows={type === Types.Multiline ? 4 : undefined}
+          multiline={!filter && type === FormTypes.Multiline}
+          rows={type === FormTypes.Multiline ? 4 : undefined}
           value={finalValue}
           onChange={({ target }) => {
             if (typeof value !== 'object') {

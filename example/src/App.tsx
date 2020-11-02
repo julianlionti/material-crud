@@ -5,7 +5,7 @@ import { CrudProvider } from 'material-crud'
 import Prueba from './Prueba'
 import TableExample from './TableExample'
 import { english } from './lang'
-import ChildTable from './ChildTable'
+import CrudTable from './CrudTable'
 
 const App = () => {
   const user = {
@@ -49,7 +49,7 @@ const App = () => {
           />
           <Route path="/form" component={FormExample} />
           <Route path="/table" component={TableExample} />
-          <Route path="/child" component={ChildTable} />
+          <Route path="/crud" component={CrudTable} />
           <Route path="/prueba" component={Prueba} />
         </Switch>
       </BrowserRouter>

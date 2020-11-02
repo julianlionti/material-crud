@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef, ReactNode, useCallback, memo, useMemo } from 'react'
-import { Collapse, makeStyles, LinearProgress } from '@material-ui/core'
-import Formulario, { CamposProps } from '../Form'
-import useAxios, { CallProps, Error } from '../../utils/useAxios'
-import { PaginationProps, ReplaceProps, useABM } from '../../utils/DataContext'
-import Dialog, { CartelState } from '../UI/Dialog'
+import { Collapse, makeStyles, LinearProgress, Typography } from '@material-ui/core'
 import { serialize } from 'object-to-formdata'
-import CenteredCard from '../UI/CenteredCard'
-import AlTable, { TableProps } from '../Crud/TableWindow'
-import { Interactions, Types } from '../Form/Types'
 import { useLang } from '../../utils/CrudContext'
+import { PaginationProps, ReplaceProps, useABM } from '../../utils/DataContext'
+import useAxios, { CallProps, Error } from '../../utils/useAxios'
+import Formulario, { CamposProps } from '../Form'
+import { Interactions } from '../Form/FormTypes'
+import AlTable from '../Table/index'
+import { ColumnsProps, TableProps } from '../Table/TableTypes'
+import CenteredCard from '../UI/CenteredCard'
+import Dialog, { CartelState } from '../UI/Dialog'
 import Toolbar from './Toolbar'
 
 interface OnFlyResponse extends PaginationProps {
@@ -22,27 +23,27 @@ interface ResponseProps {
 }
 
 export interface CrudProps extends TableProps {
+  columns: ColumnsProps[]
   url: string
   name: string
+  fields?: CamposProps[]
   title?: string
-  titleSize?: number
+  description?: string
   gender?: 'M' | 'F'
-  description: string
-  columns: CamposProps[]
-  filtersPerRow?: number
-  isFormData?: boolean
-  onFinished?: (what: 'new' | 'update' | 'delete', genero?: 'M' | 'F') => void
-  onError?: (err: Error) => void
-  Left?: ReactNode
-  idInUrl?: boolean
-  response: ResponseProps
-  interaction?: Interactions
   itemId?: 'id' | '_id' | string
   itemName?: string // PAra borrar
+  titleSize?: number
+  noTitle?: boolean
+  isFormData?: boolean
+  idInUrl?: boolean
+  Left?: ReactNode
+  response: ResponseProps
+  interaction?: Interactions
+  onFinished?: (what: 'new' | 'update' | 'delete', genero?: 'M' | 'F') => void
+  onError?: (err: Error) => void
   transform?: (what: 'query' | 'new' | 'update', rowData: any) => Object
   transformToEdit?: (props: any) => any
   transformFilter?: (props: any) => any
-  noTitle?: boolean
 }
 
 interface DataCallProps {
@@ -131,12 +132,22 @@ export default memo((props: CrudProps) => {
 
   const { url, response, interaction, onFinished, onError, title, noTitle, transformFilter } = props
   const { Left, gender, description, isFormData, transform, transformToEdit } = props
-  const { name, columns, filtersPerRow, titleSize, idInUrl, itemName, actions } = props
+  const { name, titleSize, idInUrl, itemName, actions } = props
 
   const lang = useLang()
   const called = useRef(false)
 
-  const { add, edit: editABM, replace, deleteCall, pagination, itemId } = useABM()
+  const {
+    add,
+    edit: editABM,
+    replace,
+    deleteCall,
+    pagination,
+    itemId,
+    filters,
+    fields,
+    columns,
+  } = useABM()
   const { loading, call } = useAxios<any>({ onError })
 
   const [cartel, setCartel] = useState<CartelState>({ visible: false })
@@ -234,57 +245,6 @@ export default memo((props: CrudProps) => {
     [name, lang, itemId, itemName, postDataCall],
   )
 
-  const filters = useMemo(() => {
-    const items = columns
-      .flat()
-      .filter((e) => {
-        if (e.type === Types.Expandable) return false
-        return e.filter
-      })
-      .map((props) => {
-        if (props.type !== Types.Expandable) {
-          const { grow, ...etc } = props
-          return etc
-        }
-
-        return props
-      })
-    const columnas = filtersPerRow || 3
-    return new Array(Math.ceil(items.length / columnas))
-      .fill(null)
-      .map((_) => items.splice(0, columnas))
-  }, [filtersPerRow, columns])
-
-  const fieldsWithoutFilters = useMemo(
-    () =>
-      columns
-        .filter((e) => {
-          if (!Array.isArray(e)) {
-            if (e.type === Types.Expandable) return false
-            return e.edit !== false
-          }
-          return true
-        })
-        .map((cam) => {
-          if (Array.isArray(cam)) {
-            return cam
-              .filter((e) => {
-                if (e.type === Types.Expandable) return false
-                return e.edit !== false
-              })
-              .map((e) => {
-                if (e.type === Types.Expandable) return e
-                const { filter, ...etc } = e
-                return etc
-              })
-          }
-          if (cam.type === Types.Expandable) return cam
-          const { filter, ...etc } = cam
-          return etc
-        }),
-    [columns],
-  )
-
   useEffect(() => {
     if (!called.current) {
       getDataCall(interactions)
@@ -292,36 +252,34 @@ export default memo((props: CrudProps) => {
     }
   }, [getDataCall, interactions])
 
+  if (columns.length === 0) return <Typography>No están configuradas las columnas</Typography>
+
   return (
     <div className={classes.contenedor}>
-      {(!noTitle || Object.keys(filters).length || actions?.new) && (
-        <Toolbar
-          filters={filters}
-          editObj={editObj}
-          Left={Left}
-          gender={gender}
-          onNew={() => setEditObj({})}
-          loading={loading}
-          noTitle={noTitle}
-          title={title}
-          actions={actions}
-          show={toolbar}
-          titleSize={titleSize}
-          name={name}
-          handleShow={() => setToolbar((t) => !t)}
-          onFilter={(filters) => {
-            let finalFilters = filters
-            if (transformFilter) finalFilters = transformFilter(filters)
+      <Toolbar
+        hide={noTitle || (!filters && !fields)}
+        editObj={editObj}
+        Left={Left}
+        gender={gender}
+        onNew={() => setEditObj({})}
+        noTitle={noTitle}
+        title={title}
+        show={toolbar}
+        titleSize={titleSize}
+        name={name}
+        handleShow={() => setToolbar((t) => !t)}
+        onFilter={(filters) => {
+          let finalFilters = filters
+          if (transformFilter) finalFilters = transformFilter(filters)
 
-            lastFilter.current = {
-              ...lastFilter.current,
-              [interaction?.filter || 'filter']: finalFilters,
-              [interaction?.page || 'page']: 1,
-            }
-            getDataCall(lastFilter.current)
-          }}
-        />
-      )}
+          lastFilter.current = {
+            ...lastFilter.current,
+            [interaction?.filter || 'filter']: finalFilters,
+            [interaction?.page || 'page']: 1,
+          }
+          getDataCall(lastFilter.current)
+        }}
+      />
       {loading && <LinearProgress />}
       <Collapse in={!editObj} timeout="auto" unmountOnExit>
         <AlTable
@@ -345,30 +303,32 @@ export default memo((props: CrudProps) => {
           onDelete={(rowData) => onDeleteCall(rowData)}
         />
       </Collapse>
-      <Collapse in={!!editObj} timeout="auto" unmountOnExit>
-        <CenteredCard
-          onClose={() => setEditObj(null)}
-          title={`${
-            editing
-              ? lang.edit
-              : lang.new
-              ? `${lang.new}${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
-              : `Nuev${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
-          } ${name}`}
-          subtitle={description}>
-          <Formulario
-            intials={editObj}
-            loading={loading}
-            accept={
+      {fields && (
+        <Collapse in={!!editObj} timeout="auto" unmountOnExit>
+          <CenteredCard
+            onClose={() => setEditObj(null)}
+            title={`${
               editing
                 ? lang.edit
-                : `${lang.add}${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''} ${name}`
-            }
-            fields={fieldsWithoutFilters}
-            onSubmit={(vals) => postDataCall(vals)}
-          />
-        </CenteredCard>
-      </Collapse>
+                : lang.new
+                ? `${lang.new}${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
+                : `Nuev${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
+            } ${name}`}
+            subtitle={description}>
+            <Formulario
+              intials={editObj}
+              loading={loading}
+              accept={
+                editing
+                  ? lang.edit
+                  : `${lang.add}${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''} ${name}`
+              }
+              fields={fields}
+              onSubmit={(vals) => postDataCall(vals)}
+            />
+          </CenteredCard>
+        </Collapse>
+      )}
       <Dialog
         show={cartel.visible}
         title={cartel?.titulo || ''}

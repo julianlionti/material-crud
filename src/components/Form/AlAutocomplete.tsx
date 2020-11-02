@@ -1,6 +1,4 @@
 import React, { useMemo, ReactNode, useEffect, useRef, useCallback, memo, useState } from 'react'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import { useField } from 'formik'
 import {
   TextField,
   Checkbox,
@@ -13,15 +11,17 @@ import {
   ListItemIcon,
   ListItemText,
 } from '@material-ui/core'
+import Autocomplete from '@material-ui/lab/Autocomplete'
+import { useField } from 'formik'
 import { FaRegCheckSquare, FaRegSquare } from 'react-icons/fa'
-import BaseInput from './BaseInput'
-import { OpcionesProps, Types, ComunesProps } from './Types'
+import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 import useFilters, { Filter } from '../../utils/useFilters'
-import AriaLabels from '../../utils/AriaLabels'
+import BaseInput from './BaseInput'
+import { OpcionesProps, FormTypes, ComunesProps } from './FormTypes'
 
 export interface AlAutocompleteProps extends ComunesProps {
-  type: Types.Autocomplete
+  type: FormTypes.Autocomplete
   error?: any
   options: OpcionesProps[]
   multiple?: boolean

@@ -1,9 +1,7 @@
-import { FieldHelperProps, FieldInputProps, FieldMetaProps, useField } from 'formik'
 import React, { memo, ReactNode } from 'react'
-import { CamposProps } from '.'
-import { Types } from '../..'
+import { FieldHelperProps, FieldInputProps, FieldMetaProps, useField } from 'formik'
 import BaseInput from './BaseInput'
-import { ComunesProps } from './Types'
+import { FormTypes, ComunesProps } from './FormTypes'
 
 export interface CustomComponentProps<T = any> {
   props: AlCustomProps
@@ -12,7 +10,7 @@ export interface CustomComponentProps<T = any> {
 
 type NoTitle = Omit<ComunesProps, 'title'>
 export interface AlCustomProps extends NoTitle {
-  type: Types.Custom
+  type: FormTypes.Custom
   component: (props: CustomComponentProps) => ReactNode
   title?: string
 }

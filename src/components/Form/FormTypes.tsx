@@ -1,8 +1,7 @@
 import { ReactNode } from 'react'
 import * as Yup from 'yup'
-import { ColumnProps } from '../Crud/CustomCell'
 
-export enum Types {
+export enum FormTypes {
   Input,
   Number,
   Email,
@@ -30,7 +29,6 @@ export interface OpcionesProps {
 export interface BaseProps {
   id: string
   title: string
-  list?: ColumnProps
 }
 
 export interface ComunesProps extends BaseProps {

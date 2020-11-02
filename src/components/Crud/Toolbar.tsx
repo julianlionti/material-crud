@@ -1,10 +1,10 @@
+import React, { ReactNode } from 'react'
 import { Button, Collapse, Divider, makeStyles, Typography } from '@material-ui/core'
-import React, { ReactNode, useMemo } from 'react'
 import { FaFilter } from 'react-icons/fa'
 import { useLang } from '../../utils/CrudContext'
-import Form, { CamposProps } from '../Form'
-import { Types } from '../Form/Types'
-import { ActionProps } from '../Crud/TableWindow'
+import { useABM } from '../../utils/DataContext'
+import Form from '../Form'
+import { ActionProps } from '../Table/TableTypes'
 
 interface Props {
   editObj: object | null
@@ -12,22 +12,24 @@ interface Props {
   Left?: ReactNode
   loading?: boolean
   title?: string
-  filters: CamposProps[]
   gender?: 'M' | 'F'
-  actions?: ActionProps
   show: boolean
   handleShow: () => void
   onFilter: (filters: object) => void
   onNew: () => void
   titleSize?: number
   name: string
+  hide: boolean
 }
 
 export default (props: Props) => {
   const lang = useLang()
-  const { editObj, noTitle, Left, loading, title, filters, gender, actions } = props
+  const { editObj, noTitle, Left, loading, title, gender, hide } = props
   const { show, handleShow, onNew, onFilter, titleSize, name } = props
+  const { filters, fields } = useABM()
   const classes = useClasses({ titleSize })
+
+  if (hide) return null
 
   return (
     <React.Fragment>
@@ -44,7 +46,7 @@ export default (props: Props) => {
             </div>
           )}
           <div>
-            {Object.keys(filters).length > 0 && (
+            {Object.keys(filters || []).length > 0 && (
               <Button
                 color="primary"
                 endIcon={<FaFilter />}
@@ -54,7 +56,7 @@ export default (props: Props) => {
                 {`${show ? lang.close : lang.open} ${lang.filters}`}
               </Button>
             )}
-            {actions?.new && (
+            {fields && (
               <Button
                 disabled={!!editObj}
                 color="primary"

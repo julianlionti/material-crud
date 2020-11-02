@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react'
-import { Dialog, CenteredCard, Form, Types } from 'material-crud'
+import { Dialog, CenteredCard, Form, FormTypes } from 'material-crud'
 import { useHistory } from 'react-router'
 import CustomField from './extra/CustomField'
 
@@ -29,11 +29,11 @@ export default () => {
       <Form
         loading={loading}
         fields={[
-          { id: 'prueba', type: Types.Input, title: 'Prueba' },
-          { id: 'fecha', type: Types.Date, title: 'Fecha' },
+          { id: 'prueba', type: FormTypes.Input, title: 'Prueba' },
+          { id: 'fecha', type: FormTypes.Date, title: 'Fecha' },
           {
             id: 'custom',
-            type: Types.Custom,
+            type: FormTypes.Custom,
             component: (props) => <CustomField {...props} />,
             title: '',
           },

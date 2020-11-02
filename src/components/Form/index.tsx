@@ -1,19 +1,19 @@
 import React, { memo, useCallback, useMemo } from 'react'
-import { Formik, FormikValues, FormikHelpers } from 'formik'
 import { Button, CircularProgress, makeStyles } from '@material-ui/core'
+import { Formik, FormikValues, FormikHelpers } from 'formik'
+import { serialize } from 'object-to-formdata'
 import * as Yup from 'yup'
-import { Types, BaseProps } from './Types'
-import AlCustom, { AlCustomProps } from './AlCustom'
-import AlInput, { AlInputProps } from './AlInput'
-import AlSelect, { AlSelectProps } from './AlSelect'
-import AlImagen, { AlImagenProps } from './AlImagen'
 import AlAutocomplete, { AlAutocompleteProps } from './AlAutocomplete'
-import AlSwitch, { AlSwitchProps } from './AlSwitch'
-import AlMultiple, { AlMultipleProps } from './AlMultiple'
-import { generateDefault } from './helpers'
+import AlCustom, { AlCustomProps } from './AlCustom'
 import AlDate, { AlDateProps } from './AlDate'
 import AlDropFiles, { AlDropFilesProps } from './AlDropFiles'
-import { serialize } from 'object-to-formdata'
+import AlImagen, { AlImagenProps } from './AlImagen'
+import AlInput, { AlInputProps } from './AlInput'
+import AlMultiple, { AlMultipleProps } from './AlMultiple'
+import AlSelect, { AlSelectProps } from './AlSelect'
+import AlSwitch, { AlSwitchProps } from './AlSwitch'
+import { FormTypes, BaseProps } from './FormTypes'
+import { generateDefault } from './helpers'
 
 Yup.setLocale({
   string: {
@@ -34,7 +34,7 @@ export type TodosProps =
   | AlCustomProps
   | AlDateProps
   | AlDropFilesProps
-  | ({ type: Types.Expandable } & BaseProps)
+  | ({ type: FormTypes.Expandable } & BaseProps)
 
 export type CamposProps = TodosProps | TodosProps[]
 
@@ -49,7 +49,7 @@ export interface Props {
   isFormData?: boolean
 }
 
-export const createFields = (props: () => CamposProps[]) => props()
+export const createFields = (props: CamposProps[]) => props // (props: () => CamposProps[]) => props()
 
 export default memo((props: Props) => {
   const { fields, onSubmit, accept, loading, intials, noValidate, inline, isFormData } = props
@@ -57,33 +57,33 @@ export default memo((props: Props) => {
 
   const renderInput = useCallback(
     (campo: TodosProps, values: any) => {
-      if (campo.type === Types.Expandable) return null
+      if (campo.type === FormTypes.Expandable) return null
       const { depends } = campo
       const hidden = depends && depends(values) === false
       switch (campo.type) {
-        case Types.Input:
-        case Types.Email:
-        case Types.Multiline:
-        case Types.Number:
-        case Types.Secure:
-        case Types.Phone:
+        case FormTypes.Input:
+        case FormTypes.Email:
+        case FormTypes.Multiline:
+        case FormTypes.Number:
+        case FormTypes.Secure:
+        case FormTypes.Phone:
           return <AlInput key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case Types.Options:
+        case FormTypes.Options:
           return <AlSelect key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case Types.File:
-        case Types.Image:
+        case FormTypes.File:
+        case FormTypes.Image:
           return <AlImagen key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case Types.Autocomplete:
+        case FormTypes.Autocomplete:
           return <AlAutocomplete key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case Types.Switch:
+        case FormTypes.Switch:
           return <AlSwitch key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case Types.Multiple:
+        case FormTypes.Multiple:
           return <AlMultiple key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case Types.Custom:
+        case FormTypes.Custom:
           return <AlCustom key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case Types.Date:
+        case FormTypes.Date:
           return <AlDate key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case Types.Draggable:
+        case FormTypes.Draggable:
           return <AlDropFiles key={campo.id} {...campo} loading={loading} hide={hidden} />
         default:
           return null
@@ -95,7 +95,7 @@ export default memo((props: Props) => {
   const valSchema = useMemo(
     () =>
       fields.flat().reduce((acc, it) => {
-        if (it.type === Types.Expandable) return acc
+        if (it.type === FormTypes.Expandable) return acc
         return { ...acc, [it.id]: it.validate }
       }, {}),
     [fields],
