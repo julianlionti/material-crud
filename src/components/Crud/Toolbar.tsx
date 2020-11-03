@@ -26,7 +26,7 @@ export default (props: Props) => {
   const lang = useLang()
   const { editObj, noTitle, Left, loading, title, gender, hide } = props
   const { show, handleShow, onNew, onFilter, titleSize, name } = props
-  const { filters, fields } = useABM()
+  const { filters, fields, steps } = useABM()
   const classes = useClasses({ titleSize })
 
   if (hide) return null
@@ -50,15 +50,15 @@ export default (props: Props) => {
               <Button
                 color="primary"
                 endIcon={<FaFilter />}
-                disabled={!!editObj}
+                disabled={!!editObj || loading}
                 className={classes.spaceLeft}
                 onClick={handleShow}>
                 {`${show ? lang.close : lang.open} ${lang.filters}`}
               </Button>
             )}
-            {fields && (
+            {(fields || steps) && (
               <Button
-                disabled={!!editObj}
+                disabled={!!editObj || loading}
                 color="primary"
                 variant="outlined"
                 className={classes.spaceLeft}

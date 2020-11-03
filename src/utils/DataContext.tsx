@@ -7,13 +7,14 @@ import React, {
   Dispatch,
   SetStateAction,
 } from 'react'
-import { CamposProps } from '../components/Form'
+import { StepProps, FieldProps } from '../components/Form'
 import { ColumnsProps } from '../components/Table/TableTypes'
 
 export interface DataConfigProps {
   columns: ColumnsProps[]
-  filters?: CamposProps[]
-  fields?: CamposProps[]
+  filters?: FieldProps[]
+  steps?: StepProps[]
+  fields?: FieldProps[]
   extraActions?: ReactNode[]
 }
 
@@ -54,11 +55,12 @@ const intials: ContextProps = {
 const DataContext = createContext<Context>([intials, () => {}])
 
 export const DataProvider = (props: ProviderProps) => {
-  const { children, itemId, fields, filters, columns, extraActions } = props
+  const { children, itemId, fields, filters, columns, extraActions, steps } = props
   const status = useState<ContextProps>({
     ...intials,
     itemId: itemId || '_id',
     fields,
+    steps,
     filters,
     columns,
     extraActions,

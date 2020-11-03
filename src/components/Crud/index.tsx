@@ -4,7 +4,7 @@ import { serialize } from 'object-to-formdata'
 import { useLang } from '../../utils/CrudContext'
 import { PaginationProps, ReplaceProps, useABM } from '../../utils/DataContext'
 import useAxios, { CallProps, Error } from '../../utils/useAxios'
-import Formulario, { CamposProps } from '../Form'
+import Formulario, { FieldProps, StepProps } from '../Form'
 import { Interactions } from '../Form/FormTypes'
 import AlTable from '../Table/index'
 import { ColumnsProps, TableProps } from '../Table/TableTypes'
@@ -26,7 +26,8 @@ export interface CrudProps extends TableProps {
   columns: ColumnsProps[]
   url: string
   name: string
-  fields?: CamposProps[]
+  fields?: FieldProps[]
+  steps?: StepProps[]
   title?: string
   description?: string
   gender?: 'M' | 'F'
@@ -132,7 +133,7 @@ export default memo((props: CrudProps) => {
 
   const { url, response, interaction, onFinished, onError, title, noTitle, transformFilter } = props
   const { Left, gender, description, isFormData, transform, transformToEdit } = props
-  const { name, titleSize, idInUrl, itemName, actions } = props
+  const { name, titleSize, idInUrl, itemName } = props
 
   const lang = useLang()
   const called = useRef(false)
@@ -146,6 +147,7 @@ export default memo((props: CrudProps) => {
     itemId,
     filters,
     fields,
+    steps,
     columns,
   } = useABM()
   const { loading, call } = useAxios<any>({ onError })
@@ -227,10 +229,9 @@ export default memo((props: CrudProps) => {
       const it = item
       setCartel({
         visible: true,
-        contenido:
-          itemName && lang.delExplanation
-            ? lang.delExplanation(it[itemName])
-            : "Para setear este texto es necesario incluir el 'itemName' y 'lang'",
+        contenido: itemName
+          ? lang.delExplanation(it[itemName])
+          : "Para setear este texto es necesario incluir el 'itemName'",
         titulo: `${lang.delete} ${name}`,
         onCerrar: (aceptado: boolean) => {
           if (aceptado) {
@@ -252,7 +253,9 @@ export default memo((props: CrudProps) => {
     }
   }, [getDataCall, interactions])
 
-  if (columns.length === 0) return <Typography>No están configuradas las columnas</Typography>
+  if (columns.length === 0) {
+    return <Typography>No están configuradas las columnas</Typography>
+  }
 
   return (
     <div className={classes.contenedor}>
@@ -260,13 +263,14 @@ export default memo((props: CrudProps) => {
         hide={noTitle || (!filters && !fields)}
         editObj={editObj}
         Left={Left}
-        gender={gender}
         onNew={() => setEditObj({})}
         noTitle={noTitle}
+        gender={gender}
         title={title}
+        loading={loading}
+        name={name}
         show={toolbar}
         titleSize={titleSize}
-        name={name}
         handleShow={() => setToolbar((t) => !t)}
         onFilter={(filters) => {
           let finalFilters = filters
@@ -303,9 +307,10 @@ export default memo((props: CrudProps) => {
           onDelete={(rowData) => onDeleteCall(rowData)}
         />
       </Collapse>
-      {fields && (
+      {(fields || steps) && (
         <Collapse in={!!editObj} timeout="auto" unmountOnExit>
           <CenteredCard
+            noPadding
             onClose={() => setEditObj(null)}
             title={`${
               editing
@@ -324,6 +329,7 @@ export default memo((props: CrudProps) => {
                   : `${lang.add}${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''} ${name}`
               }
               fields={fields}
+              steps={steps}
               onSubmit={(vals) => postDataCall(vals)}
             />
           </CenteredCard>

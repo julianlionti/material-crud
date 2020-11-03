@@ -5,7 +5,7 @@ import { DataProvider, DataConfigProps } from '../../utils/DataContext'
 type Props = DataConfigProps & CrudProps
 
 export default (props: Props) => {
-  const { fields, columns, filters, itemId, extraActions } = props
+  const { fields, columns, filters, itemId, extraActions, steps } = props
   const finalFilters = useMemo(
     () =>
       filters?.map((cam) => {
@@ -23,6 +23,7 @@ export default (props: Props) => {
       columns={columns}
       fields={fields}
       filters={finalFilters}
+      steps={steps}
       extraActions={extraActions}>
       <Crud {...props} />
     </DataProvider>

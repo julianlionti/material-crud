@@ -1,6 +1,15 @@
-import React, { memo, useCallback, useMemo } from 'react'
-import { Button, CircularProgress, makeStyles } from '@material-ui/core'
-import { Formik, FormikValues, FormikHelpers } from 'formik'
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react'
+import {
+  Button,
+  CircularProgress,
+  makeStyles,
+  Paper,
+  Tab,
+  Tabs,
+  Typography,
+} from '@material-ui/core'
+import { TabContext, TabList, TabPanel } from '@material-ui/lab'
+import { Formik, FormikValues, FormikHelpers, FormikProps } from 'formik'
 import { serialize } from 'object-to-formdata'
 import * as Yup from 'yup'
 import AlAutocomplete, { AlAutocompleteProps } from './AlAutocomplete'
@@ -12,8 +21,9 @@ import AlInput, { AlInputProps } from './AlInput'
 import AlMultiple, { AlMultipleProps } from './AlMultiple'
 import AlSelect, { AlSelectProps } from './AlSelect'
 import AlSwitch, { AlSwitchProps } from './AlSwitch'
-import { FormTypes, BaseProps } from './FormTypes'
+import { FormTypes, AlExpandableProps } from './FormTypes'
 import { generateDefault } from './helpers'
+import Step from './Step'
 
 Yup.setLocale({
   string: {
@@ -34,12 +44,18 @@ export type TodosProps =
   | AlCustomProps
   | AlDateProps
   | AlDropFilesProps
-  | ({ type: FormTypes.Expandable } & BaseProps)
+  | AlExpandableProps
 
-export type CamposProps = TodosProps | TodosProps[]
+export type FieldProps = TodosProps | TodosProps[]
+export interface StepProps {
+  id: string
+  title: string
+  fields: FieldProps[]
+}
 
-export interface Props {
-  fields: CamposProps[]
+export interface FormProps {
+  steps?: StepProps[]
+  fields?: FieldProps[]
   onSubmit?: (values: FormikValues, helpers: FormikHelpers<any>) => void | Promise<any>
   accept?: string
   loading?: boolean
@@ -49,120 +65,65 @@ export interface Props {
   isFormData?: boolean
 }
 
-export const createFields = (props: CamposProps[]) => props // (props: () => CamposProps[]) => props()
+export const createFields = (props: FieldProps[]) => props // (props: () => CamposProps[]) => props()
+export const createSteps = (props: StepProps[]) => props // (props: () => CamposProps[]) => props()
 
-export default memo((props: Props) => {
-  const { fields, onSubmit, accept, loading, intials, noValidate, inline, isFormData } = props
-  const classes = useClases({ inline })
+export default memo((props: FormProps) => {
+  const formRef = useRef<FormikProps<any>>()
+  const { fields, steps, loading, isFormData, accept } = props
 
-  const renderInput = useCallback(
-    (campo: TodosProps, values: any) => {
-      if (campo.type === FormTypes.Expandable) return null
-      const { depends } = campo
-      const hidden = depends && depends(values) === false
-      switch (campo.type) {
-        case FormTypes.Input:
-        case FormTypes.Email:
-        case FormTypes.Multiline:
-        case FormTypes.Number:
-        case FormTypes.Secure:
-        case FormTypes.Phone:
-          return <AlInput key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case FormTypes.Options:
-          return <AlSelect key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case FormTypes.File:
-        case FormTypes.Image:
-          return <AlImagen key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case FormTypes.Autocomplete:
-          return <AlAutocomplete key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case FormTypes.Switch:
-          return <AlSwitch key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case FormTypes.Multiple:
-          return <AlMultiple key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case FormTypes.Custom:
-          return <AlCustom key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case FormTypes.Date:
-          return <AlDate key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case FormTypes.Draggable:
-          return <AlDropFiles key={campo.id} {...campo} loading={loading} hide={hidden} />
-        default:
-          return null
-      }
-    },
-    [loading],
-  )
+  const [firstStep] = steps || []
+  const [tab, setTab] = useState(firstStep?.id || '')
 
-  const valSchema = useMemo(
-    () =>
-      fields.flat().reduce((acc, it) => {
-        if (it.type === FormTypes.Expandable) return acc
-        return { ...acc, [it.id]: it.validate }
-      }, {}),
-    [fields],
-  )
+  const classes = useClasses()
 
-  const defaultValues = useMemo(
-    () => fields.flat().reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it) }), {}),
-    [fields],
-  )
+  if (!steps && !fields) {
+    return <Typography>Se debe agregar 'fields' o 'steps'</Typography>
+  }
+  if (steps && fields) {
+    return <Typography>Los parametros 'fields' y 'steps' no pueden ir juntos</Typography>
+  }
+
+  if (!steps && fields) {
+    return <Step {...props} fields={props.fields!!} />
+  }
 
   return (
-    <Formik
-      enableReinitialize
-      initialValues={Object.keys(intials || {}).length > 0 ? intials : defaultValues}
-      validationSchema={noValidate ? null : Yup.object().shape(valSchema)}
-      onSubmit={(vals, helpers) => {
-        let finalData = vals
-        if (isFormData)
-          finalData = serialize(vals, {
-            indices: true,
-            allowEmptyArrays: true,
-          })
-
-        if (onSubmit) onSubmit(finalData, helpers)
-      }}>
-      {({ submitForm, values }) => (
-        <div className={classes.container}>
-          {fields.map((field, index) => {
-            if (Array.isArray(field)) {
-              return (
-                <div key={`${field[0].id}-row-${index}`} className={classes.horizontal}>
-                  {field.map((e) => renderInput(e, values))}
-                </div>
-              )
-            }
-            return renderInput(field, values)
-          })}
-          {accept && (
-            <Button
-              disabled={loading}
-              onClick={submitForm}
-              className={classes.btn}
-              color="primary"
-              endIcon={loading && <CircularProgress size={16} />}
-              variant="outlined">
-              {accept}
-            </Button>
-          )}
-        </div>
-      )}
-    </Formik>
+    <TabContext value={tab}>
+      <TabList variant="fullWidth" onChange={(e, tabVal) => setTab(tabVal)}>
+        {steps!!.map(({ title, id }) => (
+          <Tab key={id} label={title} value={id} />
+        ))}
+      </TabList>
+      {steps!!.map(({ fields, id }) => (
+        <TabPanel key={id} value={id!!}>
+          <Step
+            isFormData={isFormData}
+            fields={fields}
+            loading={loading}
+            ref={(e) => formRef.current}
+          />
+        </TabPanel>
+      ))}
+      <Button
+        disabled={loading}
+        onClick={() => {
+          // formRef.current.
+        }}
+        className={classes.btn}
+        color="primary"
+        endIcon={loading && <CircularProgress size={16} />}
+        variant="outlined">
+        {accept}
+      </Button>
+    </TabContext>
   )
 })
 
-const useClases = makeStyles((tema) => ({
-  container: ({ inline }: any) => ({
-    flex: 1,
-    display: 'flex',
-    flexDirection: inline ? 'row' : 'column',
-  }),
+const useClasses = makeStyles((theme) => ({
   btn: {
-    marginTop: tema.spacing(2),
-    marginBottom: tema.spacing(2),
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
     alignSelf: 'center',
-  },
-  horizontal: {
-    display: 'flex',
-    flex: 1,
   },
 }))

@@ -1,5 +1,5 @@
 import Crud from './components/Crud/WithProvider'
-import Form, { createFields } from './components/Form'
+import Form, { createFields, createSteps } from './components/Form'
 import { FormTypes } from './components/Form/FormTypes'
 import { createColumns } from './components/Table'
 
@@ -28,6 +28,7 @@ export {
   useAxios,
   callWs,
   useWindowSize,
+  createSteps,
   createFields,
   createColumns,
   createTranslation,

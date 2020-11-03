@@ -49,3 +49,7 @@ export interface Interactions {
   page: string
   perPage: string
 }
+
+export interface AlExpandableProps extends BaseProps {
+  type: FormTypes.Expandable
+}

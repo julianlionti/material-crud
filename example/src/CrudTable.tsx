@@ -7,6 +7,7 @@ import {
   FormTypes,
   useWindowSize,
   TableTypes,
+  createSteps,
 } from 'material-crud'
 import { FaIceCream } from 'react-icons/fa'
 import { IconButton } from '@material-ui/core'
@@ -19,35 +20,67 @@ export default () => {
     [],
   )
 
-  const campos = useMemo(
-    () =>
-      createFields([
-        {
-          id: 'nombre',
-          title: 'Nombre',
-          placeholder: 'Nombre de la categoría',
-          type: FormTypes.Input,
-          validate: Yup.string().required(),
-        },
-        {
-          id: 'descripcion',
-          title: 'Descripción',
-          placeholder: 'Descripción de la categoría',
-          type: FormTypes.Multiline,
-          validate: Yup.string().max(450),
-        },
-        { id: 'fecha', type: FormTypes.Date, title: 'Fecha' },
-        {
-          id: 'requiereNormativa',
-          type: FormTypes.Switch,
-          title: 'Requiere normativa',
-        },
-      ]),
+  const filters = useMemo(
+    () => createFields([{ id: 'nombre', type: FormTypes.Input, title: 'Nombre *' }]),
     [],
   )
 
-  const filters = useMemo(
-    () => createFields([{ id: 'nombre', type: FormTypes.Input, title: 'Nombre *' }]),
+  const steps = useMemo(
+    () =>
+      createSteps([
+        {
+          id: 'uno',
+          title: 'Uno',
+          fields: [
+            {
+              id: 'nombre',
+              title: 'Nombre',
+              placeholder: 'Nombre de la categoría',
+              type: FormTypes.Input,
+              validate: Yup.string().required(),
+            },
+            {
+              id: 'descripcion',
+              title: 'Descripción',
+              placeholder: 'Descripción de la categoría',
+              type: FormTypes.Multiline,
+              validate: Yup.string().max(450),
+            },
+            { id: 'fecha', type: FormTypes.Date, title: 'Fecha' },
+            {
+              id: 'requiereNormativa',
+              type: FormTypes.Switch,
+              title: 'Requiere normativa',
+            },
+          ],
+        },
+        {
+          id: 'dos',
+          title: 'Dos',
+          fields: [
+            {
+              id: 'nombre2',
+              title: 'Nombre 2',
+              placeholder: 'Nombre de la categoría',
+              type: FormTypes.Input,
+              validate: Yup.string().required(),
+            },
+            {
+              id: 'descripcion2',
+              title: 'Descripción 2',
+              placeholder: 'Descripción de la categoría',
+              type: FormTypes.Multiline,
+              validate: Yup.string().max(450),
+            },
+            { id: 'fecha2', type: FormTypes.Date, title: 'Fecha 2' },
+            {
+              id: 'requiereNormativa2',
+              type: FormTypes.Switch,
+              title: 'Requiere normativa 2',
+            },
+          ],
+        },
+      ]),
     [],
   )
 
@@ -57,7 +90,7 @@ export default () => {
         url={'http://localhost:5050/api/categoria'}
         gender="F"
         name="Categoria"
-        fields={campos}
+        steps={steps}
         columns={columnas}
         filters={filters}
         actions={{ edit: true, delete: false }}
