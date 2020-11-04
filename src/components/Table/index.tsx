@@ -131,6 +131,7 @@ export default memo((props: Props) => {
         </AutoSizer>
       </div>
       <Pagination
+        loading={loading}
         onChange={(page, perpage) => {
           setRowSelected([])
           listRef.current!!.resetAfterIndex(0)

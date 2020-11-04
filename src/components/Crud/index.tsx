@@ -271,7 +271,20 @@ export default memo((props: CrudProps) => {
         name={name}
         show={toolbar}
         titleSize={titleSize}
-        handleShow={() => setToolbar((t) => !t)}
+        handleShow={() => {
+          setToolbar((t) => {
+            const final = !t
+            if (!final) {
+              lastFilter.current = {
+                ...lastFilter.current,
+                [interaction?.filter || 'filter']: {},
+                [interaction?.page || 'page']: 1,
+              }
+              getDataCall(lastFilter.current)
+            }
+            return final
+          })
+        }}
         onFilter={(filters) => {
           let finalFilters = filters
           if (transformFilter) finalFilters = transformFilter(filters)

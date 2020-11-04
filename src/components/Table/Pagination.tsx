@@ -6,11 +6,12 @@ import { useABM } from '../../utils/DataContext'
 
 interface Props {
   onChange: (page: number, perPage: number) => void
+  loading?: boolean
 }
 
 const perPageList = [5, 10, 15, 50, 100, 500, 1000]
 
-export default memo(({ onChange }: Props) => {
+export default memo(({ onChange, loading }: Props) => {
   const { pagination } = useABM()
   const { page, limit, totalDocs, totalPages } = pagination
   const lang = useLang()
@@ -24,6 +25,7 @@ export default memo(({ onChange }: Props) => {
             lang.pagination!!.rowsPerPage
           }:`}</Typography>
           <Select
+            disabled={loading}
             className={classes.perPage}
             value={limit}
             onChange={({ target }) => onChange(page, target.value as number)}>
@@ -37,6 +39,7 @@ export default memo(({ onChange }: Props) => {
         </div>
       </Collapse>
       <Pagination
+        disabled={loading}
         color="primary"
         variant="outlined"
         className={classes.pagination}

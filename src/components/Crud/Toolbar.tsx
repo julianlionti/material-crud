@@ -70,7 +70,14 @@ export default (props: Props) => {
         </div>
         {filters && (
           <Collapse in={show} timeout="auto" unmountOnExit>
-            <Form inline accept={lang.filter} fields={filters} onSubmit={onFilter} noValidate />
+            <Form
+              inline
+              accept={lang.filter}
+              loading={loading}
+              fields={filters}
+              onSubmit={onFilter}
+              noValidate
+            />
           </Collapse>
         )}
       </Collapse>
