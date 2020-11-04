@@ -34,8 +34,8 @@ interface SwtichType extends CommonProps {
 
 interface CustomType extends CommonProps {
   type: TableTypes.Custom
-  height: number
-  content: () => ReactNode
+  height?: number
+  content: (rowData: any) => ReactNode
 }
 
 interface ImageType extends CommonProps {
