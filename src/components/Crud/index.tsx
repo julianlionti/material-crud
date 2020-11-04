@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef, ReactNode, useCallback, memo, useMemo } from 'react'
 import { Collapse, makeStyles, LinearProgress, Typography } from '@material-ui/core'
 import { serialize } from 'object-to-formdata'
+import qs from 'qs'
 import { useLang } from '../../utils/CrudContext'
 import { PaginationProps, ReplaceProps, useABM } from '../../utils/DataContext'
 import useAxios, { CallProps, Error } from '../../utils/useAxios'
-import Formulario, { FieldProps, StepProps } from '../Form'
-import { Interactions } from '../Form/FormTypes'
+import Formulario from '../Form'
+import { Interactions, FieldProps, StepProps } from '../Form/FormTypes'
 import AlTable from '../Table/index'
 import { ColumnsProps, TableProps } from '../Table/TableTypes'
 import CenteredCard from '../UI/CenteredCard'
@@ -117,9 +118,10 @@ const postData = async (props: NoGetCallProps) => {
 const getData = async ({ call, response, replace, params, url, transform }: DataCallProps) => {
   const finalParams = transform ? transform('query', params) : params
   const { response: responseWs, status } = await call({
-    method: 'GET',
     url,
+    method: 'GET',
     params: finalParams,
+    paramsSerializer: (params) => qs.stringify(finalParams),
   })
 
   if (status!! >= 200 && status!! < 300) {

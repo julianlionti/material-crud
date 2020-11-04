@@ -2,7 +2,6 @@ import React, { memo, useMemo } from 'react'
 import { IconButton, makeStyles, Paper, Typography } from '@material-ui/core'
 import { useField } from 'formik'
 import { FaPlus, FaTrash } from 'react-icons/fa'
-import { TodosProps } from '.'
 import AlAutocomplete from './AlAutocomplete'
 import AlCustom from './AlCustom'
 import AlImagen from './AlImagen'
@@ -10,14 +9,14 @@ import AlInput from './AlInput'
 import AlSelect from './AlSelect'
 import AlSwitch from './AlSwitch'
 import BaseInput from './BaseInput'
-import { FormTypes, ComunesProps } from './FormTypes'
+import { FormTypes, ComunesProps, AllInputTypes } from './FormTypes'
 import { multipleDefault } from './helpers'
 
 type ValuesProps = { [key: string]: any }
 
 export interface AlMultipleProps extends ComunesProps {
   type: FormTypes.Multiple
-  configuration: TodosProps[]
+  configuration: AllInputTypes[]
 }
 
 export default memo((props: AlMultipleProps) => {

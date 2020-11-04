@@ -7,7 +7,7 @@ import React, {
   Dispatch,
   SetStateAction,
 } from 'react'
-import { StepProps, FieldProps } from '../components/Form'
+import { FieldProps, StepProps } from '../components/Form/FormTypes'
 import { ColumnsProps } from '../components/Table/TableTypes'
 
 export interface DataConfigProps {

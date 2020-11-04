@@ -1,5 +1,14 @@
 import { ReactNode } from 'react'
 import * as Yup from 'yup'
+import { AlAutocompleteProps } from './AlAutocomplete'
+import { AlCustomProps } from './AlCustom'
+import { AlDateProps } from './AlDate'
+import { AlDropFilesProps } from './AlDropFiles'
+import { AlImagenProps } from './AlImagen'
+import { AlInputProps } from './AlInput'
+import { AlMultipleProps } from './AlMultiple'
+import { AlSelectProps } from './AlSelect'
+import { AlSwitchProps } from './AlSwitch'
 
 export enum FormTypes {
   Input,
@@ -52,4 +61,24 @@ export interface Interactions {
 
 export interface AlExpandableProps extends BaseProps {
   type: FormTypes.Expandable
+}
+
+export type AllInputTypes =
+  | AlInputProps
+  | AlSelectProps
+  | AlImagenProps
+  | AlAutocompleteProps
+  | AlSwitchProps
+  | AlMultipleProps
+  | AlCustomProps
+  | AlDateProps
+  | AlDropFilesProps
+  | AlExpandableProps
+
+export type FieldProps = AllInputTypes | AllInputTypes[]
+
+export interface StepProps {
+  id: string
+  title: string
+  fields: FieldProps[]
 }

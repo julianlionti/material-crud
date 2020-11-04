@@ -1,9 +1,9 @@
 import React, { forwardRef, memo, useCallback, useMemo } from 'react'
 import { Button, CircularProgress, makeStyles } from '@material-ui/core'
-import { Formik, FormikValues, FormikHelpers, FormikProps } from 'formik'
+import { Formik, FormikProps } from 'formik'
 import { serialize } from 'object-to-formdata'
 import * as Yup from 'yup'
-import { FieldProps, TodosProps, FormProps } from '.'
+import { FormProps } from '.'
 import AlAutocomplete from './AlAutocomplete'
 import AlCustom from './AlCustom'
 import AlDate from './AlDate'
@@ -13,7 +13,7 @@ import AlInput from './AlInput'
 import AlMultiple from './AlMultiple'
 import AlSelect from './AlSelect'
 import AlSwitch from './AlSwitch'
-import { FormTypes } from './FormTypes'
+import { AllInputTypes, FieldProps, FormTypes } from './FormTypes'
 import { generateDefault } from './helpers'
 
 interface Props extends Omit<FormProps, 'steps'> {
@@ -26,7 +26,7 @@ export default memo(
     const classes = useClases({ inline })
 
     const renderInput = useCallback(
-      (campo: TodosProps, values: any) => {
+      (campo: AllInputTypes, values: any) => {
         if (campo.type === FormTypes.Expandable) return null
         const { depends } = campo
         const hidden = depends && depends(values) === false

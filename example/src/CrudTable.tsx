@@ -21,7 +21,8 @@ export default () => {
   )
 
   const filters = useMemo(
-    () => createFields([{ id: 'nombre', type: FormTypes.Input, title: 'Nombre *' }]),
+    () =>
+      createFields([{ id: 'nombre', type: FormTypes.Input, title: 'Nombre *', willSubmit: true }]),
     [],
   )
 

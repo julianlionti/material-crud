@@ -1,31 +1,10 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import {
-  Button,
-  CircularProgress,
-  makeStyles,
-  Paper,
-  Tab,
-  Tabs,
-  Typography,
-  useTheme,
-} from '@material-ui/core'
-import { TabContext, TabList, TabPanel } from '@material-ui/lab'
-import { Formik, FormikValues, FormikHelpers, FormikProps } from 'formik'
-import { serialize } from 'object-to-formdata'
+import React, { memo, useEffect, useRef, useState } from 'react'
+import { Button, CircularProgress, makeStyles, Tab, Tabs, Typography } from '@material-ui/core'
+import { FormikValues, FormikHelpers, FormikProps } from 'formik'
 import { FaCheck, FaTimes } from 'react-icons/fa'
 import SwipeableViews from 'react-swipeable-views'
 import * as Yup from 'yup'
-import AlAutocomplete, { AlAutocompleteProps } from './AlAutocomplete'
-import AlCustom, { AlCustomProps } from './AlCustom'
-import AlDate, { AlDateProps } from './AlDate'
-import AlDropFiles, { AlDropFilesProps } from './AlDropFiles'
-import AlImagen, { AlImagenProps } from './AlImagen'
-import AlInput, { AlInputProps } from './AlInput'
-import AlMultiple, { AlMultipleProps } from './AlMultiple'
-import AlSelect, { AlSelectProps } from './AlSelect'
-import AlSwitch, { AlSwitchProps } from './AlSwitch'
-import { FormTypes, AlExpandableProps } from './FormTypes'
-import { generateDefault } from './helpers'
+import { StepProps, FieldProps } from './FormTypes'
 import Step from './Step'
 
 Yup.setLocale({
@@ -36,25 +15,6 @@ Yup.setLocale({
     required: ({ path }) => `El ${path} es obligatorio`,
   },
 })
-
-export type TodosProps =
-  | AlInputProps
-  | AlSelectProps
-  | AlImagenProps
-  | AlAutocompleteProps
-  | AlSwitchProps
-  | AlMultipleProps
-  | AlCustomProps
-  | AlDateProps
-  | AlDropFilesProps
-  | AlExpandableProps
-
-export type FieldProps = TodosProps | TodosProps[]
-export interface StepProps {
-  id: string
-  title: string
-  fields: FieldProps[]
-}
 
 export interface FormProps {
   steps?: StepProps[]
@@ -68,8 +28,8 @@ export interface FormProps {
   isFormData?: boolean
 }
 
-export const createFields = (props: FieldProps[]) => props // (props: () => CamposProps[]) => props()
-export const createSteps = (props: StepProps[]) => props // (props: () => CamposProps[]) => props()
+export const createFields = (props: FieldProps[]) => props
+export const createSteps = (props: StepProps[]) => props
 
 interface RefProps {
   form: FormikProps<any>
@@ -151,57 +111,6 @@ export default memo((props: FormProps) => {
       </Button>
     </React.Fragment>
   )
-
-  /*
-  return (
-    <TabContext value={tab}>
-      <TabList
-        onChange={(e, tabVal) => {
-          const act = formRef.current.find((e) => e.id === tab)
-          console.log(act?.form.values)
-          // console.log(act?.form.submitForm())
-          setTab(tabVal)
-        }}>
-        {steps!!.map(({ title, id }) => (
-          <Tab key={id} label={title} value={id} />
-        ))}
-      </TabList>
-      {steps!!.map(({ fields, id }) => (
-        <TabPanel key={id} value={id!!}>
-          <Step
-            isFormData={isFormData}
-            fields={fields}
-            loading={loading}
-            accept="prueba"
-            onSubmit={(e) => console.log(e)}
-            ref={(e) => {
-              const actual = formRef.current?.find((e) => e.id === id)
-              if (!actual) {
-                formRef.current = [...formRef.current, { id, form: e!! }]
-              } else {
-                formRef.current.map((e) => {
-                  if (e.id === id) return { id, form: e }
-                  return e
-                })
-              }
-            }}
-          />
-        </TabPanel>
-      ))}
-      <Button
-        disabled={loading}
-        onClick={() => {
-          // formRef.current.
-        }}
-        className={classes.btn}
-        color="primary"
-        endIcon={loading && <CircularProgress size={16} />}
-        variant="outlined">
-        {accept}
-      </Button>
-    </TabContext>
-  )
-  */
 })
 
 const useClasses = makeStyles((theme) => ({

@@ -1,13 +1,12 @@
-import moment, { Moment } from 'moment'
-import { TodosProps } from '.'
+import { Moment } from 'moment'
 import { Filter } from '../../utils/useFilters'
-import { FormTypes } from './FormTypes'
+import { AllInputTypes, FormTypes } from './FormTypes'
 
-export const multipleDefault = (conf: TodosProps[]) =>
+export const multipleDefault = (conf: AllInputTypes[]) =>
   conf.flat().reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it) }), {})
 
 export type DefResponse = boolean | null | '' | any[] | Filter | Moment
-export const generateDefault = (item: TodosProps): DefResponse => {
+export const generateDefault = (item: AllInputTypes): DefResponse => {
   if (item.type === FormTypes.Expandable) return null
   if (item.filter) {
     switch (item.type) {
