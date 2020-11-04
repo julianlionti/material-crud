@@ -1,22 +1,15 @@
 import React from 'react'
-import {
-  act,
-  cleanup,
-  fireEvent,
-  render,
-  queryByLabelText,
-  waitFor,
-  screen,
-} from '@testing-library/react'
+import { act, cleanup, fireEvent, render, queryByLabelText } from '@testing-library/react'
+import Axios from 'axios'
+import MockAdapter from 'axios-mock-adapter'
 import Crud from '../components/Crud/WithProvider'
 import { createFields } from '../components/Form'
-import { Types } from '../components/Form/Types'
-import { CrudProvider } from '../utils/CrudContext'
+import { FormTypes } from '../components/Form/FormTypes'
+import { createColumns } from '../components/Table'
 import { enUS } from '../translate/en_us'
 import AriaLabels from '../utils/AriaLabels'
+import { CrudProvider } from '../utils/CrudContext'
 
-import MockAdapter from 'axios-mock-adapter'
-import Axios from 'axios'
 import { fakeData } from './generators'
 
 jest.mock('react-virtualized-auto-sizer', () => ({ children }: any) =>
@@ -35,26 +28,24 @@ describe('CrudComponent FakeData AlimentAPP', () => {
     const name = 'Prueba'
     const url = 'http://localhost:5050/api/prueba'
 
-    const fields = createFields(() => [
+    const fields = createFields([
       [
         {
           id: '_id',
-          type: Types.Input,
+          type: FormTypes.Input,
           title: 'ID',
           filter: true,
           readonly: true,
-          list: { width: 10 },
         },
         {
           id: 'nombre',
-          type: Types.Input,
+          type: FormTypes.Input,
           title: 'Nombre',
-          list: { width: 30 },
         },
       ],
       {
         id: 'select',
-        type: Types.Options,
+        type: FormTypes.Options,
         options: [
           { id: 'id1', title: 'Titulo 1' },
           { id: 'id2', title: 'Titulo 2' },
@@ -62,19 +53,23 @@ describe('CrudComponent FakeData AlimentAPP', () => {
         placeholder: 'Seleccione una prueba',
         title: 'Pruebas',
         filter: true,
-        list: { width: 60 },
       },
+    ])
+
+    const columns = createColumns([
+      { id: 'id', title: 'ID' },
+      { id: 'nombre', title: 'Nombre' },
     ])
 
     const { queryByText, ...crudElement } = render(
       <CrudProvider lang={currentLang}>
         <Crud
-          itemId="_id"
-          height={500}
           url={url}
+          itemId="_id"
           description={description}
           name={name}
-          columns={fields}
+          fields={fields}
+          columns={columns}
           response={{
             list: ({ data }) => ({ items: data.docs, ...data }),
           }}
@@ -94,7 +89,7 @@ describe('CrudComponent FakeData AlimentAPP', () => {
     await act(async () => {})
 
     const fieldsWithFilter = fields.flat().filter((field) => {
-      if (field.type === Types.Expandable) return false
+      if (field.type === FormTypes.Expandable) return false
       return field.filter
     })
     const filters = crudElement.queryAllByLabelText(AriaLabels.BaseInput)
@@ -103,13 +98,13 @@ describe('CrudComponent FakeData AlimentAPP', () => {
     filters.forEach((filterInput, i) => {
       const { type } = fieldsWithFilter[i]
       if (
-        type === Types.Autocomplete ||
-        type === Types.Input ||
-        type === Types.Email ||
-        type === Types.Multiline ||
-        type === Types.Number ||
-        type === Types.Phone ||
-        type === Types.Options
+        type === FormTypes.Autocomplete ||
+        type === FormTypes.Input ||
+        type === FormTypes.Email ||
+        type === FormTypes.Multiline ||
+        type === FormTypes.Number ||
+        type === FormTypes.Phone ||
+        type === FormTypes.Options
       ) {
         const filterType = queryByLabelText(filterInput, AriaLabels.BtnFilterTypes)
         expect(filterType).toBeTruthy()
