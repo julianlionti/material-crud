@@ -16,7 +16,7 @@ import useAxios, { callWs } from './utils/useAxios'
 import useWindowSize from './utils/useWindowSize'
 
 export type { CustomComponentProps } from './components/Form/AlCustom'
-export type { useAxiosProps } from './utils/useAxios'
+export type { UseAxiosProps } from './utils/useAxios'
 export type { OpcionesProps } from './components/Form/FormTypes'
 
 export {

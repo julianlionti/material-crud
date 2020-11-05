@@ -60,8 +60,10 @@ export default memo((props: FormProps) => {
   }
 
   if (!steps && fields) {
-    return <Step {...props} fields={props.fields!!} />
+    return <Step {...props} fields={fields} />
   }
+
+  if (!steps) return null
 
   return (
     <React.Fragment>
@@ -71,7 +73,7 @@ export default memo((props: FormProps) => {
         indicatorColor="primary"
         textColor="primary"
         onChange={(e, newVal) => setTab(newVal)}>
-        {steps!!.map(({ title, id }, index) => (
+        {steps.map(({ title, id }, index) => (
           <Tab
             key={id}
             label={title}
@@ -81,7 +83,7 @@ export default memo((props: FormProps) => {
         ))}
       </Tabs>
       <SwipeableViews className={classes.stepRoot} index={tab} onChangeIndex={(tab) => setTab(tab)}>
-        {steps!!.map(({ fields, id }) => (
+        {steps.map(({ fields, id }) => (
           <Step
             key={id}
             isFormData={isFormData}
@@ -90,8 +92,8 @@ export default memo((props: FormProps) => {
             onSubmit={(vals) => setFormsValues((values) => ({ ...values, [id]: vals }))}
             ref={(e) => {
               const actual = formRef.current?.find((e) => e.id === id)
-              if (!actual) {
-                formRef.current = [...formRef.current, { id, form: e!! }]
+              if (!actual && e) {
+                formRef.current = [...formRef.current, { id, form: e }]
               }
             }}
           />

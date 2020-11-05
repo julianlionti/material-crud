@@ -7,7 +7,9 @@
     "prettier/standard",
     "prettier/react",
     "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:import/typescript"
+    "plugin:import/typescript",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
   "plugins": ["react-hooks"],
   "env": {
@@ -26,6 +28,21 @@
     }
   },
   "rules": {
+    "@typescript-eslint/no-empty-function":"off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-use-before-define":"off",
+    "@typescript-eslint/member-delimiter-style": ["error", {
+      "multiline": {
+        "delimiter": "none",
+        "requireLast": true
+      },
+      "singleline": {
+        "delimiter": "semi",    
+        "requireLast": false
+      }
+    }],
+    "semi":"off",
     "space-before-function-paren": 0,
     "react/prop-types": 0,
     "react/jsx-handler-names": 0,

@@ -110,12 +110,13 @@ export default memo((props: AlMultipleProps) => {
             </IconButton>
           </div>
         ))}
+        {error && <Typography className={classes.error}>{error}</Typography>}
       </Paper>
     </BaseInput>
   )
 })
 
-const useClasses = makeStyles(() => ({
+const useClasses = makeStyles((theme) => ({
   headerContainer: {
     display: 'flex',
     alignItems: 'center',
@@ -123,5 +124,8 @@ const useClasses = makeStyles(() => ({
   },
   horizontal: {
     display: 'flex',
+  },
+  error: {
+    color: theme.palette.error.main,
   },
 }))

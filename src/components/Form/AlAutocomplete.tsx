@@ -72,7 +72,9 @@ export default memo(
       (agregado) => {
         const vals = value as OpcionesProps[]
         const donde = vals.find((e) => e.id === agregado.id)
-        donde!!.extras = { ...donde!!.extras, comprados: agregado.cantidad }
+        if (donde) {
+          donde.extras = { ...donde.extras, comprados: agregado.cantidad }
+        }
       },
       [value],
     )
@@ -116,8 +118,10 @@ export default memo(
                       aria-label={AriaLabels.BtnFilterTypes}
                       key="filter"
                       title={lang.tooltips.defineFilter}>
-                      <IconButton onClick={(e) => setAnchorFilter(e.currentTarget)}>
-                        {autocomplete!!.find((e) => e.id === (value as AutoFilter).filter)?.icon}
+                      <IconButton
+                        disabled={loading}
+                        onClick={(e) => setAnchorFilter(e.currentTarget)}>
+                        {autocomplete.find((e) => e.id === (value as AutoFilter).filter)?.icon}
                       </IconButton>
                     </Tooltip>
                   ),
@@ -156,7 +160,7 @@ export default memo(
         )}
         {filter && (
           <Menu anchorEl={anchorFilter} open={!!anchorFilter}>
-            {autocomplete!!.map((e) => (
+            {autocomplete.map((e) => (
               <MenuItem
                 onClick={() => {
                   setAnchorFilter(null)

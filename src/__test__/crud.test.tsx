@@ -16,7 +16,7 @@ jest.mock('react-virtualized-auto-sizer', () => ({ children }: any) =>
   children({ height: 600, width: 600 }),
 )
 jest.setTimeout(30000)
-var mock = new MockAdapter(Axios)
+const mock = new MockAdapter(Axios)
 mock.onGet().reply(200, fakeData())
 
 describe('CrudComponent FakeData AlimentAPP', () => {
@@ -84,8 +84,8 @@ describe('CrudComponent FakeData AlimentAPP', () => {
     let filterButton = queryByText(`${currentLang.open} ${currentLang.filters}`, { exact: false })
       ?.parentElement
     expect(filterButton).toBeTruthy()
-
-    await fireEvent.click(filterButton!!)
+    if (!filterButton) return
+    await fireEvent.click(filterButton)
     await act(async () => {})
 
     const fieldsWithFilter = fields.flat().filter((field) => {

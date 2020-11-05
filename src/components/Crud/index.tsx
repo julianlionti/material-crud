@@ -44,7 +44,7 @@ export interface CrudProps extends TableProps {
   interaction?: Interactions
   onFinished?: (what: 'new' | 'update' | 'delete', genero?: 'M' | 'F') => void
   onError?: (err: Error) => void
-  transform?: (what: 'query' | 'new' | 'update', rowData: any) => Object
+  transform?: (what: 'query' | 'new' | 'update', rowData: any) => Record<string, any>
   transformToEdit?: (props: any) => any
   transformFilter?: (props: any) => any
 }
@@ -55,7 +55,7 @@ interface DataCallProps {
   response: ResponseProps
   replace: (props: ReplaceProps) => void
   params?: any
-  transform?: (what: 'query' | 'new' | 'update', rowData: any) => Object
+  transform?: (what: 'query' | 'new' | 'update', rowData: any) => Record<string, any>
 }
 
 interface NoGetCallProps extends DataCallProps {
@@ -71,7 +71,7 @@ interface NoGetCallProps extends DataCallProps {
   add: (items: object[]) => void
   deleteCall: (id: string) => void
   setCartel: (value: React.SetStateAction<CartelState>) => void
-  transform?: (what: 'query' | 'new' | 'update', rowData: any) => Object
+  transform?: (what: 'query' | 'new' | 'update', rowData: any) => Record<string, any>
   isFormData?: boolean
 }
 
@@ -99,7 +99,7 @@ const postData = async (props: NoGetCallProps) => {
     data: finalData,
   })
 
-  if (status!! >= 200 && status!! < 300) {
+  if (status && status >= 200 && status < 300) {
     if (isDelete) {
       deleteCall(finalId)
       setCartel({ visible: false })
@@ -122,10 +122,10 @@ const getData = async ({ call, response, replace, params, url, transform }: Data
     url,
     method: 'GET',
     params: finalParams,
-    paramsSerializer: (params) => qs.stringify(finalParams),
+    paramsSerializer: qs.stringify,
   })
 
-  if (status!! >= 200 && status!! < 300) {
+  if (status && status >= 200 && status < 300) {
     const { items, ...data } = response?.list(responseWs) || { page: 1 }
     replace({ items: items || [], pagination: data })
   }
@@ -146,9 +146,9 @@ export default memo((props: CrudProps) => {
 
   const [cartel, setCartel] = useState<CartelState>({ visible: false })
   const [toolbar, setToolbar] = useState(false)
-  const [editObj, setEditObj] = useState<object | null>({})
+  const [editObj, setEditObj] = useState<object | null>(null)
 
-  const editing = useMemo(() => (editObj ? Object.keys(editObj!!).length > 0 : false), [editObj])
+  const editing = useMemo(() => (editObj ? Object.keys(editObj).length > 0 : false), [editObj])
 
   const getDataCall = useCallback(
     (params) => getData({ call, params, replace, response, url, transform }),

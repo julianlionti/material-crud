@@ -1,4 +1,3 @@
-import { ReactNode } from 'react'
 import * as Yup from 'yup'
 import { AlAutocompleteProps } from './AlAutocomplete'
 import { AlCustomProps } from './AlCustom'

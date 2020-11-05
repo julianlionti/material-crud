@@ -17,13 +17,13 @@ export default memo(({ onChange, loading }: Props) => {
   const lang = useLang()
   const classes = useClasses()
 
+  if (!lang.pagination) return <Typography>Hace falta 'lang.pagination'</Typography>
+
   return (
     <div style={{ width: '100%' }} className={classes.pagContainer}>
       <Collapse in={!!totalDocs} timeout="auto">
         <div style={{ display: 'flex', alignItems: 'center', padding: 8 }}>
-          <Typography>{`${lang.pagination!!.totalCount} ${totalDocs} - ${
-            lang.pagination!!.rowsPerPage
-          }:`}</Typography>
+          <Typography>{`${lang.pagination.totalCount} ${totalDocs} - ${lang.pagination.rowsPerPage}:`}</Typography>
           <Select
             disabled={loading}
             className={classes.perPage}
@@ -34,7 +34,7 @@ export default memo(({ onChange, loading }: Props) => {
                 {String(e)}
               </MenuItem>
             ))}
-            <MenuItem value={-1}>{lang.pagination!!.all}</MenuItem>
+            <MenuItem value={-1}>{lang.pagination.all}</MenuItem>
           </Select>
         </div>
       </Collapse>
@@ -45,7 +45,7 @@ export default memo(({ onChange, loading }: Props) => {
         className={classes.pagination}
         count={totalPages}
         page={page}
-        onChange={(e, p) => onChange(p, limit!!)}
+        onChange={(_, p) => onChange(p, limit || 10)}
         siblingCount={1}
         showFirstButton
         showLastButton

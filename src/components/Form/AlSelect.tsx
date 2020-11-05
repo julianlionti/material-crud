@@ -1,4 +1,4 @@
-import React, { memo, MouseEvent, useCallback, useMemo, useRef, useState } from 'react'
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react'
 import {
   FormControl,
   InputLabel,
@@ -83,8 +83,8 @@ export default memo((props: AlSelectProps) => {
             startAdornment={
               filter && (
                 <Tooltip aria-label={AriaLabels.BtnFilterTypes} title={lang.tooltips.defineFilter}>
-                  <IconButton onClick={(e) => setAnchorFilter(e.currentTarget)}>
-                    {select!!.find((e) => e.id === (value as SelectFilter).filter)?.icon}
+                  <IconButton disabled={loading} onClick={(e) => setAnchorFilter(e.currentTarget)}>
+                    {select.find((e) => e.id === (value as SelectFilter).filter)?.icon}
                   </IconButton>
                 </Tooltip>
               )
@@ -105,7 +105,7 @@ export default memo((props: AlSelectProps) => {
               </MenuItem>
             ))}
             {onAddItem && (
-              <MenuItem value="-1" onClick={(e) => onAddItem(inputRef.current)}>
+              <MenuItem value="-1" onClick={() => onAddItem(inputRef.current)}>
                 <FaPlus className={classes.addIcon} />
                 <em>{lang.addItem}</em>
               </MenuItem>
@@ -116,7 +116,7 @@ export default memo((props: AlSelectProps) => {
       </div>
       {filter && (
         <Menu anchorEl={anchorFilter} open={!!anchorFilter}>
-          {select!!.map((e) => (
+          {select.map((e) => (
             <MenuItem
               onClick={() => {
                 setAnchorFilter(null)

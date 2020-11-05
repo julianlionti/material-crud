@@ -62,7 +62,7 @@ export default memo((props: Props) => {
         if (headerSelected === true && !rowData) return []
         if (!headerSelected && !rowData) return list.filter((e) => !e.child)
 
-        const i = acc.findIndex((x) => x[itemId!!] === rowData[itemId!!])
+        const i = acc.findIndex((x) => x[itemId] === rowData[itemId])
         if (i >= 0) return acc.filter((_, index) => index !== i)
         else return [...acc, rowData]
       })
@@ -91,6 +91,7 @@ export default memo((props: Props) => {
         </div>
       </Collapse>
       <CustomRow
+        index={-1}
         rowHeight={headerHeight || 54}
         customClassName={`${classes.rowHeader} ${headerClassName}`}
         onSelect={selectRow}
@@ -124,7 +125,9 @@ export default memo((props: Props) => {
                   rowHeight={finalRowHeight}
                   onSelect={selectRow}
                   selected={rowsSelected.some((e) => e[itemId] === list[props.index][itemId])}
-                  onExpanded={(index) => listRef.current!!.resetAfterIndex(index)}
+                  onExpanded={(index) => {
+                    if (listRef.current) listRef.current.resetAfterIndex(index)
+                  }}
                   onEdit={actions?.edit && onEdit}
                   onDelete={actions?.delete && onDelete}
                   showSelecting={showSelecting}
@@ -138,7 +141,9 @@ export default memo((props: Props) => {
         loading={loading}
         onChange={(page, perpage) => {
           setRowSelected([])
-          listRef.current!!.resetAfterIndex(0)
+          if (listRef.current) {
+            listRef.current.resetAfterIndex(0)
+          }
           onChangePagination(page, perpage)
         }}
       />

@@ -1,4 +1,4 @@
-import React, { memo, ReactNode, useMemo, useState } from 'react'
+import React, { memo, useMemo, useState } from 'react'
 import {
   FormControl,
   InputLabel,
@@ -12,15 +12,7 @@ import {
   Tooltip,
 } from '@material-ui/core'
 import { useField, useFormikContext } from 'formik'
-import {
-  FaArrowRight,
-  FaNotEqual,
-  FaEquals,
-  FaChevronLeft,
-  FaChevronRight,
-  FaEye,
-  FaEyeSlash,
-} from 'react-icons/fa'
+import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 import useFilters, { Filter } from '../../utils/useFilters'
@@ -72,8 +64,8 @@ export default memo((props: AlInputProps) => {
   const valMax = validate?.describe().tests.find((e) => e.name === 'max')?.params.max
 
   const finalTitle = useMemo<string>(() => {
-    if (filter) {
-      return title!!
+    if (filter && title) {
+      return title
     } else {
       const valor = value as string
       return `${title} ${valMax ? `(${valor?.length || 0}/${valMax})` : ''} ${mandatory ? '*' : ''}`
@@ -90,9 +82,9 @@ export default memo((props: AlInputProps) => {
   const filterType = useMemo(() => {
     switch (type) {
       case FormTypes.Number:
-        return filterOptions.numeric!!
+        return filterOptions.numeric
       default:
-        return filterOptions.text!!
+        return filterOptions.text
     }
   }, [type, filterOptions])
 
@@ -125,7 +117,7 @@ export default memo((props: AlInputProps) => {
           startAdornment={
             filter && (
               <Tooltip aria-label={AriaLabels.BtnFilterTypes} title={lang.tooltips.defineFilter}>
-                <IconButton onClick={(e) => setAnchorFilter(e.currentTarget)}>
+                <IconButton disabled={loading} onClick={(e) => setAnchorFilter(e.currentTarget)}>
                   {filterType.find((e) => e.id === (value as InputFilter).filter)?.icon}
                 </IconButton>
               </Tooltip>
@@ -134,7 +126,7 @@ export default memo((props: AlInputProps) => {
           endAdornment={
             FormTypes.Secure === type && (
               <Tooltip title={hasSecure ? lang.tooltips.showPass : lang.tooltips.hidePass}>
-                <IconButton onClick={() => setHasSecure((hs) => !hs)}>
+                <IconButton disabled={loading} onClick={() => setHasSecure((hs) => !hs)}>
                   {hasSecure ? <FaEye /> : <FaEyeSlash />}
                 </IconButton>
               </Tooltip>

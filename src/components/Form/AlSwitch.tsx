@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from 'react'
 import { Collapse, FormControlLabel, Switch, Typography } from '@material-ui/core'
 import { useField } from 'formik'
-import useFilters, { Filter } from '../../utils/useFilters'
+import { Filter } from '../../utils/useFilters'
 import BaseInput from './BaseInput'
 import { ComunesProps, FormTypes } from './FormTypes'
 
@@ -11,7 +11,7 @@ export interface AlSwitchProps extends ComunesProps {
 type SwitchFilter = Filter<boolean>
 export default memo((props: AlSwitchProps) => {
   const { id, title, grow, hide, loading, filter } = props
-  const filterOptions = useFilters()
+  // const filterOptions = useFilters()
   const [{ value }, { error }, { setValue }] = useField<boolean | SwitchFilter>(id)
 
   const finalValue = useMemo(() => {

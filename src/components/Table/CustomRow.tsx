@@ -22,6 +22,7 @@ interface Props extends Partial<ListChildComponentProps> {
   showSelecting?: boolean
   isHeader?: boolean
   fields?: FieldProps[]
+  index: number
 }
 
 export default memo((props: Props) => {
@@ -44,7 +45,7 @@ export default memo((props: Props) => {
   const lang = useLang()
   const { list, insertIndex, removeIndex, itemId, columns, extraActions } = useABM()
   const classes = useClasses({ index, height: rowHeight })
-  const rowData = useMemo(() => list[index!!], [list, index])
+  const rowData = useMemo(() => list[index], [list, index])
 
   const renderContent = useCallback(() => {
     if (isHeader) {
@@ -55,30 +56,30 @@ export default memo((props: Props) => {
 
     if (rowData.child) {
       return (
-        <CustomCell rowIndex={index!!} rowHeight={rowData.height} isChild>
-          {rowData.child(list[index!! - 1])}
+        <CustomCell rowIndex={index} rowHeight={rowData.height} isChild>
+          {rowData.child(list[index - 1])}
         </CustomCell>
       )
     }
 
-    const nextIsChild = !!list[index!! + 1]?.child
+    const nextIsChild = !!list[index + 1]?.child
     return columns.map((col) => (
       <CustomCell
         expanded={nextIsChild}
         onExpand={() => {
-          if (onExpanded) onExpanded(index!!)
-          if (nextIsChild) return removeIndex((index || 0) + 1)
+          if (onExpanded) onExpanded(index)
+          if (nextIsChild) return removeIndex(index + 1)
 
           switch (col.type) {
             case TableTypes.Custom:
-              insertIndex(index!! + 1, {
+              insertIndex(index + 1, {
                 [itemId]: col.id + 'child',
                 child: col.content,
                 height: col.height,
               })
           }
         }}
-        rowIndex={index!!}
+        rowIndex={index}
         rowHeight={rowHeight}
         key={col.id}
         col={col}
@@ -113,7 +114,7 @@ export default memo((props: Props) => {
       )
 
     return (
-      <CustomCell col={{ width: 0.5 }} rowIndex={index!!} rowHeight={rowHeight}>
+      <CustomCell col={{ width: 0.5 }} rowIndex={index} rowHeight={rowHeight}>
         <Checkbox checked={selected} onChange={() => onSelect(rowData)} />
       </CustomCell>
     )
@@ -134,7 +135,7 @@ export default memo((props: Props) => {
       )
 
     return (
-      <CustomCell col={{ width: 0.5, align: 'flex-end' }} rowHeight={rowHeight} rowIndex={index!!}>
+      <CustomCell col={{ width: 0.5, align: 'flex-end' }} rowHeight={rowHeight} rowIndex={index}>
         {extraActions}
         {onEdit && (
           <Tooltip title={lang.edit}>

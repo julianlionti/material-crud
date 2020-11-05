@@ -8,7 +8,7 @@ export interface Error {
   code: number
 }
 
-export interface useAxiosProps {
+export interface UseAxiosProps {
   onInit?: AxiosRequestConfig
   onError?: (error: Error) => void
 }
@@ -78,7 +78,7 @@ export const callWs = async <T extends any>(
   return { error, response, status }
 }
 
-export default <T extends any = any>(props?: useAxiosProps): Response<T> => {
+export default <T extends any = any>(props?: UseAxiosProps): Response<T> => {
   const { onInit, onError } = props || {}
   const onInitRef = useRef(false)
   const calling = useRef(false)
@@ -93,7 +93,7 @@ export default <T extends any = any>(props?: useAxiosProps): Response<T> => {
         onError(error.error)
       }
       if (error.errors) {
-        error.errors!!.forEach((err) => {
+        error.errors.forEach((err) => {
           onError(err)
         })
       }

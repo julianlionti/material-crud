@@ -26,10 +26,10 @@ export default memo((props: PropsWithChildren<Props>) => {
 
   const renderContent = useCallback(() => {
     if (children) return children
-    if (col?.cellComponent) {
+    if (col?.cellComponent && onExpand) {
       return col.cellComponent({
         rowData,
-        expandRow: onExpand!!,
+        expandRow: onExpand,
         isExpanded: !!expanded,
       })
     }
@@ -65,7 +65,7 @@ export default memo((props: PropsWithChildren<Props>) => {
   )
 })
 
-const useClasses = makeStyles((theme) => ({
+const useClasses = makeStyles(() => ({
   cell: ({ grow, height, align, isChild }: any) => ({
     flexGrow: grow || 1,
     flex: 1,

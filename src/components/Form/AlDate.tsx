@@ -1,7 +1,5 @@
-// import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date'
 import React, { useMemo, useState } from 'react'
 import DateFnsUtils from '@date-io/date-fns'
-// import 'moment/locale/es'
 import { IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip } from '@material-ui/core'
 import { DatePicker, DatePickerProps, MuiPickersUtilsProvider } from '@material-ui/pickers'
 import enLocale from 'date-fns/locale/en-US'
@@ -17,8 +15,6 @@ const localeWrapper = {
   en: enLocale,
   es: esLocale,
 }
-
-// import moment from 'moment'
 
 export interface AlDateProps extends ComunesProps {
   type: FormTypes.Date
@@ -100,7 +96,7 @@ export default (props: AlDateProps) => {
                     e.preventDefault()
                     setAnchorFilter(e.currentTarget)
                   }}>
-                  {date!!.find((e) => e.id === (value as DateFilter).filter)?.icon}
+                  {date.find((e) => e.id === (value as DateFilter).filter)?.icon}
                 </IconButton>
               </Tooltip>
             ),
@@ -109,7 +105,7 @@ export default (props: AlDateProps) => {
         />
         {filter && (
           <Menu anchorEl={anchorFilter} open={!!anchorFilter}>
-            {date!!.map((e) => (
+            {date.map((e) => (
               <MenuItem
                 onClick={() => {
                   setAnchorFilter(null)

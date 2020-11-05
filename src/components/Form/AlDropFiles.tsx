@@ -33,8 +33,8 @@ export default memo(({ title, id, accept, grow, hide, ImgIcon, multiple }: AlDro
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (accepted) => {
       if (multiple) {
-        var ids = new Set(value.map((d) => d.name))
-        var merged = [...value, ...accepted.filter((d) => !ids.has(d.name))]
+        const ids = new Set(value.map((d) => d.name))
+        const merged = [...value, ...accepted.filter((d) => !ids.has(d.name))]
         setValue(merged)
       } else {
         setValue(accepted)

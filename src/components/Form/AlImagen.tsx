@@ -40,7 +40,7 @@ export default memo((props: AlImagenProps) => {
   const clases = useClases()
 
   const srcFinal = useMemo(() => {
-    if (value instanceof File) {
+    if (value instanceof window.File) {
       return base64
     } else if (typeof value === 'string') {
       return baseURL + value
@@ -51,14 +51,15 @@ export default memo((props: AlImagenProps) => {
   const isImage = type === FormTypes.Image
 
   const renderExplanation = useCallback(() => {
+    if (!lang.inputs) return ''
     if (value === null && isImage) {
-      return lang.inputs!!.image.new
+      return lang.inputs.image.new
     } else if (value === null && !isImage) {
-      return lang.inputs!!.file.new
+      return lang.inputs.file.new
     } else if (value !== null && isImage) {
-      return lang.inputs!!.image.edit
+      return lang.inputs.image.edit
     } else {
-      return lang.inputs!!.file.edit
+      return lang.inputs.file.edit
     }
   }, [value, isImage, lang])
 
@@ -78,9 +79,8 @@ export default memo((props: AlImagenProps) => {
   const finalTitle = useMemo<string>(() => {
     const mandatory = !!validate?.describe().tests.find((e) => e.name === 'required')
 
-    const valor = value as string
     return `${title} ${mandatory ? '*' : ''}`
-  }, [title, value, validate])
+  }, [title, validate])
 
   return (
     <BaseInput grow={grow} ocultar={hide}>
@@ -114,10 +114,11 @@ export default memo((props: AlImagenProps) => {
         className={clases.input}
         id={camaraId}
         onChange={(e) => {
-          const archivo = e.currentTarget.files!![0]
+          if (!e.currentTarget.files) return
+          const archivo = e.currentTarget.files[0]
           if (archivo) {
             setSubiendo(true)
-            var FR = new FileReader()
+            const FR = new window.FileReader()
             FR.addEventListener('load', function (e) {
               setValue(archivo)
               setBase64(e.target?.result as string)

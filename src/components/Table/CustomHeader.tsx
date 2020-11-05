@@ -27,9 +27,9 @@ export default ({ col, onSort, children, rowHeight }: Props) => {
 
   const renderIcono = useCallback(
     ({ id, type, sort: colSort }: Partial<ColumnsProps>) => {
-      if (!colSort) return null
+      if (!colSort || !id) return null
       if (!sort) return <FaSortAmountDownAlt fontSize={icono} />
-      switch (sort[id!!]) {
+      switch (sort[id]) {
         case 1:
           if (type === TableTypes.Number) return <FaSortNumericDown fontSize={icono} />
           return <FaSortAlphaDown fontSize={icono} />
@@ -56,9 +56,10 @@ export default ({ col, onSort, children, rowHeight }: Props) => {
           if (!col || !col.sort) return null
 
           return setSort((orden) => {
+            if (!col.id) return {}
             const final: SortProps = {
               ...orden,
-              [col.id!!]: orden[col.id!!] === undefined ? 1 : orden[col.id!!] === 1 ? -1 : 0,
+              [col.id]: orden[col.id] === undefined ? 1 : orden[col.id] === 1 ? -1 : 0,
             }
             Object.keys(final).forEach((el) => {
               if (final[el] === 0) {
@@ -86,7 +87,7 @@ export default ({ col, onSort, children, rowHeight }: Props) => {
   )
 }
 
-const useClasses = makeStyles((theme) => ({
+const useClasses = makeStyles(() => ({
   cell: ({ grow, height, align }: any) => ({
     borderBottomWidth: 0,
     flexGrow: grow || 1,
