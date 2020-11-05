@@ -11,6 +11,7 @@ import {
 } from 'material-crud'
 import { FaIceCream } from 'react-icons/fa'
 import { IconButton } from '@material-ui/core'
+import { OpcionesProps } from '../../dist/components/Form/FormTypes'
 
 export default () => {
   const { height } = useWindowSize()
@@ -26,6 +27,8 @@ export default () => {
     [],
   )
 
+  const [opciones, setOpciones] = useState<OpcionesProps[]>([/*-{ id: 'assda', title: 'asdas' }*/])
+
   const steps = useMemo(
     () =>
       createSteps([
@@ -39,6 +42,20 @@ export default () => {
               placeholder: 'Nombre de la categoría',
               type: FormTypes.Input,
               validate: Yup.string().required(),
+            },
+            {
+              type: FormTypes.Autocomplete,
+              title: 'Prueba con opciones',
+              id: 'prueba',
+              onChangeText: (text) => {
+                if (text.length > 2) {
+                  setOpciones([
+                    { id: 'prueba1', title: 'prueba 1' },
+                    { id: 'prueba2', title: 'prueba 2' },
+                  ])
+                }
+              },
+              options: opciones,
             },
             {
               id: 'descripcion',
@@ -82,8 +99,10 @@ export default () => {
           ],
         },
       ]),
-    [],
+    [opciones],
   )
+
+  console.log(opciones)
 
   return (
     <React.Fragment>

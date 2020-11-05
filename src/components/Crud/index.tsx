@@ -27,8 +27,9 @@ export interface CrudProps extends TableProps {
   columns: ColumnsProps[]
   url: string
   name: string
-  fields?: FieldProps[]
+  filters?: FieldProps[]
   steps?: StepProps[]
+  fields?: FieldProps[]
   title?: string
   description?: string
   gender?: 'M' | 'F'
@@ -135,28 +136,17 @@ export default memo((props: CrudProps) => {
 
   const { url, response, interaction, onFinished, onError, title, noTitle, transformFilter } = props
   const { Left, gender, description, isFormData, transform, transformToEdit } = props
-  const { name, titleSize, idInUrl, itemName } = props
+  const { name, titleSize, idInUrl, itemName, fields, steps, filters } = props
 
   const lang = useLang()
   const called = useRef(false)
 
-  const {
-    add,
-    edit: editABM,
-    replace,
-    deleteCall,
-    pagination,
-    itemId,
-    filters,
-    fields,
-    steps,
-    columns,
-  } = useABM()
+  const { add, edit: editABM, replace, deleteCall, pagination, itemId, columns } = useABM()
   const { loading, call } = useAxios<any>({ onError })
 
   const [cartel, setCartel] = useState<CartelState>({ visible: false })
   const [toolbar, setToolbar] = useState(false)
-  const [editObj, setEditObj] = useState<object | null>(null)
+  const [editObj, setEditObj] = useState<object | null>({})
 
   const editing = useMemo(() => (editObj ? Object.keys(editObj!!).length > 0 : false), [editObj])
 
@@ -262,6 +252,9 @@ export default memo((props: CrudProps) => {
   return (
     <div className={classes.contenedor}>
       <Toolbar
+        fields={fields}
+        filters={filters}
+        steps={steps}
         hide={noTitle || (!filters && !fields)}
         editObj={editObj}
         Left={Left}

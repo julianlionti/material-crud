@@ -5,6 +5,7 @@ import { VariableSizeList as List } from 'react-window'
 import { useLang } from '../../utils/CrudContext'
 import { useABM } from '../../utils/DataContext'
 import useWindowSize from '../../utils/useWindowSize'
+import { FieldProps } from '../Form/FormTypes'
 import { ColumnsProps, TableProps } from '../Table/TableTypes'
 import { SortProps } from './CustomHeader'
 import CustomRow from './CustomRow'
@@ -18,6 +19,7 @@ interface Props extends TableProps {
   onEdit?: (row: any) => void
   onDelete?: (row: any) => void
   headerClassName?: string
+  fields?: FieldProps[]
 }
 
 export default memo((props: Props) => {
@@ -34,6 +36,7 @@ export default memo((props: Props) => {
     onSort,
     showSelecting,
     rightToolbar,
+    fields,
   } = props
 
   const { height: windowHeight } = useWindowSize()
@@ -117,6 +120,7 @@ export default memo((props: Props) => {
               {(props) => (
                 <CustomRow
                   {...props}
+                  fields={fields}
                   rowHeight={finalRowHeight}
                   onSelect={selectRow}
                   selected={rowsSelected.some((e) => e[itemId] === list[props.index][itemId])}

@@ -5,6 +5,7 @@ import { ListChildComponentProps } from 'react-window'
 import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 import { useABM } from '../../utils/DataContext'
+import { FieldProps } from '../Form/FormTypes'
 import CustomCell from './CustomCell'
 import CustomHeader, { SortProps } from './CustomHeader'
 import { TableTypes } from './TableTypes'
@@ -20,6 +21,7 @@ interface Props extends Partial<ListChildComponentProps> {
   onDelete?: false | ((rowData: any) => void)
   showSelecting?: boolean
   isHeader?: boolean
+  fields?: FieldProps[]
 }
 
 export default memo((props: Props) => {
@@ -36,10 +38,11 @@ export default memo((props: Props) => {
     onDelete,
     showSelecting,
     isHeader,
+    fields,
   } = props
 
   const lang = useLang()
-  const { list, insertIndex, removeIndex, itemId, columns, fields, extraActions } = useABM()
+  const { list, insertIndex, removeIndex, itemId, columns, extraActions } = useABM()
   const classes = useClasses({ index, height: rowHeight })
   const rowData = useMemo(() => list[index!!], [list, index])
 

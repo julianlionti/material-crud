@@ -12,9 +12,6 @@ import { ColumnsProps } from '../components/Table/TableTypes'
 
 export interface DataConfigProps {
   columns: ColumnsProps[]
-  filters?: FieldProps[]
-  steps?: StepProps[]
-  fields?: FieldProps[]
   extraActions?: ReactNode[]
 }
 
@@ -55,16 +52,14 @@ const intials: ContextProps = {
 const DataContext = createContext<Context>([intials, () => {}])
 
 export const DataProvider = (props: ProviderProps) => {
-  const { children, itemId, fields, filters, columns, extraActions, steps } = props
+  const { children, itemId, columns, extraActions } = props
   const status = useState<ContextProps>({
     ...intials,
     itemId: itemId || '_id',
-    fields,
-    steps,
-    filters,
     columns,
     extraActions,
   })
+
   return <DataContext.Provider value={status}>{children}</DataContext.Provider>
 }
 

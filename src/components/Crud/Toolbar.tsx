@@ -4,6 +4,7 @@ import { FaFilter } from 'react-icons/fa'
 import { useLang } from '../../utils/CrudContext'
 import { useABM } from '../../utils/DataContext'
 import Form from '../Form'
+import { FieldProps, StepProps } from '../Form/FormTypes'
 import { ActionProps } from '../Table/TableTypes'
 
 interface Props {
@@ -20,13 +21,15 @@ interface Props {
   titleSize?: number
   name: string
   hide: boolean
+  filters?: FieldProps[]
+  steps?: StepProps[]
+  fields?: FieldProps[]
 }
 
 export default (props: Props) => {
   const lang = useLang()
   const { editObj, noTitle, Left, loading, title, gender, hide } = props
-  const { show, handleShow, onNew, onFilter, titleSize, name } = props
-  const { filters, fields, steps } = useABM()
+  const { show, handleShow, onNew, onFilter, titleSize, name, fields, filters, steps } = props
   const classes = useClasses({ titleSize })
 
   if (hide) return null

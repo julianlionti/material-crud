@@ -1,11 +1,11 @@
-import React, { useMemo } from 'react'
+import React, { memo, useMemo } from 'react'
 import Crud, { CrudProps } from '.'
 import { DataProvider, DataConfigProps } from '../../utils/DataContext'
 
 type Props = DataConfigProps & CrudProps
 
-export default (props: Props) => {
-  const { fields, columns, filters, itemId, extraActions, steps } = props
+export default memo((props: Props) => {
+  const { columns, filters, itemId, extraActions } = props
   const finalFilters = useMemo(
     () =>
       filters?.map((cam) => {
@@ -18,14 +18,8 @@ export default (props: Props) => {
   )
 
   return (
-    <DataProvider
-      itemId={itemId}
-      columns={columns}
-      fields={fields}
-      filters={finalFilters}
-      steps={steps}
-      extraActions={extraActions}>
-      <Crud {...props} />
+    <DataProvider itemId={itemId} columns={columns} extraActions={extraActions}>
+      <Crud {...props} filters={finalFilters} />
     </DataProvider>
   )
-}
+})
