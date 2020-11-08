@@ -5,7 +5,7 @@ import { VariableSizeList as List } from 'react-window'
 import { useLang } from '../../utils/CrudContext'
 import { useABM } from '../../utils/DataContext'
 import useWindowSize from '../../utils/useWindowSize'
-import { FieldProps } from '../Form/FormTypes'
+import { FieldProps, StepProps } from '../Form/FormTypes'
 import { ColumnsProps, TableProps } from '../Table/TableTypes'
 import { SortProps } from './CustomHeader'
 import CustomRow from './CustomRow'
@@ -20,6 +20,7 @@ interface Props extends TableProps {
   onDelete?: (row: any) => void
   headerClassName?: string
   fields?: FieldProps[]
+  steps?: StepProps[]
 }
 
 export default memo((props: Props) => {
@@ -37,6 +38,7 @@ export default memo((props: Props) => {
     showSelecting,
     rightToolbar,
     fields,
+    steps,
   } = props
 
   const { height: windowHeight } = useWindowSize()
@@ -101,6 +103,8 @@ export default memo((props: Props) => {
         onDelete={actions?.delete && onDelete}
         showSelecting={showSelecting}
         isHeader
+        fields={fields}
+        steps={steps}
       />
       {!loading && list.length === 0 && (
         <div className={classes.noResult}>
@@ -122,6 +126,7 @@ export default memo((props: Props) => {
                 <CustomRow
                   {...props}
                   fields={fields}
+                  steps={steps}
                   rowHeight={finalRowHeight}
                   onSelect={selectRow}
                   selected={rowsSelected.some((e) => e[itemId] === list[props.index][itemId])}

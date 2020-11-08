@@ -102,8 +102,6 @@ export default () => {
     [opciones],
   )
 
-  console.log(opciones)
-
   return (
     <React.Fragment>
       <Crud

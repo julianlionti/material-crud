@@ -5,7 +5,7 @@ import { ListChildComponentProps } from 'react-window'
 import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 import { useABM } from '../../utils/DataContext'
-import { FieldProps } from '../Form/FormTypes'
+import { FieldProps, StepProps } from '../Form/FormTypes'
 import CustomCell from './CustomCell'
 import CustomHeader, { SortProps } from './CustomHeader'
 import { TableTypes } from './TableTypes'
@@ -22,6 +22,7 @@ interface Props extends Partial<ListChildComponentProps> {
   showSelecting?: boolean
   isHeader?: boolean
   fields?: FieldProps[]
+  steps?: StepProps[]
   index: number
 }
 
@@ -40,6 +41,7 @@ export default memo((props: Props) => {
     showSelecting,
     isHeader,
     fields,
+    steps,
   } = props
 
   const lang = useLang()
@@ -124,7 +126,8 @@ export default memo((props: Props) => {
     if (rowData?.child) return null
     if (!onEdit && !onDelete && (!extraActions || (extraActions && extraActions.length === 0)))
       return null
-    if (!fields) return null
+
+    if (!fields && !steps) return null
 
     if (isHeader)
       return (
@@ -153,7 +156,7 @@ export default memo((props: Props) => {
         )}
       </CustomCell>
     )
-  }, [isHeader, rowHeight, lang, index, onEdit, onDelete, rowData, fields, extraActions])
+  }, [isHeader, rowHeight, lang, index, onEdit, onDelete, rowData, fields, extraActions, steps])
 
   return (
     <TableRow
