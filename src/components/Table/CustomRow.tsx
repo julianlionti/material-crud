@@ -47,7 +47,7 @@ export default memo((props: Props) => {
   const lang = useLang()
   const { list, insertIndex, removeIndex, itemId, columns, extraActions } = useABM()
   const rowData = useMemo(() => list[index], [list, index])
-  const classes = useClasses({ index, height: rowHeight, isChild: rowData.child })
+  const classes = useClasses({ index, height: rowHeight, isChild: rowData?.child })
 
   const renderContent = useCallback(() => {
     if (isHeader) {
