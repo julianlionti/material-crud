@@ -46,7 +46,7 @@ export default memo((props: PropsWithChildren<Props>) => {
         )
       }
       case TableTypes.Date: {
-        const format = col.format
+        const format = col.format || 'DD/MM/YYYY'
         if (format) return moment(cellData).format(format)
 
         return String(cellData || '-')

@@ -104,7 +104,7 @@ export default memo((props: Props) => {
 
     if (isHeader)
       return (
-        <CustomHeader col={{ width: 2 }}>
+        <CustomHeader col={{ width: 0.5 }}>
           <Checkbox
             checked={selected === true}
             indeterminate={selected === undefined}
@@ -114,7 +114,7 @@ export default memo((props: Props) => {
       )
 
     return (
-      <CustomCell col={{ width: 2 }} rowIndex={index} rowHeight={rowHeight}>
+      <CustomCell col={{ width: 0.5 }} rowIndex={index} rowHeight={rowHeight}>
         <Checkbox checked={selected} onChange={() => onSelect(rowData)} />
       </CustomCell>
     )

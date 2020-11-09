@@ -25,7 +25,7 @@ interface StringType extends CommonProps {
 
 interface DateType extends CommonProps {
   type: TableTypes.Date
-  format: string
+  format?: string
 }
 
 interface SwtichType extends CommonProps {
