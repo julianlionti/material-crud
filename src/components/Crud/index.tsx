@@ -136,12 +136,12 @@ export default memo((props: CrudProps) => {
 
   const { url, response, interaction, onFinished, onError, title, noTitle, transformFilter } = props
   const { Left, gender, description, isFormData, transform, transformToEdit } = props
-  const { name, titleSize, idInUrl, itemName, fields, steps, filters } = props
+  const { name, titleSize, idInUrl, itemName, fields, steps, filters, columns } = props
 
   const lang = useLang()
   const called = useRef(false)
 
-  const { add, edit: editABM, replace, deleteCall, pagination, itemId, columns } = useABM()
+  const { add, edit: editABM, replace, deleteCall, pagination, itemId } = useABM()
   const { loading, call } = useAxios<any>({ onError })
 
   const [cartel, setCartel] = useState<CartelState>({ visible: false })

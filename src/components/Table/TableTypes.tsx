@@ -73,7 +73,7 @@ export interface TableProps {
   headerHeight?: number
   rowHeight?: number
   actions?: ActionProps
-  extraActions?: ReactNode[]
+  extraActions?: (rowData: any) => ReactNode[]
   showSelecting?: boolean
   rightToolbar?: (props: RightToolbarProps) => ReactNode
   loading?: boolean

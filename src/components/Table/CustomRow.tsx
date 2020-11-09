@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo } from 'react'
+import React, { memo, ReactNode, useCallback, useMemo } from 'react'
 import { Checkbox, IconButton, makeStyles, TableRow, Tooltip } from '@material-ui/core'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { ListChildComponentProps } from 'react-window'
@@ -8,7 +8,7 @@ import { useABM } from '../../utils/DataContext'
 import { FieldProps, StepProps } from '../Form/FormTypes'
 import CustomCell from './CustomCell'
 import CustomHeader, { SortProps } from './CustomHeader'
-import { TableTypes } from './TableTypes'
+import { ColumnsProps, TableTypes } from './TableTypes'
 
 interface Props extends Partial<ListChildComponentProps> {
   rowHeight: number
@@ -24,6 +24,8 @@ interface Props extends Partial<ListChildComponentProps> {
   fields?: FieldProps[]
   steps?: StepProps[]
   index: number
+  columns: ColumnsProps[]
+  extraActions?: (rowdata: any) => ReactNode[]
 }
 
 export default memo((props: Props) => {
@@ -42,10 +44,12 @@ export default memo((props: Props) => {
     isHeader,
     fields,
     steps,
+    columns,
+    extraActions,
   } = props
 
   const lang = useLang()
-  const { list, insertIndex, removeIndex, itemId, columns, extraActions } = useABM()
+  const { list, insertIndex, removeIndex, itemId } = useABM()
   const rowData = useMemo(() => list[index], [list, index])
   const classes = useClasses({ index, height: rowHeight, isChild: rowData?.child })
 
@@ -131,7 +135,7 @@ export default memo((props: Props) => {
 
     return (
       <CustomCell col={{ width: 2, align: 'flex-end' }} rowHeight={rowHeight} rowIndex={index}>
-        {extraActions}
+        {extraActions && extraActions(rowData)}
         {onEdit && (
           <Tooltip title={lang.edit}>
             <IconButton size="small" onClick={() => onEdit(rowData)}>
