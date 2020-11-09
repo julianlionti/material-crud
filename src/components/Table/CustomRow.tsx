@@ -46,8 +46,8 @@ export default memo((props: Props) => {
 
   const lang = useLang()
   const { list, insertIndex, removeIndex, itemId, columns, extraActions } = useABM()
-  const classes = useClasses({ index, height: rowHeight })
   const rowData = useMemo(() => list[index], [list, index])
+  const classes = useClasses({ index, height: rowHeight, isChild: rowData.child })
 
   const renderContent = useCallback(() => {
     if (isHeader) {
@@ -164,8 +164,9 @@ export default memo((props: Props) => {
 })
 
 const useClasses = makeStyles((theme) => ({
-  row: ({ index }: any) => ({
+  row: ({ index, isChild }: any) => ({
     display: 'flex',
+    alignItems: isChild ? 'center' : undefined,
     backgroundColor:
       index % 2 !== 0 ? undefined : theme.palette.grey[theme.palette.type === 'dark' ? 600 : 200],
   }),
