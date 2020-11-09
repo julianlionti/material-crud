@@ -94,7 +94,7 @@ const useClasses = makeStyles(() => ({
     display: 'flex',
     justifyContent: align || 'flex-start',
 
-    whiteSpace: 'nowrap',
+    // whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   }),

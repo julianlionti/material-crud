@@ -13,11 +13,12 @@ interface Props {
   onExpand?: () => void
   expanded?: boolean
   isChild?: boolean
+  horizontal?: boolean
 }
 
 export default memo((props: PropsWithChildren<Props>) => {
-  const { children, rowHeight, col, rowIndex, onExpand, expanded, isChild } = props
-  const classes = useClasses({ width: col?.width, align: col?.align, isChild })
+  const { children, rowHeight, col, rowIndex, onExpand, expanded, isChild, horizontal } = props
+  const classes = useClasses({ width: col?.width, align: col?.align, isChild, horizontal })
   const { list } = useABM()
   const rowData = list[rowIndex]
   const cellData = useMemo(() => {
@@ -73,13 +74,13 @@ export default memo((props: PropsWithChildren<Props>) => {
 })
 
 const useClasses = makeStyles(() => ({
-  cell: ({ width, align, isChild }: any) => ({
+  cell: ({ width, align, isChild, horizontal }: any) => ({
     flex: 1,
-    flexDirection: 'column',
+    flexDirection: horizontal ? 'row' : 'column',
     flexGrow: width,
     display: 'flex',
-    alignItems: align || 'flex-start',
-    justifyContent: isChild ? 'start' : 'center',
+    alignItems: horizontal ? (isChild ? 'start' : 'center') : align || 'flex-start',
+    justifyContent: horizontal ? align || 'flex-start' : isChild ? 'start' : 'center',
 
     whiteSpace: 'nowrap',
     overflow: 'hidden',

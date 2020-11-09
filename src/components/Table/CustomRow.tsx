@@ -134,7 +134,11 @@ export default memo((props: Props) => {
     if (isHeader) return <CustomHeader col={{ width: 2, title: lang.crudCol, align: 'flex-end' }} />
 
     return (
-      <CustomCell col={{ width: 2, align: 'flex-end' }} rowHeight={rowHeight} rowIndex={index}>
+      <CustomCell
+        col={{ width: 2, align: 'flex-end' }}
+        horizontal
+        rowHeight={rowHeight}
+        rowIndex={index}>
         {extraActions && extraActions(rowData)}
         {onEdit && (
           <Tooltip title={lang.edit}>

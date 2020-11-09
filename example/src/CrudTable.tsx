@@ -8,6 +8,7 @@ import {
   useWindowSize,
   TableTypes,
   createSteps,
+  useAxios,
 } from 'material-crud'
 import { FaIceCream, FaUserFriends } from 'react-icons/fa'
 import { IconButton } from '@material-ui/core'
@@ -15,16 +16,38 @@ import { OpcionesProps } from '../../dist/components/Form/FormTypes'
 
 export default () => {
   const { height } = useWindowSize()
+  const { call, response } = useAxios()
 
   // const columnas = useMemo(
   //   () => createColumns([{ id: 'nombre', title: 'Nombre', type: TableTypes.String }]),
   //   [],
   // )
-
   const filters = useMemo(
     () =>
-      createFields([{ id: 'nombre', type: FormTypes.Input, title: 'Nombre *', willSubmit: true }]),
-    [],
+      createFields([
+        { id: 'nombre', type: FormTypes.Input, title: 'Nombre *', willSubmit: true },
+        {
+          id: 'segment',
+          type: FormTypes.Autocomplete,
+          title: 'Etiquetas',
+          options:
+            response?.data.docs.map(({ _id, name }: any) => ({
+              id: _id,
+              title: name,
+            })) || [],
+          onChangeText: (segment) => {
+            call({
+              url: 'http://localhost:5050/api/etiqueta',
+              params: { filtros: { value: segment, filter: 'startsWith' } },
+            })
+          },
+          multiple: true,
+          onAddItem: (e) => {
+            console.log(e)
+          },
+        },
+      ]),
+    [response],
   )
 
   const [opciones, setOpciones] = useState<OpcionesProps[]>([
@@ -147,7 +170,7 @@ export default () => {
             return !rowData.segmentIds?.length ? (
               <span>No hay etiquetas</span>
             ) : (
-              rowData.segmentIds?.map((item: any) => <span key={item}>{item}</span>)
+              rowData.segmentIds?.map((item: any) => <span key={item.name}>{item.name}</span>)
             )
           },
         },
@@ -181,11 +204,6 @@ export default () => {
         columns={columns}
         filters={filters}
         actions={{ edit: true, delete: false }}
-        extraActions={[
-          <IconButton key="ice">
-            <FaIceCream />
-          </IconButton>,
-        ]}
         height={height - 100}
         rowHeight={75}
         description={'Los productos tendrán asociada una o más categorías.'}

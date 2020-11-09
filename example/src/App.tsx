@@ -17,7 +17,7 @@ const App = () => {
   }
 
   return (
-    <ThemeProvider theme={createMuiTheme({ palette: { type: 'dark' } })}>
+    <ThemeProvider theme={createMuiTheme({ palette: { type: 'light' } })}>
       <CrudProvider
         lang={english}
         user={user}

@@ -145,7 +145,7 @@ export default memo((props: CrudProps) => {
   const { loading, call } = useAxios<any>({ onError })
 
   const [cartel, setCartel] = useState<CartelState>({ visible: false })
-  const [toolbar, setToolbar] = useState(false)
+  const [toolbar, setToolbar] = useState(true)
   const [editObj, setEditObj] = useState<object | null>(null)
 
   const editing = useMemo(() => (editObj ? Object.keys(editObj).length > 0 : false), [editObj])
