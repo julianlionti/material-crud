@@ -9,6 +9,7 @@ import {
   TableTypes,
   createSteps,
   useAxios,
+  createMoreOptions,
 } from 'material-crud'
 import { FaIceCream, FaUserFriends } from 'react-icons/fa'
 import { IconButton } from '@material-ui/core'
@@ -194,6 +195,16 @@ export default () => {
     [],
   )
 
+  const moreOptions = createMoreOptions([
+    {
+      id: 'exportar',
+      title: 'Exportar',
+      onClick: () => {
+        console.log('Exportar')
+      },
+    },
+  ])
+
   return (
     <React.Fragment>
       <Crud
@@ -223,6 +234,7 @@ export default () => {
         }}
         itemName="nombre"
         onError={(err) => console.log(err)}
+        moreOptions={moreOptions}
       />
     </React.Fragment>
   )

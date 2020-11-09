@@ -1,3 +1,4 @@
+import { createMoreOptions } from './components/Crud/Toolbar'
 import Crud from './components/Crud/WithProvider'
 import Form, { createFields, createSteps } from './components/Form'
 import { FormTypes } from './components/Form/FormTypes'
@@ -40,4 +41,5 @@ export {
   enUS,
   FormTypes,
   TableTypes,
+  createMoreOptions,
 }

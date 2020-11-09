@@ -55,4 +55,5 @@ export const esAR = createTranslation({
     accept: 'Aceptar',
   },
   serverError: 'Error en el servidor',
+  more: 'Más opciones',
 })

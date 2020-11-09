@@ -1,9 +1,29 @@
-import React, { ReactNode } from 'react'
-import { Button, Collapse, Divider, makeStyles, Typography } from '@material-ui/core'
-import { FaFilter } from 'react-icons/fa'
+import React, { ReactNode, useState } from 'react'
+import {
+  Button,
+  Collapse,
+  Divider,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  makeStyles,
+  Menu,
+  MenuItem,
+  Tooltip,
+  Typography,
+} from '@material-ui/core'
+import { FaEllipsisV, FaFilter } from 'react-icons/fa'
 import { useLang } from '../../utils/CrudContext'
 import Form from '../Form'
 import { FieldProps, StepProps } from '../Form/FormTypes'
+
+export interface MoreOptionsProps {
+  id: string
+  title: string
+  icon?: ReactNode
+  onClick: () => void
+  keepOpen?: boolean
+}
 
 interface Props {
   editObj: object | null
@@ -22,13 +42,28 @@ interface Props {
   filters?: FieldProps[]
   steps?: StepProps[]
   fields?: FieldProps[]
+  moreOptions?: MoreOptionsProps[]
 }
+
+export const createMoreOptions = (props: MoreOptionsProps[]) => props
 
 export default (props: Props) => {
   const lang = useLang()
   const { editObj, noTitle, Left, loading, title, gender, hide } = props
-  const { show, handleShow, onNew, onFilter, titleSize, name, fields, filters, steps } = props
+  const {
+    show,
+    handleShow,
+    onNew,
+    onFilter,
+    titleSize,
+    name,
+    fields,
+    filters,
+    steps,
+    moreOptions,
+  } = props
   const classes = useClasses({ titleSize })
+  const [anchorEl, setAnchorEl] = useState<any>(null)
 
   if (hide) return null
 
@@ -67,6 +102,13 @@ export default (props: Props) => {
                 {`${lang.add}${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''} ${name}`}
               </Button>
             )}
+            {moreOptions && moreOptions.length && (
+              <Tooltip title={lang.more}>
+                <IconButton color="primary" onClick={(e) => setAnchorEl(e.currentTarget)}>
+                  <FaEllipsisV />
+                </IconButton>
+              </Tooltip>
+            )}
           </div>
         </div>
         {filters && (
@@ -83,6 +125,29 @@ export default (props: Props) => {
         )}
       </Collapse>
       <Divider className={classes.divisor} />
+      <Menu
+        anchorEl={anchorEl}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        keepMounted
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        open={!!anchorEl}
+        onClose={() => setAnchorEl(null)}>
+        {moreOptions?.map(({ id, title, icon, onClick, keepOpen }, i) => {
+          if (!id || !title || !onClick) return <Divider key={i} />
+          return (
+            <MenuItem
+              key={id}
+              onClick={() => {
+                onClick()
+                if (keepOpen) return
+                setAnchorEl(null)
+              }}>
+              {icon && <ListItemIcon>{icon}</ListItemIcon>}
+              <ListItemText>{title}</ListItemText>
+            </MenuItem>
+          )
+        })}
+      </Menu>
     </React.Fragment>
   )
 }
