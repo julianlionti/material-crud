@@ -1,4 +1,4 @@
-import React, { memo, MouseEvent, useCallback, useMemo, useRef, useState } from 'react'
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react'
 import {
   FormControl,
   InputLabel,
@@ -13,15 +13,15 @@ import {
   makeStyles,
 } from '@material-ui/core'
 import { useField } from 'formik'
-import BaseInput from './BaseInput'
-import { Types, ComunesProps, OpcionesProps } from './Types'
-import useFilters, { Filter } from '../../utils/useFilters'
 import { FaPlus } from 'react-icons/fa'
-import { useLang } from '../../utils/CrudContext'
 import AriaLabels from '../../utils/AriaLabels'
+import { useLang } from '../../utils/CrudContext'
+import useFilters, { Filter } from '../../utils/useFilters'
+import BaseInput from './BaseInput'
+import { FormTypes, ComunesProps, OpcionesProps } from './FormTypes'
 
 export interface AlSelectProps extends ComunesProps {
-  type: Types.Options
+  type: FormTypes.Options
   placeholder: string
   options: OpcionesProps[]
   onAddItem?: (props: HTMLDivElement) => void
@@ -35,7 +35,6 @@ export default memo((props: AlSelectProps) => {
     title,
     placeholder,
     validate,
-    list,
     grow,
     options,
     loading,
@@ -84,8 +83,8 @@ export default memo((props: AlSelectProps) => {
             startAdornment={
               filter && (
                 <Tooltip aria-label={AriaLabels.BtnFilterTypes} title={lang.tooltips.defineFilter}>
-                  <IconButton onClick={(e) => setAnchorFilter(e.currentTarget)}>
-                    {select!!.find((e) => e.id === (value as SelectFilter).filter)?.icon}
+                  <IconButton disabled={loading} onClick={(e) => setAnchorFilter(e.currentTarget)}>
+                    {select.find((e) => e.id === (value as SelectFilter).filter)?.icon}
                   </IconButton>
                 </Tooltip>
               )
@@ -106,7 +105,7 @@ export default memo((props: AlSelectProps) => {
               </MenuItem>
             ))}
             {onAddItem && (
-              <MenuItem value="-1" onClick={(e) => onAddItem(inputRef.current)}>
+              <MenuItem value="-1" onClick={() => onAddItem(inputRef.current)}>
                 <FaPlus className={classes.addIcon} />
                 <em>{lang.addItem}</em>
               </MenuItem>
@@ -117,7 +116,7 @@ export default memo((props: AlSelectProps) => {
       </div>
       {filter && (
         <Menu anchorEl={anchorFilter} open={!!anchorFilter}>
-          {select!!.map((e) => (
+          {select.map((e) => (
             <MenuItem
               onClick={() => {
                 setAnchorFilter(null)

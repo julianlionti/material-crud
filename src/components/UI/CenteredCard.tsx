@@ -18,6 +18,7 @@ export interface Props {
   footer?: string
   loading?: boolean
   noElevation?: boolean
+  noPadding?: boolean
   button?: {
     title: string
     onClick: () => void
@@ -43,8 +44,9 @@ export default memo((props: Props) => {
     onClose,
     titleSize,
     subtitleSize,
+    noPadding,
   } = props
-  const clases = useClases({ titleSize, subtitleSize })
+  const clases = useClases({ titleSize, subtitleSize, noPadding })
 
   return (
     <div className={clases.contenedor}>
@@ -114,15 +116,15 @@ const useClases = makeStyles((tema) => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  contenido: {
+  contenido: ({ noPadding }: any) => ({
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
-    padding: tema.spacing(2),
-  },
+    padding: tema.spacing(noPadding ? 0 : 2),
+  }),
   card: {
     [tema.breakpoints.up('md')]: {
-      width: '60%',
+      width: '70%',
     },
     width: '90%',
   },

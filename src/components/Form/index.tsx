@@ -1,19 +1,11 @@
-import React, { memo, useCallback, useMemo } from 'react'
-import { Formik, FormikValues, FormikHelpers } from 'formik'
-import { Button, CircularProgress, makeStyles } from '@material-ui/core'
+import React, { memo, useEffect, useRef, useState } from 'react'
+import { Button, CircularProgress, makeStyles, Tab, Tabs, Typography } from '@material-ui/core'
+import { FormikValues, FormikHelpers, FormikProps } from 'formik'
+import { FaCheck, FaTimes } from 'react-icons/fa'
+import SwipeableViews from 'react-swipeable-views'
 import * as Yup from 'yup'
-import { Types, BaseProps } from './Types'
-import AlCustom, { AlCustomProps } from './AlCustom'
-import AlInput, { AlInputProps } from './AlInput'
-import AlSelect, { AlSelectProps } from './AlSelect'
-import AlImagen, { AlImagenProps } from './AlImagen'
-import AlAutocomplete, { AlAutocompleteProps } from './AlAutocomplete'
-import AlSwitch, { AlSwitchProps } from './AlSwitch'
-import AlMultiple, { AlMultipleProps } from './AlMultiple'
-import { generateDefault } from './helpers'
-import AlDate, { AlDateProps } from './AlDate'
-import AlDropFiles, { AlDropFilesProps } from './AlDropFiles'
-import { serialize } from 'object-to-formdata'
+import { StepProps, FieldProps } from './FormTypes'
+import Step from './Step'
 
 Yup.setLocale({
   string: {
@@ -24,23 +16,10 @@ Yup.setLocale({
   },
 })
 
-export type TodosProps =
-  | AlInputProps
-  | AlSelectProps
-  | AlImagenProps
-  | AlAutocompleteProps
-  | AlSwitchProps
-  | AlMultipleProps
-  | AlCustomProps
-  | AlDateProps
-  | AlDropFilesProps
-  | ({ type: Types.Expandable } & BaseProps)
-
-export type CamposProps = TodosProps | TodosProps[]
-
-export interface Props {
-  fields: CamposProps[]
-  onSubmit?: (values: FormikValues, helpers: FormikHelpers<any>) => void | Promise<any>
+export interface FormProps {
+  steps?: StepProps[]
+  fields?: FieldProps[]
+  onSubmit?: (values: FormikValues, helpers?: FormikHelpers<any>) => void | Promise<any>
   accept?: string
   loading?: boolean
   intials?: any
@@ -49,120 +28,103 @@ export interface Props {
   isFormData?: boolean
 }
 
-export const createFields = (props: () => CamposProps[]) => props()
+export const createFields = (props: FieldProps[]) => props
+export const createSteps = (props: StepProps[]) => props
 
-export default memo((props: Props) => {
-  const { fields, onSubmit, accept, loading, intials, noValidate, inline, isFormData } = props
-  const classes = useClases({ inline })
+interface RefProps {
+  form: FormikProps<any>
+  id: string
+}
+export default memo((props: FormProps) => {
+  const hasSubmitedRef = useRef(false)
+  const formRef = useRef<RefProps[]>([])
+  const [formsValues, setFormsValues] = useState({})
+  const { fields, steps, loading, isFormData, accept, onSubmit } = props
 
-  const renderInput = useCallback(
-    (campo: TodosProps, values: any) => {
-      if (campo.type === Types.Expandable) return null
-      const { depends } = campo
-      const hidden = depends && depends(values) === false
-      switch (campo.type) {
-        case Types.Input:
-        case Types.Email:
-        case Types.Multiline:
-        case Types.Number:
-        case Types.Secure:
-        case Types.Phone:
-          return <AlInput key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case Types.Options:
-          return <AlSelect key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case Types.File:
-        case Types.Image:
-          return <AlImagen key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case Types.Autocomplete:
-          return <AlAutocomplete key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case Types.Switch:
-          return <AlSwitch key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case Types.Multiple:
-          return <AlMultiple key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case Types.Custom:
-          return <AlCustom key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case Types.Date:
-          return <AlDate key={campo.id} {...campo} loading={loading} hide={hidden} />
-        case Types.Draggable:
-          return <AlDropFiles key={campo.id} {...campo} loading={loading} hide={hidden} />
-        default:
-          return null
-      }
-    },
-    [loading],
-  )
+  const [tab, setTab] = useState(0)
 
-  const valSchema = useMemo(
-    () =>
-      fields.flat().reduce((acc, it) => {
-        if (it.type === Types.Expandable) return acc
-        return { ...acc, [it.id]: it.validate }
-      }, {}),
-    [fields],
-  )
+  const classes = useClasses()
 
-  const defaultValues = useMemo(
-    () => fields.flat().reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it) }), {}),
-    [fields],
-  )
+  useEffect(() => {
+    if (Object.keys(formsValues).length === steps?.length && onSubmit && !hasSubmitedRef.current) {
+      onSubmit(formsValues)
+      hasSubmitedRef.current = true
+    }
+  }, [formsValues, steps, onSubmit])
+
+  if (!steps && !fields) {
+    return <Typography>Se debe agregar 'fields' o 'steps'</Typography>
+  }
+  if (steps && fields) {
+    return <Typography>Los parametros 'fields' y 'steps' no pueden ir juntos</Typography>
+  }
+
+  if (!steps && fields) {
+    return <Step {...props} fields={fields} />
+  }
+
+  if (!steps) return null
 
   return (
-    <Formik
-      enableReinitialize
-      initialValues={Object.keys(intials || {}).length > 0 ? intials : defaultValues}
-      validationSchema={noValidate ? null : Yup.object().shape(valSchema)}
-      onSubmit={(vals, helpers) => {
-        let finalData = vals
-        if (isFormData)
-          finalData = serialize(vals, {
-            indices: true,
-            allowEmptyArrays: true,
-          })
-
-        if (onSubmit) onSubmit(finalData, helpers)
-      }}>
-      {({ submitForm, values }) => (
-        <div className={classes.container}>
-          {fields.map((field, index) => {
-            if (Array.isArray(field)) {
-              return (
-                <div key={`${field[0].id}-row-${index}`} className={classes.horizontal}>
-                  {field.map((e) => renderInput(e, values))}
-                </div>
-              )
-            }
-            return renderInput(field, values)
-          })}
-          {accept && (
-            <Button
-              disabled={loading}
-              onClick={submitForm}
-              className={classes.btn}
-              color="primary"
-              endIcon={loading && <CircularProgress size={16} />}
-              variant="outlined">
-              {accept}
-            </Button>
-          )}
-        </div>
-      )}
-    </Formik>
+    <React.Fragment>
+      <Tabs
+        value={tab}
+        variant="fullWidth"
+        indicatorColor="primary"
+        textColor="primary"
+        onChange={(e, newVal) => setTab(newVal)}>
+        {steps.map(({ title, id }, index) => (
+          <Tab
+            key={id}
+            label={title}
+            value={index}
+            icon={formsValues[id] ? <FaCheck color="primary" /> : <FaTimes color="primary" />}
+          />
+        ))}
+      </Tabs>
+      <SwipeableViews className={classes.stepRoot} index={tab} onChangeIndex={(tab) => setTab(tab)}>
+        {steps.map(({ fields, id }) => (
+          <Step
+            key={id}
+            isFormData={isFormData}
+            fields={fields}
+            loading={loading}
+            onSubmit={(vals) => setFormsValues((values) => ({ ...values, [id]: vals }))}
+            ref={(e) => {
+              const actual = formRef.current?.find((e) => e.id === id)
+              if (!actual && e) {
+                formRef.current = [...formRef.current, { id, form: e }]
+              }
+            }}
+          />
+        ))}
+      </SwipeableViews>
+      <Button
+        disabled={loading}
+        onClick={() => {
+          hasSubmitedRef.current = false
+          formRef.current.forEach((e) => e.form.submitForm())
+        }}
+        className={classes.btn}
+        color="primary"
+        endIcon={loading && <CircularProgress size={16} />}
+        variant="outlined">
+        {accept}
+      </Button>
+    </React.Fragment>
   )
 })
 
-const useClases = makeStyles((tema) => ({
-  container: ({ inline }: any) => ({
+const useClasses = makeStyles((theme) => ({
+  root: {
     flex: 1,
-    display: 'flex',
-    flexDirection: inline ? 'row' : 'column',
-  }),
-  btn: {
-    marginTop: tema.spacing(2),
-    marginBottom: tema.spacing(2),
-    alignSelf: 'center',
   },
-  horizontal: {
-    display: 'flex',
-    flex: 1,
+  stepRoot: {
+    marginTop: theme.spacing(2),
+  },
+  btn: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    alignSelf: 'center',
   },
 }))

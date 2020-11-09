@@ -5,7 +5,8 @@ import { CrudProvider } from 'material-crud'
 import Prueba from './Prueba'
 import TableExample from './TableExample'
 import { english } from './lang'
-import ChildTable from './ChildTable'
+import CrudTable from './CrudTable'
+import { createMuiTheme, ThemeProvider } from '@material-ui/core'
 
 const App = () => {
   const user = {
@@ -16,44 +17,46 @@ const App = () => {
   }
 
   return (
-    <CrudProvider
-      lang={english}
-      user={user}
-      headers={{
-        Authorization: user.token,
-      }}>
-      <BrowserRouter>
-        <Switch>
-          <Route
-            path="/"
-            exact
-            component={() => (
-              <ul>
-                <li>
-                  <Link to="/form">Form example</Link>
-                </li>
-                <li>
-                  <Link to="/crud">Crud example</Link>
-                </li>
-                <li>
-                  <Link to="/table">Table example</Link>
-                </li>
-                <li>
-                  <Link to="/child">ChildTable</Link>
-                </li>
-                <li>
-                  <Link to="/prueba">Prueba</Link>
-                </li>
-              </ul>
-            )}
-          />
-          <Route path="/form" component={FormExample} />
-          <Route path="/table" component={TableExample} />
-          <Route path="/child" component={ChildTable} />
-          <Route path="/prueba" component={Prueba} />
-        </Switch>
-      </BrowserRouter>
-    </CrudProvider>
+    <ThemeProvider theme={createMuiTheme({ palette: { type: 'dark' } })}>
+      <CrudProvider
+        lang={english}
+        user={user}
+        headers={{
+          Authorization: user.token,
+        }}>
+        <BrowserRouter>
+          <Switch>
+            <Route
+              path="/"
+              exact
+              component={() => (
+                <ul>
+                  <li>
+                    <Link to="/form">Form example</Link>
+                  </li>
+                  <li>
+                    <Link to="/crud">Crud example</Link>
+                  </li>
+                  <li>
+                    <Link to="/table">Table example</Link>
+                  </li>
+                  <li>
+                    <Link to="/child">ChildTable</Link>
+                  </li>
+                  <li>
+                    <Link to="/prueba">Prueba</Link>
+                  </li>
+                </ul>
+              )}
+            />
+            <Route path="/form" component={FormExample} />
+            <Route path="/table" component={TableExample} />
+            <Route path="/crud" component={CrudTable} />
+            <Route path="/prueba" component={Prueba} />
+          </Switch>
+        </BrowserRouter>
+      </CrudProvider>
+    </ThemeProvider>
   )
 }
 

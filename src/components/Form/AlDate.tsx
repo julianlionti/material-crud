@@ -1,27 +1,23 @@
-import { DatePicker, DatePickerProps, MuiPickersUtilsProvider } from '@material-ui/pickers'
-// import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date'
 import React, { useMemo, useState } from 'react'
-import BaseInput from './BaseInput'
-import { ComunesProps, Types } from './Types'
 import DateFnsUtils from '@date-io/date-fns'
-// import 'moment/locale/es'
-import { useField } from 'formik'
 import { IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip } from '@material-ui/core'
-import useFilters, { Filter } from '../../utils/useFilters'
-import { useLang } from '../../utils/CrudContext'
-import AriaLabels from '../../utils/AriaLabels'
+import { DatePicker, DatePickerProps, MuiPickersUtilsProvider } from '@material-ui/pickers'
 import enLocale from 'date-fns/locale/en-US'
 import esLocale from 'date-fns/locale/es'
+import { useField } from 'formik'
+import AriaLabels from '../../utils/AriaLabels'
+import { useLang } from '../../utils/CrudContext'
+import useFilters, { Filter } from '../../utils/useFilters'
+import BaseInput from './BaseInput'
+import { ComunesProps, FormTypes } from './FormTypes'
 
 const localeWrapper = {
   en: enLocale,
   es: esLocale,
 }
 
-// import moment from 'moment'
-
 export interface AlDateProps extends ComunesProps {
-  type: Types.Date
+  type: FormTypes.Date
   fullWidth?: boolean
   locale?: 'en' | 'es'
   format?: string
@@ -100,7 +96,7 @@ export default (props: AlDateProps) => {
                     e.preventDefault()
                     setAnchorFilter(e.currentTarget)
                   }}>
-                  {date!!.find((e) => e.id === (value as DateFilter).filter)?.icon}
+                  {date.find((e) => e.id === (value as DateFilter).filter)?.icon}
                 </IconButton>
               </Tooltip>
             ),
@@ -109,7 +105,7 @@ export default (props: AlDateProps) => {
         />
         {filter && (
           <Menu anchorEl={anchorFilter} open={!!anchorFilter}>
-            {date!!.map((e) => (
+            {date.map((e) => (
               <MenuItem
                 onClick={() => {
                   setAnchorFilter(null)

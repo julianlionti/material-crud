@@ -1,16 +1,17 @@
-import { Checkbox, IconButton, makeStyles, TableRow, Tooltip } from '@material-ui/core'
 import React, { memo, useCallback, useMemo } from 'react'
+import { Checkbox, IconButton, makeStyles, TableRow, Tooltip } from '@material-ui/core'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { ListChildComponentProps } from 'react-window'
+import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 import { useABM } from '../../utils/DataContext'
-import CustomCell, { FieldAndColProps } from './CustomCell'
+import { FieldProps, StepProps } from '../Form/FormTypes'
+import CustomCell from './CustomCell'
 import CustomHeader, { SortProps } from './CustomHeader'
-import AriaLabels from '../../utils/AriaLabels'
+import { TableTypes } from './TableTypes'
 
 interface Props extends Partial<ListChildComponentProps> {
   rowHeight: number
-  columns: FieldAndColProps[]
   customClassName?: string
   onSelect: (rowData: any) => void | null
   selected?: boolean
@@ -20,6 +21,9 @@ interface Props extends Partial<ListChildComponentProps> {
   onDelete?: false | ((rowData: any) => void)
   showSelecting?: boolean
   isHeader?: boolean
+  fields?: FieldProps[]
+  steps?: StepProps[]
+  index: number
 }
 
 export default memo((props: Props) => {
@@ -28,7 +32,6 @@ export default memo((props: Props) => {
     style,
     customClassName,
     onSort,
-    columns,
     onSelect,
     selected,
     rowHeight,
@@ -37,42 +40,46 @@ export default memo((props: Props) => {
     onDelete,
     showSelecting,
     isHeader,
+    fields,
+    steps,
   } = props
 
   const lang = useLang()
-  const { list, insertIndex, removeIndex, itemId } = useABM()
+  const { list, insertIndex, removeIndex, itemId, columns, extraActions } = useABM()
   const classes = useClasses({ index, height: rowHeight })
-  const rowData = useMemo(() => list[index!!], [list, index])
+  const rowData = useMemo(() => list[index], [list, index])
 
   const renderContent = useCallback(() => {
     if (isHeader) {
-      return columns.map((col) => (
-        <CustomHeader onSort={onSort} rowHeight={rowHeight} key={col.id} col={col} />
-      ))
+      return columns.map((col) => <CustomHeader onSort={onSort} key={col.id} col={col} />)
     }
 
     if (rowData.child) {
       return (
-        <CustomCell rowIndex={index!!} rowHeight={rowData.height} isChild>
-          {rowData.child(list[index!! - 1])}
+        <CustomCell rowIndex={index} rowHeight={rowData.height} isChild>
+          {rowData.child(list[index - 1])}
         </CustomCell>
       )
     }
 
-    const nextIsChild = !!list[index!! + 1]?.child
+    const nextIsChild = !!list[index + 1]?.child
     return columns.map((col) => (
       <CustomCell
         expanded={nextIsChild}
         onExpand={() => {
-          if (onExpanded) onExpanded(index!!)
-          if (nextIsChild) return removeIndex((index || 0) + 1)
-          insertIndex(index!! + 1, {
-            [itemId]: col.id + 'child',
-            child: col.content,
-            height: col.height,
-          })
+          if (onExpanded) onExpanded(index)
+          if (nextIsChild) return removeIndex(index + 1)
+
+          switch (col.type) {
+            case TableTypes.Custom:
+              insertIndex(index + 1, {
+                [itemId]: col.id + 'child',
+                child: col.content,
+                height: col.height,
+              })
+          }
         }}
-        rowIndex={index!!}
+        rowIndex={index}
         rowHeight={rowHeight}
         key={col.id}
         col={col}
@@ -97,7 +104,7 @@ export default memo((props: Props) => {
 
     if (isHeader)
       return (
-        <CustomHeader col={{ width: 0.5 }} rowHeight={rowHeight}>
+        <CustomHeader col={{ width: 2 }}>
           <Checkbox
             checked={selected === true}
             indeterminate={selected === undefined}
@@ -107,7 +114,7 @@ export default memo((props: Props) => {
       )
 
     return (
-      <CustomCell col={{ width: 0.5 }} rowIndex={index!!} rowHeight={rowHeight}>
+      <CustomCell col={{ width: 2 }} rowIndex={index} rowHeight={rowHeight}>
         <Checkbox checked={selected} onChange={() => onSelect(rowData)} />
       </CustomCell>
     )
@@ -115,18 +122,16 @@ export default memo((props: Props) => {
 
   const renderCrud = useCallback(() => {
     if (rowData?.child) return null
-    if (!onEdit && !onDelete) return null
+    if (!onEdit && !onDelete && (!extraActions || (extraActions && extraActions.length === 0)))
+      return null
 
-    if (isHeader)
-      return (
-        <CustomHeader
-          col={{ width: 0.5, title: lang.crudCol, align: 'flex-end' }}
-          rowHeight={rowHeight}
-        />
-      )
+    if (!fields && !steps) return null
+
+    if (isHeader) return <CustomHeader col={{ width: 2, title: lang.crudCol, align: 'flex-end' }} />
 
     return (
-      <CustomCell col={{ width: 0.5, align: 'flex-end' }} rowHeight={rowHeight} rowIndex={index!!}>
+      <CustomCell col={{ width: 2, align: 'flex-end' }} rowHeight={rowHeight} rowIndex={index}>
+        {extraActions}
         {onEdit && (
           <Tooltip title={lang.edit}>
             <IconButton size="small" onClick={() => onEdit(rowData)}>
@@ -143,7 +148,7 @@ export default memo((props: Props) => {
         )}
       </CustomCell>
     )
-  }, [isHeader, rowHeight, lang, index, onEdit, onDelete, rowData])
+  }, [isHeader, rowHeight, lang, index, onEdit, onDelete, rowData, fields, extraActions, steps])
 
   return (
     <TableRow
@@ -159,17 +164,9 @@ export default memo((props: Props) => {
 })
 
 const useClasses = makeStyles((theme) => ({
-  row: ({ index, height }: any) => ({
-    height,
+  row: ({ index }: any) => ({
     display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'nowrap',
-    alignItems: 'center',
-    boxSizing: 'border-box',
-    backgroundColor: index
-      ? index % 2 === 0
-        ? theme.palette.common.white
-        : theme.palette.grey[100]
-      : undefined,
+    backgroundColor:
+      index % 2 !== 0 ? undefined : theme.palette.grey[theme.palette.type === 'dark' ? 600 : 200],
   }),
 }))

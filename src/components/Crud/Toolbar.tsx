@@ -1,10 +1,9 @@
+import React, { ReactNode } from 'react'
 import { Button, Collapse, Divider, makeStyles, Typography } from '@material-ui/core'
-import React, { ReactNode, useMemo } from 'react'
 import { FaFilter } from 'react-icons/fa'
 import { useLang } from '../../utils/CrudContext'
-import Form, { CamposProps } from '../Form'
-import { Types } from '../Form/Types'
-import { ActionProps } from '../Crud/TableWindow'
+import Form from '../Form'
+import { FieldProps, StepProps } from '../Form/FormTypes'
 
 interface Props {
   editObj: object | null
@@ -12,22 +11,26 @@ interface Props {
   Left?: ReactNode
   loading?: boolean
   title?: string
-  filters: CamposProps[]
   gender?: 'M' | 'F'
-  actions?: ActionProps
   show: boolean
   handleShow: () => void
   onFilter: (filters: object) => void
   onNew: () => void
   titleSize?: number
   name: string
+  hide: boolean
+  filters?: FieldProps[]
+  steps?: StepProps[]
+  fields?: FieldProps[]
 }
 
 export default (props: Props) => {
   const lang = useLang()
-  const { editObj, noTitle, Left, loading, title, filters, gender, actions } = props
-  const { show, handleShow, onNew, onFilter, titleSize, name } = props
+  const { editObj, noTitle, Left, loading, title, gender, hide } = props
+  const { show, handleShow, onNew, onFilter, titleSize, name, fields, filters, steps } = props
   const classes = useClasses({ titleSize })
+
+  if (hide) return null
 
   return (
     <React.Fragment>
@@ -44,19 +47,19 @@ export default (props: Props) => {
             </div>
           )}
           <div>
-            {Object.keys(filters).length > 0 && (
+            {Object.keys(filters || []).length > 0 && (
               <Button
                 color="primary"
                 endIcon={<FaFilter />}
-                disabled={!!editObj}
+                disabled={!!editObj || loading}
                 className={classes.spaceLeft}
                 onClick={handleShow}>
                 {`${show ? lang.close : lang.open} ${lang.filters}`}
               </Button>
             )}
-            {actions?.new && (
+            {(fields || steps) && (
               <Button
-                disabled={!!editObj}
+                disabled={!!editObj || loading}
                 color="primary"
                 variant="outlined"
                 className={classes.spaceLeft}
@@ -68,7 +71,14 @@ export default (props: Props) => {
         </div>
         {filters && (
           <Collapse in={show} timeout="auto" unmountOnExit>
-            <Form inline accept={lang.filter} fields={filters} onSubmit={onFilter} noValidate />
+            <Form
+              inline
+              accept={lang.filter}
+              loading={loading}
+              fields={filters}
+              onSubmit={onFilter}
+              noValidate
+            />
           </Collapse>
         )}
       </Collapse>

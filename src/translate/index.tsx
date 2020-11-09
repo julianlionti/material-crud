@@ -9,7 +9,7 @@ export interface Translations {
   delExplanation: (name: string) => string
   filters: string
   filter: string
-  filterOptions?: {
+  filterOptions: {
     startsWith: string
     equal: string
     different: string

@@ -1,49 +1,31 @@
-import React, { memo, ReactNode, useCallback, useMemo, useRef, useState } from 'react'
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react'
 import { Collapse, lighten, LinearProgress, makeStyles, Paper, Typography } from '@material-ui/core'
-import { VariableSizeList as List } from 'react-window'
-import { useABM } from '../../utils/DataContext'
-import { CamposProps } from '../Form'
-import { FieldAndColProps } from './CustomCell'
-import Pagination from './Pagination'
-import { SortProps } from './CustomHeader'
-import { useLang } from '../../utils/CrudContext'
-import CustomRow from './CustomRow'
 import AutoSizer from 'react-virtualized-auto-sizer'
+import { VariableSizeList as List } from 'react-window'
+import { useLang } from '../../utils/CrudContext'
+import { useABM } from '../../utils/DataContext'
+import useWindowSize from '../../utils/useWindowSize'
+import { FieldProps, StepProps } from '../Form/FormTypes'
+import { ColumnsProps, TableProps } from '../Table/TableTypes'
+import { SortProps } from './CustomHeader'
+import CustomRow from './CustomRow'
+import Pagination from './Pagination'
 
-export interface ActionProps {
-  new?: boolean
-  edit?: boolean
-  delete?: boolean
-}
-
-export interface TableProps {
-  height: number
-  columns: CamposProps[]
-  headerHeight?: number
-  rowHeight?: number
-  actions?: ActionProps
-  showSelecting?: boolean
-  rightToolbar?: (props: {
-    rowsSelected: any[]
-    list: any[]
-    deleteCall: (id: any) => void
-    editCall: (id: any, item: any) => void
-    clearSelected: () => void
-  }) => ReactNode
-}
+export const createColumns = (props: ColumnsProps[]) => props
 
 interface Props extends TableProps {
-  loading?: boolean
-  headerClassName?: string
   onChangePagination: (page: number, perPage: number) => void
   onSort: (sort: SortProps) => void
   onEdit?: (row: any) => void
   onDelete?: (row: any) => void
+  headerClassName?: string
+  fields?: FieldProps[]
+  steps?: StepProps[]
 }
 
 export default memo((props: Props) => {
   const {
-    columns,
+    loading,
     height,
     actions,
     onDelete,
@@ -52,12 +34,14 @@ export default memo((props: Props) => {
     headerHeight,
     headerClassName,
     onChangePagination,
-    loading,
     onSort,
     showSelecting,
     rightToolbar,
+    fields,
+    steps,
   } = props
 
+  const { height: windowHeight } = useWindowSize()
   const listRef = useRef<List | null>()
 
   const lang = useLang()
@@ -66,21 +50,7 @@ export default memo((props: Props) => {
   const [rowsSelected, setRowSelected] = useState<any[]>([])
 
   const finalRowHeight = useMemo(() => rowHeight || 48, [rowHeight])
-  const finalColumns = useMemo(
-    () =>
-      columns!
-        .flat()
-        .filter((e) => e.list)
-        .map(
-          (e): FieldAndColProps => {
-            if (typeof e.title === 'string') return { ...e, title: e.title || '', ...e.list!! }
-            return { ...e, title: '', ...e.list }
-          },
-        ),
-    [columns],
-  )
-
-  const classes = useClasses({ height })
+  const classes = useClasses({ height: height || windowHeight - 190 })
 
   const headerSelected = useMemo(() => {
     if (rowsSelected.length === 0) return false
@@ -94,7 +64,7 @@ export default memo((props: Props) => {
         if (headerSelected === true && !rowData) return []
         if (!headerSelected && !rowData) return list.filter((e) => !e.child)
 
-        const i = acc.findIndex((x) => x[itemId!!] === rowData[itemId!!])
+        const i = acc.findIndex((x) => x[itemId] === rowData[itemId])
         if (i >= 0) return acc.filter((_, index) => index !== i)
         else return [...acc, rowData]
       })
@@ -123,9 +93,9 @@ export default memo((props: Props) => {
         </div>
       </Collapse>
       <CustomRow
+        index={-1}
         rowHeight={headerHeight || 54}
         customClassName={`${classes.rowHeader} ${headerClassName}`}
-        columns={finalColumns}
         onSelect={selectRow}
         selected={headerSelected}
         onSort={onSort}
@@ -133,6 +103,8 @@ export default memo((props: Props) => {
         onDelete={actions?.delete && onDelete}
         showSelecting={showSelecting}
         isHeader
+        fields={fields}
+        steps={steps}
       />
       {!loading && list.length === 0 && (
         <div className={classes.noResult}>
@@ -153,11 +125,14 @@ export default memo((props: Props) => {
               {(props) => (
                 <CustomRow
                   {...props}
-                  rowHeight={finalRowHeight}
-                  columns={finalColumns}
+                  fields={fields}
+                  steps={steps}
+                  rowHeight={list[props.index].height || finalRowHeight}
                   onSelect={selectRow}
                   selected={rowsSelected.some((e) => e[itemId] === list[props.index][itemId])}
-                  onExpanded={(index) => listRef.current!!.resetAfterIndex(index)}
+                  onExpanded={(index) => {
+                    if (listRef.current) listRef.current.resetAfterIndex(index)
+                  }}
                   onEdit={actions?.edit && onEdit}
                   onDelete={actions?.delete && onDelete}
                   showSelecting={showSelecting}
@@ -168,9 +143,12 @@ export default memo((props: Props) => {
         </AutoSizer>
       </div>
       <Pagination
+        loading={loading}
         onChange={(page, perpage) => {
           setRowSelected([])
-          listRef.current!!.resetAfterIndex(0)
+          if (listRef.current) {
+            listRef.current.resetAfterIndex(0)
+          }
           onChangePagination(page, perpage)
         }}
       />
@@ -182,6 +160,7 @@ const useClasses = makeStyles((theme) => ({
   container: ({ height }: any) => ({
     height: height,
     display: 'flex',
+    flex: 1,
     flexDirection: 'column',
   }),
   noResult: {

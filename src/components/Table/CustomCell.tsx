@@ -1,34 +1,14 @@
 import React, { memo, PropsWithChildren, ReactNode, useCallback, useMemo } from 'react'
 import { Avatar, makeStyles, TableCell } from '@material-ui/core'
-import { FaCheck, FaTimes } from 'react-icons/fa'
-import { AlImagenProps } from '../Form/AlImagen'
-import { ComunesProps, Types } from '../Form/Types'
-import { CamposProps } from '../Form'
-import { useABM } from '../../utils/DataContext'
-import { AlDateProps } from '../Form/AlDate'
 import moment from 'moment'
-
-interface ComponentProps {
-  rowData: any
-  expandRow: () => void
-  isExpanded: boolean
-}
-
-export interface ColumnProps {
-  sort?: boolean
-  width?: number
-  height?: number
-  align?: 'center' | 'flex-start' | 'flex-end'
-  cellComponent?: (props: ComponentProps) => ReactNode
-  content?: (rowData: any) => ReactNode
-}
-
-export type FieldAndColProps = Exclude<ComunesProps, 'list'> & ColumnProps & { type: Types }
+import { FaCheck, FaTimes } from 'react-icons/fa'
+import { useABM } from '../../utils/DataContext'
+import { ColumnsProps, TableTypes } from './TableTypes'
 
 interface Props {
   rowHeight: number
   rowIndex: number
-  col?: Partial<FieldAndColProps>
+  col?: Partial<ColumnsProps>
   children?: ReactNode
   onExpand?: () => void
   expanded?: boolean
@@ -37,7 +17,7 @@ interface Props {
 
 export default memo((props: PropsWithChildren<Props>) => {
   const { children, rowHeight, col, rowIndex, onExpand, expanded, isChild } = props
-  const classes = useClasses({ height: rowHeight, grow: col?.width, align: col?.align, isChild })
+  const classes = useClasses({ width: col?.width, align: col?.align, isChild })
   const { list } = useABM()
   const rowData = list[rowIndex]
   const cellData = useMemo(() => {
@@ -46,37 +26,37 @@ export default memo((props: PropsWithChildren<Props>) => {
 
   const renderContent = useCallback(() => {
     if (children) return children
-    if (col?.cellComponent) {
+    if (col?.cellComponent && onExpand) {
       return col.cellComponent({
         rowData,
-        expandRow: onExpand!!,
+        expandRow: onExpand,
         isExpanded: !!expanded,
       })
     }
 
-    switch (col!.type) {
-      case Types.Image: {
+    switch (col?.type) {
+      case TableTypes.Image: {
         const finalSize = rowHeight - 8
         return (
           <Avatar
             alt={cellData}
-            src={(col as AlImagenProps).baseURL + cellData}
+            src={col.baseURL + cellData}
             style={{ height: finalSize, width: finalSize }}
           />
         )
       }
-      case Types.Date: {
-        const format = (col as AlDateProps).format
+      case TableTypes.Date: {
+        const format = col.format
         if (format) return moment(cellData).format(format)
 
         return String(cellData || '-')
       }
-      case Types.Switch:
+      case TableTypes.Switch:
         return cellData ? <FaCheck size={18} color="green" /> : <FaTimes size={18} color="red" />
       default:
         return String(cellData || '-')
     }
-  }, [cellData, col, rowHeight, rowData, children, expanded, onExpand])
+  }, [cellData, col, rowHeight, children, onExpand, expanded, rowData])
 
   return (
     <TableCell component="div" variant="body" className={classes.cell}>
@@ -85,13 +65,16 @@ export default memo((props: PropsWithChildren<Props>) => {
   )
 })
 
-const useClasses = makeStyles((theme) => ({
-  cell: ({ grow, height, align, isChild }: any) => ({
-    flexGrow: grow || 1,
+const useClasses = makeStyles(() => ({
+  cell: ({ width, align, isChild }: any) => ({
     flex: 1,
+    flexGrow: width,
     display: 'flex',
     justifyContent: align || 'flex-start',
     alignItems: isChild ? 'start' : 'center',
-    height,
+
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   }),
 }))

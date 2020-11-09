@@ -1,5 +1,5 @@
-import { Button, makeStyles, TableCell } from '@material-ui/core'
 import React, { ReactNode, useCallback, useState } from 'react'
+import { Button, makeStyles, TableCell } from '@material-ui/core'
 import {
   FaSortAlphaDown,
   FaSortAlphaUp,
@@ -7,35 +7,33 @@ import {
   FaSortNumericDown,
   FaSortNumericUpAlt,
 } from 'react-icons/fa'
-import { Types } from '../Form/Types'
-import { FieldAndColProps } from './CustomCell'
+import { ColumnsProps, TableTypes } from './TableTypes'
 
 export interface SortProps {
   [key: string]: 1 | -1 | 0
 }
 
 interface Props {
-  col?: Partial<FieldAndColProps>
+  col?: Partial<ColumnsProps>
   onSort?: (newSort: SortProps) => void
   children?: ReactNode
-  rowHeight: number
 }
 
 const icono = 22
-export default ({ col, onSort, children, rowHeight }: Props) => {
-  const classes = useClasses({ grow: col?.width, height: rowHeight, align: col?.align })
+export default ({ col, onSort, children }: Props) => {
+  const classes = useClasses({ width: col?.width, align: col?.align })
   const [sort, setSort] = useState<SortProps>({})
 
   const renderIcono = useCallback(
-    ({ id, type, sort: colSort }: Partial<FieldAndColProps>) => {
-      if (!colSort) return null
+    ({ id, type, sort: colSort }: Partial<ColumnsProps>) => {
+      if (!colSort || !id) return null
       if (!sort) return <FaSortAmountDownAlt fontSize={icono} />
-      switch (sort[id!!]) {
+      switch (sort[id]) {
         case 1:
-          if (type === Types.Number) return <FaSortNumericDown fontSize={icono} />
+          if (type === TableTypes.Number) return <FaSortNumericDown fontSize={icono} />
           return <FaSortAlphaDown fontSize={icono} />
         case -1:
-          if (type === Types.Number) return <FaSortNumericUpAlt fontSize={icono} />
+          if (type === TableTypes.Number) return <FaSortNumericUpAlt fontSize={icono} />
           return <FaSortAlphaUp fontSize={icono} />
         default:
           return <FaSortAmountDownAlt fontSize={icono} />
@@ -57,9 +55,10 @@ export default ({ col, onSort, children, rowHeight }: Props) => {
           if (!col || !col.sort) return null
 
           return setSort((orden) => {
+            if (!col.id) return {}
             const final: SortProps = {
               ...orden,
-              [col.id!!]: orden[col.id!!] === undefined ? 1 : orden[col.id!!] === 1 ? -1 : 0,
+              [col.id]: orden[col.id] === undefined ? 1 : orden[col.id] === 1 ? -1 : 0,
             }
             Object.keys(final).forEach((el) => {
               if (final[el] === 0) {
@@ -87,14 +86,16 @@ export default ({ col, onSort, children, rowHeight }: Props) => {
   )
 }
 
-const useClasses = makeStyles((theme) => ({
-  cell: ({ grow, height, align }: any) => ({
+const useClasses = makeStyles(() => ({
+  cell: ({ width, align }: any) => ({
     borderBottomWidth: 0,
-    flexGrow: grow || 1,
     flex: 1,
+    flexGrow: width,
     display: 'flex',
     justifyContent: align || 'flex-start',
-    alignItems: 'center',
-    height,
+
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   }),
 }))

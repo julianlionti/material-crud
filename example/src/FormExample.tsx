@@ -1,7 +1,8 @@
 import React, { useCallback, useState } from 'react'
-import { Dialog, CenteredCard, Form, Types } from 'material-crud'
+import { Dialog, CenteredCard, Form, FormTypes } from 'material-crud'
 import { useHistory } from 'react-router'
 import CustomField from './extra/CustomField'
+import { OpcionesProps } from '../../dist/components/Form/FormTypes'
 
 export default () => {
   const history = useHistory()
@@ -14,6 +15,8 @@ export default () => {
     setDialog(vals)
     setLoading(false)
   }, [])
+
+  const [opciones, setOpciones] = useState<OpcionesProps[]>([{ id: 'assda', title: 'asdas' }])
 
   return (
     <CenteredCard
@@ -29,11 +32,25 @@ export default () => {
       <Form
         loading={loading}
         fields={[
-          { id: 'prueba', type: Types.Input, title: 'Prueba' },
-          { id: 'fecha', type: Types.Date, title: 'Fecha' },
+          { id: 'pruebaa', type: FormTypes.Input, title: 'Prueba' },
+          { id: 'fecha', type: FormTypes.Date, title: 'Fecha' },
+          {
+            type: FormTypes.Autocomplete,
+            title: 'Prueba con opciones',
+            id: 'prueba',
+            onChangeText: (text) => {
+              if (text.length > 2) {
+                setOpciones([
+                  { id: 'prueba1', title: 'prueba 1' },
+                  { id: 'prueba2', title: 'prueba 2' },
+                ])
+              }
+            },
+            options: opciones,
+          },
           {
             id: 'custom',
-            type: Types.Custom,
+            type: FormTypes.Custom,
             component: (props) => <CustomField {...props} />,
             title: '',
           },

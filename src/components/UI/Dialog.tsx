@@ -9,9 +9,10 @@ import {
   Slide,
   LinearProgress,
   makeStyles,
+  Typography,
 } from '@material-ui/core'
-import { TransitionProps } from '@material-ui/core/transitions'
 import { grey } from '@material-ui/core/colors'
+import { TransitionProps } from '@material-ui/core/transitions'
 import { useLang } from '../../utils/CrudContext'
 
 export interface CartelState {
@@ -39,6 +40,9 @@ export const Transition = forwardRef(
 export default memo(({ show, onClose, title, content, loading }: Props) => {
   const lang = useLang()
   const clases = useClases()
+
+  if (!lang.dialog) return <Typography>Hace falta 'lang.dialog'</Typography>
+
   return (
     <Dialog open={show} TransitionComponent={Transition}>
       {loading && <LinearProgress />}
@@ -54,7 +58,7 @@ export default memo(({ show, onClose, title, content, loading }: Props) => {
             if (onClose) onClose(false)
           }}
           color="primary">
-          {lang.dialog!!.cancel}
+          {lang.dialog.cancel}
         </Button>
         <Button
           onClick={() => {
@@ -62,7 +66,7 @@ export default memo(({ show, onClose, title, content, loading }: Props) => {
           }}
           color="primary"
           autoFocus>
-          {lang.dialog!!.accept}
+          {lang.dialog.accept}
         </Button>
       </DialogActions>
     </Dialog>

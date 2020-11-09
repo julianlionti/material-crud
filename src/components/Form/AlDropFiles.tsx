@@ -1,15 +1,15 @@
 import React, { memo, ReactNode, useCallback } from 'react'
 import { IconButton, makeStyles, Paper, Typography } from '@material-ui/core'
-import { FaFile, FaTrashAlt } from 'react-icons/fa'
-import { useDropzone } from 'react-dropzone'
-import { useField } from 'formik'
 import { grey } from '@material-ui/core/colors'
-import { ComunesProps, Types } from './Types'
+import { useField } from 'formik'
+import { useDropzone } from 'react-dropzone'
+import { FaFile, FaTrashAlt } from 'react-icons/fa'
 import BaseInput from './BaseInput'
+import { ComunesProps, FormTypes } from './FormTypes'
 
 type NoTitle = Omit<ComunesProps, 'title'>
 export interface AlDropFilesProps extends NoTitle {
-  type: Types.Draggable
+  type: FormTypes.Draggable
   multiple?: boolean
   accept?: string
   ImgIcon?: ReactNode
@@ -33,8 +33,8 @@ export default memo(({ title, id, accept, grow, hide, ImgIcon, multiple }: AlDro
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (accepted) => {
       if (multiple) {
-        var ids = new Set(value.map((d) => d.name))
-        var merged = [...value, ...accepted.filter((d) => !ids.has(d.name))]
+        const ids = new Set(value.map((d) => d.name))
+        const merged = [...value, ...accepted.filter((d) => !ids.has(d.name))]
         setValue(merged)
       } else {
         setValue(accepted)

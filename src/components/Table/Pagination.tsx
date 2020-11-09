@@ -1,29 +1,31 @@
-import { Collapse, makeStyles, MenuItem, Select, Typography } from '@material-ui/core'
 import React, { memo } from 'react'
+import { Collapse, makeStyles, MenuItem, Select, Typography } from '@material-ui/core'
 import Pagination from '@material-ui/lab/Pagination'
 import { useLang } from '../../utils/CrudContext'
 import { useABM } from '../../utils/DataContext'
 
 interface Props {
   onChange: (page: number, perPage: number) => void
+  loading?: boolean
 }
 
 const perPageList = [5, 10, 15, 50, 100, 500, 1000]
 
-export default memo(({ onChange }: Props) => {
+export default memo(({ onChange, loading }: Props) => {
   const { pagination } = useABM()
   const { page, limit, totalDocs, totalPages } = pagination
   const lang = useLang()
   const classes = useClasses()
 
+  if (!lang.pagination) return <Typography>Hace falta 'lang.pagination'</Typography>
+
   return (
     <div style={{ width: '100%' }} className={classes.pagContainer}>
       <Collapse in={!!totalDocs} timeout="auto">
         <div style={{ display: 'flex', alignItems: 'center', padding: 8 }}>
-          <Typography>{`${lang.pagination!!.totalCount} ${totalDocs} - ${
-            lang.pagination!!.rowsPerPage
-          }:`}</Typography>
+          <Typography>{`${lang.pagination.totalCount} ${totalDocs} - ${lang.pagination.rowsPerPage}:`}</Typography>
           <Select
+            disabled={loading}
             className={classes.perPage}
             value={limit}
             onChange={({ target }) => onChange(page, target.value as number)}>
@@ -32,17 +34,18 @@ export default memo(({ onChange }: Props) => {
                 {String(e)}
               </MenuItem>
             ))}
-            <MenuItem value={-1}>{lang.pagination!!.all}</MenuItem>
+            <MenuItem value={-1}>{lang.pagination.all}</MenuItem>
           </Select>
         </div>
       </Collapse>
       <Pagination
+        disabled={loading}
         color="primary"
         variant="outlined"
         className={classes.pagination}
         count={totalPages}
         page={page}
-        onChange={(e, p) => onChange(p, limit!!)}
+        onChange={(_, p) => onChange(p, limit || 10)}
         siblingCount={1}
         showFirstButton
         showLastButton

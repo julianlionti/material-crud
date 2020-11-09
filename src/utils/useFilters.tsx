@@ -32,11 +32,11 @@ export interface FilterMenu {
 }
 
 export interface FilterResponse {
-  text?: FilterMenu[]
-  numeric?: FilterMenu[]
-  autocomplete?: FilterMenu[]
-  select?: FilterMenu[]
-  date?: FilterMenu[]
+  text: FilterMenu[]
+  numeric: FilterMenu[]
+  autocomplete: FilterMenu[]
+  select: FilterMenu[]
+  date: FilterMenu[]
 }
 
 const defIconSize = 16
@@ -46,7 +46,7 @@ export default (): FilterResponse => {
   const contains = useMemo<FilterMenu>(
     () => ({
       id: 'contains',
-      text: lang.filterOptions!!.contains,
+      text: lang.filterOptions.contains,
       icon: <FaInbox size={defIconSize} />,
     }),
     [lang],
@@ -55,7 +55,7 @@ export default (): FilterResponse => {
   const startsWith = useMemo<FilterMenu>(
     () => ({
       id: 'startsWith',
-      text: lang.filterOptions!!.startsWith,
+      text: lang.filterOptions.startsWith,
       icon: <FaArrowRight size={defIconSize} />,
     }),
     [lang],
@@ -64,7 +64,7 @@ export default (): FilterResponse => {
   const equal = useMemo<FilterMenu>(
     () => ({
       id: 'equal',
-      text: lang.filterOptions!!.equal,
+      text: lang.filterOptions.equal,
       icon: <FaEquals size={defIconSize} />,
     }),
     [lang],
@@ -73,7 +73,7 @@ export default (): FilterResponse => {
   const different = useMemo<FilterMenu>(
     () => ({
       id: 'different',
-      text: lang.filterOptions!!.different,
+      text: lang.filterOptions.different,
       icon: <FaNotEqual size={defIconSize} />,
     }),
     [lang],
@@ -82,7 +82,7 @@ export default (): FilterResponse => {
   const greater = useMemo<FilterMenu>(
     () => ({
       id: 'greater',
-      text: lang.filterOptions!!.greater,
+      text: lang.filterOptions.greater,
       icon: <FaChevronRight size={defIconSize} />,
     }),
     [lang],
@@ -91,7 +91,7 @@ export default (): FilterResponse => {
   const lower = useMemo<FilterMenu>(
     () => ({
       id: 'lower',
-      text: lang.filterOptions!!.lower,
+      text: lang.filterOptions.lower,
       icon: <FaChevronLeft size={defIconSize} />,
     }),
     [lang],
