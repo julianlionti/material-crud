@@ -48,6 +48,7 @@ export interface CrudProps extends TableProps {
   transformToEdit?: (props: any) => any
   transformFilter?: (props: any) => any
   moreOptions?: MoreOptionsProps[]
+  big?: boolean
 }
 
 interface DataCallProps {
@@ -136,7 +137,7 @@ export default memo((props: CrudProps) => {
   const lastFilter = useRef<any>({})
 
   const { url, response, interaction, onFinished, onError, title, noTitle, transformFilter } = props
-  const { Left, gender, description, isFormData, transform, transformToEdit } = props
+  const { Left, gender, description, isFormData, transform, transformToEdit, big } = props
   const { name, titleSize, idInUrl, itemName, fields, steps, filters, columns, moreOptions } = props
 
   const lang = useLang()
@@ -266,6 +267,7 @@ export default memo((props: CrudProps) => {
         loading={loading}
         moreOptions={moreOptions}
         name={name}
+        big={big}
         show={toolbar}
         titleSize={titleSize}
         handleShow={() => {

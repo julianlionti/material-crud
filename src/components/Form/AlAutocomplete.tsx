@@ -91,6 +91,22 @@ export default memo((props: AlAutocompleteProps) => {
     }
   }, [value, filter])
 
+  const startAdornment = useMemo(
+    () =>
+      [
+        onAddItem && (
+          <Tooltip aria-label={AriaLabels.BtnAddItem} key="add" title={lang.addItem}>
+            <div>
+              <IconButton disabled={loading} onClick={() => onAddItem(inputRef.current)}>
+                <FaPlus size={16} />
+              </IconButton>
+            </div>
+          </Tooltip>
+        ),
+      ].filter((e) => e),
+    [onAddItem, lang, loading],
+  )
+
   return (
     <BaseInput grow={grow} ocultar={hide}>
       <Autocomplete
@@ -115,13 +131,7 @@ export default memo((props: AlAutocompleteProps) => {
             {...inputProps}
             InputProps={{
               ...InputProps,
-              startAdornment: onAddItem && (
-                <Tooltip aria-label={AriaLabels.BtnAddItem} key="add" title={lang.addItem}>
-                  <IconButton disabled={loading} onClick={() => onAddItem(inputRef.current)}>
-                    <FaPlus />
-                  </IconButton>
-                </Tooltip>
-              ),
+              startAdornment,
 
               // startAdornment: [
               //   filter && (

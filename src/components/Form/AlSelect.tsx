@@ -83,9 +83,13 @@ export default memo((props: AlSelectProps) => {
             startAdornment={
               filter && (
                 <Tooltip aria-label={AriaLabels.BtnFilterTypes} title={lang.tooltips.defineFilter}>
-                  <IconButton disabled={loading} onClick={(e) => setAnchorFilter(e.currentTarget)}>
-                    {select.find((e) => e.id === (value as SelectFilter).filter)?.icon}
-                  </IconButton>
+                  <div>
+                    <IconButton
+                      disabled={loading}
+                      onClick={(e) => setAnchorFilter(e.currentTarget)}>
+                      {select.find((e) => e.id === (value as SelectFilter).filter)?.icon}
+                    </IconButton>
+                  </div>
                 </Tooltip>
               )
             }

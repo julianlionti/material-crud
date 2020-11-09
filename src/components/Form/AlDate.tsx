@@ -90,14 +90,17 @@ export default (props: AlDateProps) => {
           InputProps={{
             startAdornment: filter && (
               <Tooltip aria-label={AriaLabels.BtnFilterTypes} title={lang.tooltips.defineFilter}>
-                <IconButton
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    e.preventDefault()
-                    setAnchorFilter(e.currentTarget)
-                  }}>
-                  {date.find((e) => e.id === (value as DateFilter).filter)?.icon}
-                </IconButton>
+                <div>
+                  <IconButton
+                    disabled={loading}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      e.preventDefault()
+                      setAnchorFilter(e.currentTarget)
+                    }}>
+                    {date.find((e) => e.id === (value as DateFilter).filter)?.icon}
+                  </IconButton>
+                </div>
               </Tooltip>
             ),
           }}

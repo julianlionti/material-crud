@@ -43,6 +43,7 @@ interface Props {
   steps?: StepProps[]
   fields?: FieldProps[]
   moreOptions?: MoreOptionsProps[]
+  big?: boolean
 }
 
 export const createMoreOptions = (props: MoreOptionsProps[]) => props
@@ -61,6 +62,7 @@ export default (props: Props) => {
     filters,
     steps,
     moreOptions,
+    big,
   } = props
   const classes = useClasses({ titleSize })
   const [anchorEl, setAnchorEl] = useState<any>(null)
@@ -81,11 +83,12 @@ export default (props: Props) => {
               } ${title ? '' : name}`}</Typography>
             </div>
           )}
-          <div>
+          <div className={classes.rightRoot}>
             {Object.keys(filters || []).length > 0 && (
               <Button
+                size={big ? 'medium' : 'small'}
                 color="primary"
-                endIcon={<FaFilter />}
+                endIcon={<FaFilter size={16} />}
                 disabled={!!editObj || loading}
                 className={classes.spaceLeft}
                 onClick={handleShow}>
@@ -94,6 +97,7 @@ export default (props: Props) => {
             )}
             {(fields || steps) && (
               <Button
+                size={big ? 'medium' : 'small'}
                 disabled={!!editObj || loading}
                 color="primary"
                 variant="outlined"
@@ -104,9 +108,16 @@ export default (props: Props) => {
             )}
             {moreOptions && moreOptions.length && (
               <Tooltip title={lang.more}>
-                <IconButton color="primary" onClick={(e) => setAnchorEl(e.currentTarget)}>
-                  <FaEllipsisV />
-                </IconButton>
+                <div>
+                  <IconButton
+                    className={classes.moreMargin}
+                    size={big ? 'medium' : 'small'}
+                    disabled={loading}
+                    color="primary"
+                    onClick={(e) => setAnchorEl(e.currentTarget)}>
+                    <FaEllipsisV />
+                  </IconButton>
+                </div>
               </Tooltip>
             )}
           </div>
@@ -173,5 +184,14 @@ const useClasses = makeStyles((theme) => ({
   },
   divisor: {
     marginBottom: theme.spacing(3),
+  },
+  rightRoot: {
+    flex: 1,
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  moreMargin: {
+    marginLeft: theme.spacing(1),
   },
 }))
