@@ -75,10 +75,11 @@ export default memo((props: PropsWithChildren<Props>) => {
 const useClasses = makeStyles(() => ({
   cell: ({ width, align, isChild }: any) => ({
     flex: 1,
+    flexDirection: 'column',
     flexGrow: width,
     display: 'flex',
-    justifyContent: align || 'flex-start',
-    alignItems: isChild ? 'start' : 'center',
+    alignItems: align || 'flex-start',
+    justifyContent: isChild ? 'start' : 'center',
 
     whiteSpace: 'nowrap',
     overflow: 'hidden',
