@@ -127,7 +127,7 @@ export default memo((props: Props) => {
                   {...props}
                   fields={fields}
                   steps={steps}
-                  rowHeight={finalRowHeight}
+                  rowHeight={list[props.index].height || finalRowHeight}
                   onSelect={selectRow}
                   selected={rowsSelected.some((e) => e[itemId] === list[props.index][itemId])}
                   onExpanded={(index) => {
@@ -160,6 +160,7 @@ const useClasses = makeStyles((theme) => ({
   container: ({ height }: any) => ({
     height: height,
     display: 'flex',
+    flex: 1,
     flexDirection: 'column',
   }),
   noResult: {

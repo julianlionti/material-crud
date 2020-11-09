@@ -51,9 +51,7 @@ export default memo((props: Props) => {
 
   const renderContent = useCallback(() => {
     if (isHeader) {
-      return columns.map((col) => (
-        <CustomHeader onSort={onSort} rowHeight={rowHeight} key={col.id} col={col} />
-      ))
+      return columns.map((col) => <CustomHeader onSort={onSort} key={col.id} col={col} />)
     }
 
     if (rowData.child) {
@@ -106,7 +104,7 @@ export default memo((props: Props) => {
 
     if (isHeader)
       return (
-        <CustomHeader col={{ width: 0.5 }} rowHeight={rowHeight}>
+        <CustomHeader col={{ width: 2 }}>
           <Checkbox
             checked={selected === true}
             indeterminate={selected === undefined}
@@ -116,7 +114,7 @@ export default memo((props: Props) => {
       )
 
     return (
-      <CustomCell col={{ width: 0.5 }} rowIndex={index} rowHeight={rowHeight}>
+      <CustomCell col={{ width: 2 }} rowIndex={index} rowHeight={rowHeight}>
         <Checkbox checked={selected} onChange={() => onSelect(rowData)} />
       </CustomCell>
     )
@@ -129,16 +127,10 @@ export default memo((props: Props) => {
 
     if (!fields && !steps) return null
 
-    if (isHeader)
-      return (
-        <CustomHeader
-          col={{ width: 0.5, title: lang.crudCol, align: 'flex-end' }}
-          rowHeight={rowHeight}
-        />
-      )
+    if (isHeader) return <CustomHeader col={{ width: 2, title: lang.crudCol, align: 'flex-end' }} />
 
     return (
-      <CustomCell col={{ width: 0.5, align: 'flex-end' }} rowHeight={rowHeight} rowIndex={index}>
+      <CustomCell col={{ width: 2, align: 'flex-end' }} rowHeight={rowHeight} rowIndex={index}>
         {extraActions}
         {onEdit && (
           <Tooltip title={lang.edit}>
@@ -172,17 +164,9 @@ export default memo((props: Props) => {
 })
 
 const useClasses = makeStyles((theme) => ({
-  row: ({ index, height }: any) => ({
-    height,
+  row: ({ index }: any) => ({
     display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'nowrap',
-    alignItems: 'center',
-    boxSizing: 'border-box',
-    backgroundColor: index
-      ? index % 2 === 0
-        ? theme.palette.common.white
-        : theme.palette.grey[100]
-      : undefined,
+    backgroundColor:
+      index % 2 !== 0 ? undefined : theme.palette.grey[theme.palette.type === 'dark' ? 600 : 200],
   }),
 }))

@@ -17,12 +17,11 @@ interface Props {
   col?: Partial<ColumnsProps>
   onSort?: (newSort: SortProps) => void
   children?: ReactNode
-  rowHeight: number
 }
 
 const icono = 22
-export default ({ col, onSort, children, rowHeight }: Props) => {
-  const classes = useClasses({ grow: col?.width, height: rowHeight, align: col?.align })
+export default ({ col, onSort, children }: Props) => {
+  const classes = useClasses({ width: col?.width, align: col?.align })
   const [sort, setSort] = useState<SortProps>({})
 
   const renderIcono = useCallback(
@@ -88,13 +87,15 @@ export default ({ col, onSort, children, rowHeight }: Props) => {
 }
 
 const useClasses = makeStyles(() => ({
-  cell: ({ grow, height, align }: any) => ({
+  cell: ({ width, align }: any) => ({
     borderBottomWidth: 0,
-    flexGrow: grow || 1,
     flex: 1,
+    flexGrow: width,
     display: 'flex',
     justifyContent: align || 'flex-start',
-    alignItems: 'center',
-    height,
+
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   }),
 }))

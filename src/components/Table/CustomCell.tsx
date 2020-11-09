@@ -17,7 +17,7 @@ interface Props {
 
 export default memo((props: PropsWithChildren<Props>) => {
   const { children, rowHeight, col, rowIndex, onExpand, expanded, isChild } = props
-  const classes = useClasses({ height: rowHeight, grow: col?.width, align: col?.align, isChild })
+  const classes = useClasses({ width: col?.width, align: col?.align, isChild })
   const { list } = useABM()
   const rowData = list[rowIndex]
   const cellData = useMemo(() => {
@@ -66,12 +66,15 @@ export default memo((props: PropsWithChildren<Props>) => {
 })
 
 const useClasses = makeStyles(() => ({
-  cell: ({ grow, height, align, isChild }: any) => ({
-    flexGrow: grow || 1,
+  cell: ({ width, align, isChild }: any) => ({
     flex: 1,
+    flexGrow: width,
     display: 'flex',
     justifyContent: align || 'flex-start',
     alignItems: isChild ? 'start' : 'center',
-    height,
+
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   }),
 }))
