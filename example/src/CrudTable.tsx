@@ -126,21 +126,18 @@ export default () => {
           title: 'Nombre',
           width: 2,
           sort: true,
-          cellComponent: ({ rowData }) => rowData.nombre || '-',
         },
         {
           id: 'apellido',
           title: 'Apellido',
           width: 2,
           sort: true,
-          cellComponent: ({ rowData }) => rowData.apellido || '-',
         },
         {
           id: 'razon_social',
           title: 'Razón Social',
           width: 2,
           sort: true,
-          cellComponent: ({ rowData }) => rowData.razon_social || '-',
         },
         {
           id: 'segmentIds',
