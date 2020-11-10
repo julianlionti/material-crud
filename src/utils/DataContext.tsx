@@ -7,14 +7,13 @@ import React, {
   Dispatch,
   SetStateAction,
 } from 'react'
-import { ColumnsProps } from '../components/Table/TableTypes'
 
-export interface DataConfigProps {
-  columns: ColumnsProps[]
-  extraActions?: ReactNode[]
-}
+// export interface DataConfigProps {
+//   columns: ColumnsProps[]
+//   extraActions?: ReactNode[]
+// }
 
-interface ProviderProps extends DataConfigProps {
+interface ProviderProps /* extends DataConfigProps */ {
   children: ReactNode
   itemId?: 'id' | '_id' | string
 }
@@ -33,7 +32,7 @@ export interface PaginationProps {
   totalPages?: number
 }
 
-interface ContextProps<T = any> extends DataConfigProps {
+interface ContextProps<T = any> /* extends DataConfigProps */ {
   list: T[]
   pagination: PaginationProps
   itemId: 'id' | '_id' | string
@@ -45,18 +44,16 @@ const intials: ContextProps = {
   list: [],
   pagination: { page: 1, limit: 10 },
   itemId: '_id',
-  columns: [],
+  // columns: [],
 }
 
 const DataContext = createContext<Context>([intials, () => {}])
 
 export const DataProvider = (props: ProviderProps) => {
-  const { children, itemId, columns, extraActions } = props
+  const { children, itemId } = props
   const status = useState<ContextProps>({
     ...intials,
     itemId: itemId || '_id',
-    columns,
-    extraActions,
   })
 
   return <DataContext.Provider value={status}>{children}</DataContext.Provider>

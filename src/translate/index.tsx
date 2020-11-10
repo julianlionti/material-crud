@@ -43,6 +43,7 @@ export interface Translations {
   }
   dialog?: { cancel: string; accept: string }
   serverError: string
+  more: string
 }
 
 export const createTranslation = (props: Translations) => props

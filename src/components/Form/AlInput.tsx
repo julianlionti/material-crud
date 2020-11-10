@@ -117,18 +117,22 @@ export default memo((props: AlInputProps) => {
           startAdornment={
             filter && (
               <Tooltip aria-label={AriaLabels.BtnFilterTypes} title={lang.tooltips.defineFilter}>
-                <IconButton disabled={loading} onClick={(e) => setAnchorFilter(e.currentTarget)}>
-                  {filterType.find((e) => e.id === (value as InputFilter).filter)?.icon}
-                </IconButton>
+                <div>
+                  <IconButton disabled={loading} onClick={(e) => setAnchorFilter(e.currentTarget)}>
+                    {filterType.find((e) => e.id === (value as InputFilter).filter)?.icon}
+                  </IconButton>
+                </div>
               </Tooltip>
             )
           }
           endAdornment={
             FormTypes.Secure === type && (
               <Tooltip title={hasSecure ? lang.tooltips.showPass : lang.tooltips.hidePass}>
-                <IconButton disabled={loading} onClick={() => setHasSecure((hs) => !hs)}>
-                  {hasSecure ? <FaEye /> : <FaEyeSlash />}
-                </IconButton>
+                <div>
+                  <IconButton disabled={loading} onClick={() => setHasSecure((hs) => !hs)}>
+                    {hasSecure ? <FaEye /> : <FaEyeSlash />}
+                  </IconButton>
+                </div>
               </Tooltip>
             )
           }

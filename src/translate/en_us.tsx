@@ -54,4 +54,5 @@ export const enUS = createTranslation({
     accept: 'Accept',
   },
   serverError: 'Server error',
+  more: 'More options',
 })

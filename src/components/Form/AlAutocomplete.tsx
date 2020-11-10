@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import { useField } from 'formik'
-import { FaRegCheckSquare, FaRegSquare } from 'react-icons/fa'
+import { FaPlus, FaRegCheckSquare, FaRegSquare } from 'react-icons/fa'
 import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 import useFilters, { Filter } from '../../utils/useFilters'
@@ -31,154 +31,170 @@ export interface AlAutocompleteProps extends ComunesProps {
     setAggregate: (value: any) => void
   }) => ReactNode
   placeholder?: string
+  onAddItem?: (props: HTMLDivElement) => void
 }
 
 type AutoValue = null | OpcionesProps | OpcionesProps[]
 type AutoFilter = Filter<AutoValue>
-export default memo(
-  (props: AlAutocompleteProps) => {
-    const {
-      id,
-      title,
-      loading,
-      options,
-      onChangeText,
-      placeholder,
-      multiple,
-      renderAggregate,
-      grow,
-      validate,
-      filter,
-      hide,
-    } = props
-    const lang = useLang()
-    const { autocomplete } = useFilters()
-    const warnRef = useRef(false)
-    const [{ value }, { error, touched }, { setValue, setTouched }] = useField<
-      AutoValue | AutoFilter
-    >(id)
+export default memo((props: AlAutocompleteProps) => {
+  const inputRef = useRef<any>()
+  const {
+    id,
+    title,
+    loading,
+    options,
+    onChangeText,
+    placeholder,
+    multiple,
+    renderAggregate,
+    grow,
+    validate,
+    filter,
+    hide,
+    onAddItem,
+  } = props
+  const lang = useLang()
+  const { autocomplete } = useFilters()
+  const warnRef = useRef(false)
+  const [{ value }, { error, touched }, { setValue, setTouched }] = useField<
+    AutoValue | AutoFilter
+  >(id)
 
-    const [anchorFilter, setAnchorFilter] = useState<HTMLElement | null>(null)
-    const clases = useClases({ grow })
+  const [anchorFilter, setAnchorFilter] = useState<HTMLElement | null>(null)
+  const clases = useClases({ grow })
 
-    useEffect(() => {
-      if (renderAggregate && !multiple && !warnRef.current) {
-        console.warn('El render agregado solo se puede usar con el multiple')
-        warnRef.current = true
+  useEffect(() => {
+    if (renderAggregate && !multiple && !warnRef.current) {
+      console.warn('El render agregado solo se puede usar con el multiple')
+      warnRef.current = true
+    }
+  }, [multiple, renderAggregate])
+
+  const setAggregate = useCallback(
+    (agregado) => {
+      const vals = value as OpcionesProps[]
+      const donde = vals.find((e) => e.id === agregado.id)
+      if (donde) {
+        donde.extras = { ...donde.extras, comprados: agregado.cantidad }
       }
-    }, [multiple, renderAggregate])
+    },
+    [value],
+  )
 
-    const setAggregate = useCallback(
-      (agregado) => {
-        const vals = value as OpcionesProps[]
-        const donde = vals.find((e) => e.id === agregado.id)
-        if (donde) {
-          donde.extras = { ...donde.extras, comprados: agregado.cantidad }
-        }
-      },
-      [value],
-    )
+  const finalTitle = `${title} ${filter && validate ? '*' : ''}`
 
-    const finalTitle = `${title} ${filter && validate ? '*' : ''}`
+  const finalValue = useMemo(() => {
+    if (filter) {
+      return (value as AutoFilter).value
+    } else {
+      return value as AutoValue
+    }
+  }, [value, filter])
 
-    const finalValue = useMemo(() => {
-      if (filter) {
-        return (value as AutoFilter).value
-      } else {
-        return value as AutoValue
-      }
-    }, [value, filter])
+  const startAdornment = useMemo(
+    () =>
+      [
+        <Tooltip aria-label={AriaLabels.BtnAddItem} key="add" title={lang.addItem}>
+          <div>
+            <IconButton disabled={loading} onClick={() => onAddItem && onAddItem(inputRef.current)}>
+              <FaPlus size={16} />
+            </IconButton>
+          </div>
+        </Tooltip>,
+      ].filter((e) => e),
+    [onAddItem, lang, loading],
+  )
 
-    return (
-      <BaseInput grow={grow} ocultar={hide}>
-        <Autocomplete
-          loadingText={lang.loading}
-          loading={loading}
-          options={options}
-          value={finalValue}
-          noOptionsText={lang.noOptions}
-          onChange={(_, vals) => {
-            if (filter) {
-              setValue({ filter: (value as AutoFilter).filter, value: vals })
-            } else if (!filter) setValue(vals)
-          }}
-          onInputChange={(_, texto) => {
-            if (texto.length > 1) onChangeText(texto)
-          }}
-          getOptionLabel={(e) => e.title || e.id || ''}
-          getOptionSelected={(option, value) => value?.id === option?.id}
-          renderInput={({ InputProps, ...inputProps }) => (
-            <TextField
-              {...inputProps}
-              InputProps={{
-                ...InputProps,
-                startAdornment: [
-                  filter && (
-                    <Tooltip
-                      aria-label={AriaLabels.BtnFilterTypes}
-                      key="filter"
-                      title={lang.tooltips.defineFilter}>
-                      <IconButton
-                        disabled={loading}
-                        onClick={(e) => setAnchorFilter(e.currentTarget)}>
-                        {autocomplete.find((e) => e.id === (value as AutoFilter).filter)?.icon}
-                      </IconButton>
-                    </Tooltip>
-                  ),
-                  InputProps.startAdornment,
-                ],
-              }}
-              label={finalTitle}
-              placeholder={placeholder}
-              error={!!error && touched}
-              helperText={error}
-              onBlur={() => setTouched(true)}
-              variant="outlined"
+  return (
+    <BaseInput grow={grow} ocultar={hide}>
+      <Autocomplete
+        innerRef={(e) => (inputRef.current = e)}
+        loadingText={lang.loading}
+        loading={loading}
+        options={options}
+        value={finalValue}
+        noOptionsText={lang.noOptions}
+        onChange={(_, vals) => {
+          if (filter) {
+            setValue({ filter: (value as AutoFilter).filter, value: vals })
+          } else if (!filter) setValue(vals)
+        }}
+        onInputChange={(_, texto) => {
+          if (texto.length > 1) onChangeText(texto)
+        }}
+        getOptionLabel={(e) => e.title || e.id || ''}
+        getOptionSelected={(option, value) => value?.id === option?.id}
+        renderInput={({ InputProps, ...inputProps }) => (
+          <TextField
+            {...inputProps}
+            InputProps={{
+              ...InputProps,
+              startAdornment: onAddItem ? startAdornment : InputProps.startAdornment,
+              // startAdornment: [
+              //   filter && (
+              //     <Tooltip
+              //       aria-label={AriaLabels.BtnFilterTypes}
+              //       key="filter"
+              //       title={lang.tooltips.defineFilter}>
+              //       <IconButton
+              //         disabled={loading}
+              //         onClick={(e) => setAnchorFilter(e.currentTarget)}>
+              //         {autocomplete.find((e) => e.id === (value as AutoFilter).filter)?.icon}
+              //       </IconButton>
+              //     </Tooltip>
+              //   ),
+              //   InputProps.startAdornment,
+              // ],
+            }}
+            label={finalTitle}
+            placeholder={placeholder}
+            error={!!error && touched}
+            helperText={error}
+            onBlur={() => setTouched(true)}
+            variant="outlined"
+          />
+        )}
+        renderOption={(option, { selected }) => (
+          <React.Fragment>
+            <Checkbox
+              icon={<FaRegSquare />}
+              checkedIcon={<FaRegCheckSquare />}
+              checked={selected}
             />
-          )}
-          renderOption={(option, { selected }) => (
-            <React.Fragment>
-              <Checkbox
-                icon={<FaRegSquare />}
-                checkedIcon={<FaRegCheckSquare />}
-                checked={selected}
-              />
-              {option.title}
-            </React.Fragment>
-          )}
-          disableCloseOnSelect={multiple}
-          multiple={multiple}
-          fullWidth
-        />
-        {renderAggregate && multiple && (value as OpcionesProps[]).length > -1 && (
-          <Paper elevation={0} className={clases.agregado}>
-            {renderAggregate({
-              values: value as OpcionesProps[],
-              setAggregate,
-            })}
-          </Paper>
+            {option.title}
+          </React.Fragment>
         )}
-        {filter && (
-          <Menu anchorEl={anchorFilter} open={!!anchorFilter}>
-            {autocomplete.map((e) => (
-              <MenuItem
-                onClick={() => {
-                  setAnchorFilter(null)
-                  setValue({ filter: e.id, value: (value as AutoFilter).value })
-                }}
-                selected={(value as AutoFilter).filter === e.id}
-                key={e.id}>
-                <ListItemIcon>{e.icon}</ListItemIcon>
-                <ListItemText>{e.text}</ListItemText>
-              </MenuItem>
-            ))}
-          </Menu>
-        )}
-      </BaseInput>
-    )
-  },
-  (a, b) => a.options === b.options,
-)
+        disableCloseOnSelect={multiple}
+        multiple={multiple}
+        fullWidth
+      />
+      {renderAggregate && multiple && (value as OpcionesProps[]).length > -1 && (
+        <Paper elevation={0} className={clases.agregado}>
+          {renderAggregate({
+            values: value as OpcionesProps[],
+            setAggregate,
+          })}
+        </Paper>
+      )}
+      {filter && (
+        <Menu anchorEl={anchorFilter} open={!!anchorFilter}>
+          {autocomplete.map((e) => (
+            <MenuItem
+              onClick={() => {
+                setAnchorFilter(null)
+                setValue({ filter: e.id, value: (value as AutoFilter).value })
+              }}
+              selected={(value as AutoFilter).filter === e.id}
+              key={e.id}>
+              <ListItemIcon>{e.icon}</ListItemIcon>
+              <ListItemText>{e.text}</ListItemText>
+            </MenuItem>
+          ))}
+        </Menu>
+      )}
+    </BaseInput>
+  )
+})
 
 const useClases = makeStyles((tema) => ({
   agregado: {

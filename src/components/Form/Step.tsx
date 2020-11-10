@@ -106,6 +106,7 @@ export default memo(
             })}
             {accept && (
               <Button
+                size={inline ? 'small' : 'medium'}
                 disabled={loading}
                 onClick={submitForm}
                 className={classes.btn}
@@ -127,6 +128,7 @@ const useClases = makeStyles((tema) => ({
     flex: 1,
     display: 'flex',
     flexDirection: inline ? 'row' : 'column',
+    alignItems: inline ? 'center' : undefined,
   }),
   btn: {
     marginTop: tema.spacing(2),

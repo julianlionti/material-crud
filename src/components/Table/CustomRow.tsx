@@ -1,5 +1,5 @@
-import React, { memo, useCallback, useMemo } from 'react'
-import { Checkbox, IconButton, makeStyles, TableRow, Tooltip } from '@material-ui/core'
+import React, { memo, ReactNode, useCallback, useMemo } from 'react'
+import { Checkbox, IconButton, makeStyles, TableRow, Tooltip, Typography } from '@material-ui/core'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { ListChildComponentProps } from 'react-window'
 import AriaLabels from '../../utils/AriaLabels'
@@ -8,7 +8,7 @@ import { useABM } from '../../utils/DataContext'
 import { FieldProps, StepProps } from '../Form/FormTypes'
 import CustomCell from './CustomCell'
 import CustomHeader, { SortProps } from './CustomHeader'
-import { TableTypes } from './TableTypes'
+import { ColumnsProps, TableTypes } from './TableTypes'
 
 interface Props extends Partial<ListChildComponentProps> {
   rowHeight: number
@@ -24,6 +24,8 @@ interface Props extends Partial<ListChildComponentProps> {
   fields?: FieldProps[]
   steps?: StepProps[]
   index: number
+  columns: ColumnsProps[]
+  extraActions?: (rowdata: any) => ReactNode[]
 }
 
 export default memo((props: Props) => {
@@ -42,12 +44,14 @@ export default memo((props: Props) => {
     isHeader,
     fields,
     steps,
+    columns,
+    extraActions,
   } = props
 
   const lang = useLang()
-  const { list, insertIndex, removeIndex, itemId, columns, extraActions } = useABM()
-  const classes = useClasses({ index, height: rowHeight })
+  const { list, insertIndex, removeIndex, itemId } = useABM()
   const rowData = useMemo(() => list[index], [list, index])
+  const classes = useClasses({ index, height: rowHeight, isChild: rowData?.child })
 
   const renderContent = useCallback(() => {
     if (isHeader) {
@@ -77,6 +81,17 @@ export default memo((props: Props) => {
                 child: col.content,
                 height: col.height,
               })
+              break
+            default:
+              insertIndex(index + 1, {
+                [itemId]: col.id + 'child',
+                child: () => (
+                  <Typography variant="body2">
+                    Para usar content el atributo 'type' debe ser CUSTOM
+                  </Typography>
+                ),
+                height: 48,
+              })
           }
         }}
         rowIndex={index}
@@ -104,7 +119,7 @@ export default memo((props: Props) => {
 
     if (isHeader)
       return (
-        <CustomHeader col={{ width: 2 }}>
+        <CustomHeader col={{ width: 0.5 }}>
           <Checkbox
             checked={selected === true}
             indeterminate={selected === undefined}
@@ -114,7 +129,7 @@ export default memo((props: Props) => {
       )
 
     return (
-      <CustomCell col={{ width: 2 }} rowIndex={index} rowHeight={rowHeight}>
+      <CustomCell col={{ width: 0.5 }} rowIndex={index} rowHeight={rowHeight}>
         <Checkbox checked={selected} onChange={() => onSelect(rowData)} />
       </CustomCell>
     )
@@ -130,8 +145,12 @@ export default memo((props: Props) => {
     if (isHeader) return <CustomHeader col={{ width: 2, title: lang.crudCol, align: 'flex-end' }} />
 
     return (
-      <CustomCell col={{ width: 2, align: 'flex-end' }} rowHeight={rowHeight} rowIndex={index}>
-        {extraActions}
+      <CustomCell
+        col={{ width: 2, align: 'flex-end' }}
+        horizontal
+        rowHeight={rowHeight}
+        rowIndex={index}>
+        {extraActions && extraActions(rowData)}
         {onEdit && (
           <Tooltip title={lang.edit}>
             <IconButton size="small" onClick={() => onEdit(rowData)}>
@@ -164,8 +183,9 @@ export default memo((props: Props) => {
 })
 
 const useClasses = makeStyles((theme) => ({
-  row: ({ index }: any) => ({
+  row: ({ index, isChild }: any) => ({
     display: 'flex',
+    alignItems: isChild ? 'center' : undefined,
     backgroundColor:
       index % 2 !== 0 ? undefined : theme.palette.grey[theme.palette.type === 'dark' ? 600 : 200],
   }),

@@ -21,6 +21,7 @@ interface Props extends TableProps {
   headerClassName?: string
   fields?: FieldProps[]
   steps?: StepProps[]
+  columns: ColumnsProps[]
 }
 
 export default memo((props: Props) => {
@@ -39,6 +40,8 @@ export default memo((props: Props) => {
     rightToolbar,
     fields,
     steps,
+    columns,
+    extraActions,
   } = props
 
   const { height: windowHeight } = useWindowSize()
@@ -105,6 +108,8 @@ export default memo((props: Props) => {
         isHeader
         fields={fields}
         steps={steps}
+        columns={columns}
+        extraActions={extraActions}
       />
       {!loading && list.length === 0 && (
         <div className={classes.noResult}>
@@ -136,6 +141,8 @@ export default memo((props: Props) => {
                   onEdit={actions?.edit && onEdit}
                   onDelete={actions?.delete && onDelete}
                   showSelecting={showSelecting}
+                  columns={columns}
+                  extraActions={extraActions}
                 />
               )}
             </List>

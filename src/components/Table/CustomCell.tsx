@@ -1,5 +1,5 @@
 import React, { memo, PropsWithChildren, ReactNode, useCallback, useMemo } from 'react'
-import { Avatar, makeStyles, TableCell } from '@material-ui/core'
+import { Avatar, makeStyles, TableCell, Tooltip, Typography } from '@material-ui/core'
 import moment from 'moment'
 import { FaCheck, FaTimes } from 'react-icons/fa'
 import { useABM } from '../../utils/DataContext'
@@ -13,11 +13,12 @@ interface Props {
   onExpand?: () => void
   expanded?: boolean
   isChild?: boolean
+  horizontal?: boolean
 }
 
 export default memo((props: PropsWithChildren<Props>) => {
-  const { children, rowHeight, col, rowIndex, onExpand, expanded, isChild } = props
-  const classes = useClasses({ width: col?.width, align: col?.align, isChild })
+  const { children, rowHeight, col, rowIndex, onExpand, expanded, isChild, horizontal } = props
+  const classes = useClasses({ width: col?.width, align: col?.align, isChild, horizontal })
   const { list } = useABM()
   const rowData = list[rowIndex]
   const cellData = useMemo(() => {
@@ -46,15 +47,22 @@ export default memo((props: PropsWithChildren<Props>) => {
         )
       }
       case TableTypes.Date: {
-        const format = col.format
+        const format = col.format || 'DD/MM/YYYY'
         if (format) return moment(cellData).format(format)
 
-        return String(cellData || '-')
+        return <Typography variant="body2">{String(cellData || '-')}</Typography>
       }
       case TableTypes.Switch:
         return cellData ? <FaCheck size={18} color="green" /> : <FaTimes size={18} color="red" />
-      default:
-        return String(cellData || '-')
+      default: {
+        let finalString = cellData || '-'
+        if (Array.isArray(cellData)) finalString = cellData.join(' - ')
+        return (
+          <Tooltip title={cellData || ''}>
+            <Typography variant="body2">{String(finalString)}</Typography>
+          </Tooltip>
+        )
+      }
     }
   }, [cellData, col, rowHeight, children, onExpand, expanded, rowData])
 
@@ -66,12 +74,13 @@ export default memo((props: PropsWithChildren<Props>) => {
 })
 
 const useClasses = makeStyles(() => ({
-  cell: ({ width, align, isChild }: any) => ({
+  cell: ({ width, align, isChild, horizontal }: any) => ({
     flex: 1,
+    flexDirection: horizontal ? 'row' : 'column',
     flexGrow: width,
     display: 'flex',
-    justifyContent: align || 'flex-start',
-    alignItems: isChild ? 'start' : 'center',
+    alignItems: horizontal ? (isChild ? 'start' : 'center') : align || 'flex-start',
+    justifyContent: horizontal ? align || 'flex-start' : isChild ? 'start' : 'center',
 
     whiteSpace: 'nowrap',
     overflow: 'hidden',

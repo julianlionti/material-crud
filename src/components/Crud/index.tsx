@@ -11,7 +11,7 @@ import AlTable from '../Table/index'
 import { ColumnsProps, TableProps } from '../Table/TableTypes'
 import CenteredCard from '../UI/CenteredCard'
 import Dialog, { CartelState } from '../UI/Dialog'
-import Toolbar from './Toolbar'
+import Toolbar, { MoreOptionsProps } from './Toolbar'
 
 interface OnFlyResponse extends PaginationProps {
   items: any[]
@@ -47,6 +47,8 @@ export interface CrudProps extends TableProps {
   transform?: (what: 'query' | 'new' | 'update', rowData: any) => Record<string, any>
   transformToEdit?: (props: any) => any
   transformFilter?: (props: any) => any
+  moreOptions?: MoreOptionsProps[]
+  big?: boolean
 }
 
 interface DataCallProps {
@@ -135,13 +137,13 @@ export default memo((props: CrudProps) => {
   const lastFilter = useRef<any>({})
 
   const { url, response, interaction, onFinished, onError, title, noTitle, transformFilter } = props
-  const { Left, gender, description, isFormData, transform, transformToEdit } = props
-  const { name, titleSize, idInUrl, itemName, fields, steps, filters } = props
+  const { Left, gender, description, isFormData, transform, transformToEdit, big } = props
+  const { name, titleSize, idInUrl, itemName, fields, steps, filters, columns, moreOptions } = props
 
   const lang = useLang()
   const called = useRef(false)
 
-  const { add, edit: editABM, replace, deleteCall, pagination, itemId, columns } = useABM()
+  const { add, edit: editABM, replace, deleteCall, pagination, itemId } = useABM()
   const { loading, call } = useAxios<any>({ onError })
 
   const [cartel, setCartel] = useState<CartelState>({ visible: false })
@@ -263,7 +265,9 @@ export default memo((props: CrudProps) => {
         gender={gender}
         title={title}
         loading={loading}
+        moreOptions={moreOptions}
         name={name}
+        big={big}
         show={toolbar}
         titleSize={titleSize}
         handleShow={() => {
@@ -275,7 +279,7 @@ export default memo((props: CrudProps) => {
                 [interaction?.filter || 'filter']: {},
                 [interaction?.page || 'page']: 1,
               }
-              getDataCall(lastFilter.current)
+              // getDataCall(lastFilter.current)
             }
             return final
           })

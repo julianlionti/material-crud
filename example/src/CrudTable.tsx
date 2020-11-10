@@ -15,21 +15,30 @@ import { OpcionesProps } from '../../dist/components/Form/FormTypes'
 
 export default () => {
   const { height } = useWindowSize()
-
-  // const columnas = useMemo(
-  //   () => createColumns([{ id: 'nombre', title: 'Nombre', type: TableTypes.String }]),
-  //   [],
-  // )
+  const [opciones, setOpciones] = useState<OpcionesProps[]>([{ id: 'assda', title: 'asdas' }])
 
   const filters = useMemo(
     () =>
-      createFields([{ id: 'nombre', type: FormTypes.Input, title: 'Nombre *', willSubmit: true }]),
-    [],
+      createFields([
+        { id: 'nombre', type: FormTypes.Input, title: 'Nombre *', willSubmit: true },
+        {
+          type: FormTypes.Autocomplete,
+          title: 'Prueba con opciones',
+          id: 'prueba',
+          multiple: true,
+          onChangeText: (text) => {
+            if (text.length > 2) {
+              setOpciones([
+                { id: 'prueba1', title: 'prueba 1' },
+                { id: 'prueba2', title: 'prueba 2' },
+              ])
+            }
+          },
+          options: opciones,
+        },
+      ]),
+    [opciones],
   )
-
-  const [opciones, setOpciones] = useState<OpcionesProps[]>([
-    /*-{ id: 'assda', title: 'asdas' }*/
-  ])
 
   const steps = useMemo(
     () =>
@@ -49,6 +58,7 @@ export default () => {
               type: FormTypes.Autocomplete,
               title: 'Prueba con opciones',
               id: 'prueba',
+              multiple: true,
               onChangeText: (text) => {
                 if (text.length > 2) {
                   setOpciones([
@@ -142,22 +152,23 @@ export default () => {
           sort: true,
           cellComponent: ({ rowData }) => rowData.razon_social || '-',
         },
-        {
-          id: 'segmentIds',
-          title: 'Etiquetas',
-          width: 2,
-          cellComponent: ({ rowData }) => {
-            return !rowData.segmentIds?.length ? (
-              <span>No hay etiquetas</span>
-            ) : (
-              rowData.segmentIds?.map((item: any) => <span key={item}>{item}</span>)
-            )
-          },
-        },
+        // {
+        //   id: 'segmentIds',
+        //   title: 'Etiquetas',
+        //   width: 2,
+        //   cellComponent: ({ rowData }) => {
+        //     return !rowData.segmentIds?.length ? (
+        //       <span>No hay etiquetas</span>
+        //     ) : (
+        //       rowData.segmentIds?.map((item: any) => <span key={item}>{item}</span>)
+        //     )
+        //   },
+        // },
         {
           id: 'contactsId',
           title: 'Contactos relacionados',
           width: 2,
+          type: TableTypes.Custom,
           cellComponent: ({ rowData, expandRow }) => (
             <IconButton onClick={expandRow} disabled={!rowData.isCompany}>
               <FaUserFriends />
@@ -184,7 +195,7 @@ export default () => {
         columns={columns}
         filters={filters}
         actions={{ edit: true, delete: false }}
-        extraActions={[
+        extraActions={(rowData) => [
           <IconButton key="ice">
             <FaIceCream />
           </IconButton>,

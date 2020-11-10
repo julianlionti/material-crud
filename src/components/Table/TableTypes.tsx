@@ -25,7 +25,7 @@ interface StringType extends CommonProps {
 
 interface DateType extends CommonProps {
   type: TableTypes.Date
-  format: string
+  format?: string
 }
 
 interface SwtichType extends CommonProps {
@@ -73,7 +73,7 @@ export interface TableProps {
   headerHeight?: number
   rowHeight?: number
   actions?: ActionProps
-  extraActions?: ReactNode[]
+  extraActions?: (rowData: any) => ReactNode[]
   showSelecting?: boolean
   rightToolbar?: (props: RightToolbarProps) => ReactNode
   loading?: boolean
