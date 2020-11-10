@@ -103,11 +103,11 @@ export default <T extends any = any>(props?: UseAxiosProps): Response<T> => {
   }, [error, onError])
 
   const call = useCallback(
-    async (config: AxiosRequestConfig) => {
+    async (config: AxiosRequestConfig, noHeader?: boolean) => {
       if (!calling.current) {
         calling.current = true
         dispatch({ loading: true, error: undefined, response: undefined, status: undefined })
-        const { error, response, status } = await callWs(config, headers, lang)
+        const { error, response, status } = await callWs(config, noHeader ? {} : headers, lang)
         dispatch({ loading: false, response, error, status: status })
         calling.current = false
         return { response, error, status }
