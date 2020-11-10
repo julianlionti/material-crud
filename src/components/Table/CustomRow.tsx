@@ -1,5 +1,5 @@
 import React, { memo, ReactNode, useCallback, useMemo } from 'react'
-import { Checkbox, IconButton, makeStyles, TableRow, Tooltip } from '@material-ui/core'
+import { Checkbox, IconButton, makeStyles, TableRow, Tooltip, Typography } from '@material-ui/core'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { ListChildComponentProps } from 'react-window'
 import AriaLabels from '../../utils/AriaLabels'
@@ -80,6 +80,17 @@ export default memo((props: Props) => {
                 [itemId]: col.id + 'child',
                 child: col.content,
                 height: col.height,
+              })
+              break
+            default:
+              insertIndex(index + 1, {
+                [itemId]: col.id + 'child',
+                child: () => (
+                  <Typography variant="body2">
+                    Para usar content el atributo 'type' debe ser CUSTOM
+                  </Typography>
+                ),
+                height: 48,
               })
           }
         }}

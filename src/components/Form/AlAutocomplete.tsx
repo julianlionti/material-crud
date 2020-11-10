@@ -94,15 +94,13 @@ export default memo((props: AlAutocompleteProps) => {
   const startAdornment = useMemo(
     () =>
       [
-        onAddItem && (
-          <Tooltip aria-label={AriaLabels.BtnAddItem} key="add" title={lang.addItem}>
-            <div>
-              <IconButton disabled={loading} onClick={() => onAddItem(inputRef.current)}>
-                <FaPlus size={16} />
-              </IconButton>
-            </div>
-          </Tooltip>
-        ),
+        <Tooltip aria-label={AriaLabels.BtnAddItem} key="add" title={lang.addItem}>
+          <div>
+            <IconButton disabled={loading} onClick={() => onAddItem && onAddItem(inputRef.current)}>
+              <FaPlus size={16} />
+            </IconButton>
+          </div>
+        </Tooltip>,
       ].filter((e) => e),
     [onAddItem, lang, loading],
   )
@@ -131,8 +129,7 @@ export default memo((props: AlAutocompleteProps) => {
             {...inputProps}
             InputProps={{
               ...InputProps,
-              startAdornment,
-
+              startAdornment: onAddItem ? startAdornment : InputProps.startAdornment,
               // startAdornment: [
               //   filter && (
               //     <Tooltip

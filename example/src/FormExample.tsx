@@ -3,6 +3,8 @@ import { Dialog, CenteredCard, Form, FormTypes } from 'material-crud'
 import { useHistory } from 'react-router'
 import CustomField from './extra/CustomField'
 import { OpcionesProps } from '../../dist/components/Form/FormTypes'
+import { Autocomplete } from '@material-ui/lab'
+import { TextField } from '@material-ui/core'
 
 export default () => {
   const history = useHistory()
@@ -16,7 +18,7 @@ export default () => {
     setLoading(false)
   }, [])
 
-  const [opciones, setOpciones] = useState<OpcionesProps[]>([{ id: 'assda', title: 'asdas' }])
+  const [opciones, setOpciones] = useState<OpcionesProps[]>([])
 
   return (
     <CenteredCard
@@ -38,6 +40,7 @@ export default () => {
             type: FormTypes.Autocomplete,
             title: 'Prueba con opciones',
             id: 'prueba',
+            multiple: true,
             onChangeText: (text) => {
               if (text.length > 2) {
                 setOpciones([

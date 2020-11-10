@@ -8,8 +8,6 @@ import {
   useWindowSize,
   TableTypes,
   createSteps,
-  useAxios,
-  createMoreOptions,
 } from 'material-crud'
 import { FaIceCream, FaUserFriends } from 'react-icons/fa'
 import { IconButton } from '@material-ui/core'
@@ -17,43 +15,30 @@ import { OpcionesProps } from '../../dist/components/Form/FormTypes'
 
 export default () => {
   const { height } = useWindowSize()
-  const { call, response } = useAxios()
+  const [opciones, setOpciones] = useState<OpcionesProps[]>([{ id: 'assda', title: 'asdas' }])
 
-  // const columnas = useMemo(
-  //   () => createColumns([{ id: 'nombre', title: 'Nombre', type: TableTypes.String }]),
-  //   [],
-  // )
   const filters = useMemo(
     () =>
       createFields([
         { id: 'nombre', type: FormTypes.Input, title: 'Nombre *', willSubmit: true },
         {
-          id: 'segment',
           type: FormTypes.Autocomplete,
-          title: 'Etiquetas',
-          options:
-            response?.data.docs.map(({ _id, name }: any) => ({
-              id: _id,
-              title: name,
-            })) || [],
-          onChangeText: (segment) => {
-            call({
-              url: 'http://localhost:5050/api/etiqueta',
-              params: { filtros: { value: segment, filter: 'startsWith' } },
-            })
-          },
+          title: 'Prueba con opciones',
+          id: 'prueba',
           multiple: true,
-          onAddItem: (e) => {
-            console.log(e)
+          onChangeText: (text) => {
+            if (text.length > 2) {
+              setOpciones([
+                { id: 'prueba1', title: 'prueba 1' },
+                { id: 'prueba2', title: 'prueba 2' },
+              ])
+            }
           },
+          options: opciones,
         },
       ]),
-    [response],
+    [opciones],
   )
-
-  const [opciones, setOpciones] = useState<OpcionesProps[]>([
-    /*-{ id: 'assda', title: 'asdas' }*/
-  ])
 
   const steps = useMemo(
     () =>
@@ -73,6 +58,7 @@ export default () => {
               type: FormTypes.Autocomplete,
               title: 'Prueba con opciones',
               id: 'prueba',
+              multiple: true,
               onChangeText: (text) => {
                 if (text.length > 2) {
                   setOpciones([
@@ -150,35 +136,39 @@ export default () => {
           title: 'Nombre',
           width: 2,
           sort: true,
+          cellComponent: ({ rowData }) => rowData.nombre || '-',
         },
         {
           id: 'apellido',
           title: 'Apellido',
           width: 2,
           sort: true,
+          cellComponent: ({ rowData }) => rowData.apellido || '-',
         },
         {
           id: 'razon_social',
           title: 'Razón Social',
           width: 2,
           sort: true,
+          cellComponent: ({ rowData }) => rowData.razon_social || '-',
         },
-        {
-          id: 'segmentIds',
-          title: 'Etiquetas',
-          width: 2,
-          cellComponent: ({ rowData }) => {
-            return !rowData.segmentIds?.length ? (
-              <span>No hay etiquetas</span>
-            ) : (
-              rowData.segmentIds?.map((item: any) => <span key={item.name}>{item.name}</span>)
-            )
-          },
-        },
+        // {
+        //   id: 'segmentIds',
+        //   title: 'Etiquetas',
+        //   width: 2,
+        //   cellComponent: ({ rowData }) => {
+        //     return !rowData.segmentIds?.length ? (
+        //       <span>No hay etiquetas</span>
+        //     ) : (
+        //       rowData.segmentIds?.map((item: any) => <span key={item}>{item}</span>)
+        //     )
+        //   },
+        // },
         {
           id: 'contactsId',
           title: 'Contactos relacionados',
           width: 2,
+          type: TableTypes.Custom,
           cellComponent: ({ rowData, expandRow }) => (
             <IconButton onClick={expandRow} disabled={!rowData.isCompany}>
               <FaUserFriends />
@@ -195,16 +185,6 @@ export default () => {
     [],
   )
 
-  const moreOptions = createMoreOptions([
-    {
-      id: 'exportar',
-      title: 'Exportar',
-      onClick: () => {
-        console.log('Exportar')
-      },
-    },
-  ])
-
   return (
     <React.Fragment>
       <Crud
@@ -215,6 +195,11 @@ export default () => {
         columns={columns}
         filters={filters}
         actions={{ edit: true, delete: false }}
+        extraActions={(rowData) => [
+          <IconButton key="ice">
+            <FaIceCream />
+          </IconButton>,
+        ]}
         height={height - 100}
         rowHeight={75}
         description={'Los productos tendrán asociada una o más categorías.'}
@@ -234,7 +219,6 @@ export default () => {
         }}
         itemName="nombre"
         onError={(err) => console.log(err)}
-        moreOptions={moreOptions}
       />
     </React.Fragment>
   )
