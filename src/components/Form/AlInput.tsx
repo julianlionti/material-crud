@@ -34,7 +34,7 @@ export interface AlInputProps extends ComunesProps {
   willSubmit?: boolean
   placeholder?: string
   fullWidth?: boolean
-  onBlur?: () => void
+  onBlur?: (val: string) => void
 }
 
 type InputFilter = Filter<string>
@@ -157,7 +157,11 @@ export default memo((props: AlInputProps) => {
               formik.submitForm()
             }
           }}
-          onBlur={onBlur}
+          onBlur={() => {
+            if (!filter && onBlur) {
+              onBlur(value as string)
+            }
+          }}
           placeholder={placeholder}
           type={inputType}
           label={finalTitle}
