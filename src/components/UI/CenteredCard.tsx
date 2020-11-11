@@ -29,6 +29,7 @@ export interface Props {
   onClose?: () => void
   titleSize?: number
   subtitleSize?: number
+  width: number | string
 }
 
 export default memo((props: Props) => {
@@ -45,8 +46,9 @@ export default memo((props: Props) => {
     titleSize,
     subtitleSize,
     noPadding,
+    width,
   } = props
-  const clases = useClases({ titleSize, subtitleSize, noPadding })
+  const clases = useClases({ titleSize, subtitleSize, noPadding, width })
 
   return (
     <div className={clases.contenedor}>
@@ -122,12 +124,12 @@ const useClases = makeStyles((tema) => ({
     flexDirection: 'column',
     padding: tema.spacing(noPadding ? 0 : 2),
   }),
-  card: {
-    [tema.breakpoints.up('md')]: {
-      width: '70%',
+  card: ({ width }: any) => ({
+    [tema.breakpoints.up('sm')]: {
+      width: width || '70%',
     },
     width: '90%',
-  },
+  }),
   textos: {
     display: 'flex',
     flex: 1,
