@@ -2,6 +2,7 @@ import React, { memo, useCallback, useMemo, useRef, useState } from 'react'
 import { Collapse, lighten, LinearProgress, makeStyles, Paper, Typography } from '@material-ui/core'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import { VariableSizeList as List } from 'react-window'
+import { compareKeysOmit } from '../../utils/addOns'
 import { useLang } from '../../utils/CrudContext'
 import { useABM } from '../../utils/DataContext'
 import useWindowSize from '../../utils/useWindowSize'
@@ -161,7 +162,7 @@ export default memo((props: Props) => {
       />
     </Paper>
   )
-})
+}, compareKeysOmit(['onSort', 'actions', 'onChangePagination', 'onDelete', 'onEdit']))
 
 const useClasses = makeStyles((theme) => ({
   container: ({ height }: any) => ({

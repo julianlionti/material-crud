@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useState } from 'react'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 import * as Yup from 'yup'
 import {
   createColumns,
@@ -16,6 +16,14 @@ import { OpcionesProps } from '../../dist/components/Form/FormTypes'
 export default () => {
   const { height } = useWindowSize()
   const [opciones, setOpciones] = useState<OpcionesProps[]>([{ id: 'assda', title: 'asdas' }])
+
+  const [name, setName] = useState('Titulo prueba')
+
+  useEffect(() => {
+    setTimeout(() => {
+      setName('Vamo Racing')
+    }, 1500)
+  }, [])
 
   const filters = useMemo(
     () =>
@@ -203,7 +211,7 @@ export default () => {
       <Crud
         url={'http://localhost:5050/api/contact'}
         gender="F"
-        name="Categoria"
+        name={name}
         steps={steps}
         columns={columns}
         filters={filters}

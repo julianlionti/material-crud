@@ -1,6 +1,7 @@
 import React, { memo, useMemo } from 'react'
 import { Collapse, FormControlLabel, Switch, Typography } from '@material-ui/core'
 import { useField } from 'formik'
+import { compareKeys } from '../../utils/addOns'
 import { Filter } from '../../utils/useFilters'
 import BaseInput from './BaseInput'
 import { ComunesProps, FormTypes } from './FormTypes'
@@ -46,4 +47,4 @@ export default memo((props: AlSwitchProps) => {
       </Collapse>
     </BaseInput>
   )
-})
+}, compareKeys(['loading']))

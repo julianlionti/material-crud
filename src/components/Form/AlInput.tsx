@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core'
 import { useField, useFormikContext } from 'formik'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
+import { compareKeys } from '../../utils/addOns'
 import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 import useFilters, { Filter } from '../../utils/useFilters'
@@ -184,4 +185,4 @@ export default memo((props: AlInputProps) => {
       </FormControl>
     </BaseInput>
   )
-})
+}, compareKeys(['loading']))

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, ReactNode, useCallback, memo, useMe
 import { Collapse, makeStyles, LinearProgress, Typography } from '@material-ui/core'
 import { serialize } from 'object-to-formdata'
 import qs from 'qs'
+import { compareKeysOmit } from '../../utils/addOns'
 import { useLang } from '../../utils/CrudContext'
 import { PaginationProps, ReplaceProps, useABM } from '../../utils/DataContext'
 import useAxios, { CallProps, Error } from '../../utils/useAxios'
@@ -356,7 +357,7 @@ export default memo((props: CrudProps) => {
       />
     </div>
   )
-})
+}, compareKeysOmit(['Left', 'response', 'transform', 'transformFilter', 'transformToEdit']))
 
 const useClasses = makeStyles((tema) => ({
   contenedor: {

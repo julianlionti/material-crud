@@ -4,6 +4,7 @@ import { grey } from '@material-ui/core/colors'
 import { useField } from 'formik'
 import { useDropzone } from 'react-dropzone'
 import { FaFile, FaTrashAlt } from 'react-icons/fa'
+import { compareKeys } from '../../utils/addOns'
 import BaseInput from './BaseInput'
 import { ComunesProps, FormTypes } from './FormTypes'
 
@@ -99,7 +100,7 @@ export default memo(({ title, id, accept, grow, hide, ImgIcon, multiple }: AlDro
       </div>
     </BaseInput>
   )
-})
+}, compareKeys(['loading']))
 
 const useClasses = makeStyles((theme) => ({
   base: {

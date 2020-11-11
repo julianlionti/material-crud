@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { Typography, TypographyProps } from '@material-ui/core'
 import { FormTypes, BaseProps } from '../Form/FormTypes'
 import BaseInput from './BaseInput'
@@ -8,7 +8,7 @@ export interface AlOnlyTitleProps extends BaseProps {
   titleProps?: TypographyProps
 }
 
-export default (props: AlOnlyTitleProps) => {
+export default memo((props: AlOnlyTitleProps) => {
   const { title, titleProps } = props
   return (
     <BaseInput>
@@ -17,4 +17,4 @@ export default (props: AlOnlyTitleProps) => {
       </Typography>
     </BaseInput>
   )
-}
+})

@@ -15,6 +15,7 @@ import {
 } from '@material-ui/core'
 import { useField } from 'formik'
 import { FaPlus } from 'react-icons/fa'
+import { compareKeys } from '../../utils/addOns'
 import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 import useFilters, { Filter } from '../../utils/useFilters'
@@ -167,7 +168,7 @@ export default memo((props: AlSelectProps) => {
       )}
     </BaseInput>
   )
-})
+}, compareKeys(['loading', 'options']))
 
 const useClasses = makeStyles((theme) => ({
   addIcon: {

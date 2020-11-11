@@ -3,6 +3,7 @@ import { makeStyles, IconButton, Typography, CircularProgress, Collapse } from '
 import { red } from '@material-ui/core/colors'
 import { useField } from 'formik'
 import { FaCamera, FaFile } from 'react-icons/fa'
+import { compareKeys } from '../../utils/addOns'
 import { useLang } from '../../utils/CrudContext'
 import BaseInput from './BaseInput'
 import { FormTypes, ComunesProps } from './FormTypes'
@@ -130,7 +131,7 @@ export default memo((props: AlImagenProps) => {
       />
     </BaseInput>
   )
-})
+}, compareKeys(['loading']))
 
 const useClases = makeStyles(() => ({
   contenedor: {

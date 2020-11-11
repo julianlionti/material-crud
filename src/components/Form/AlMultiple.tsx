@@ -2,6 +2,7 @@ import React, { memo, useMemo } from 'react'
 import { IconButton, makeStyles, Paper, Typography } from '@material-ui/core'
 import { useField } from 'formik'
 import { FaPlus, FaTrash } from 'react-icons/fa'
+import { compareKeys } from '../../utils/addOns'
 import AlAutocomplete from './AlAutocomplete'
 import AlCustom from './AlCustom'
 import AlImagen from './AlImagen'
@@ -114,7 +115,7 @@ export default memo((props: AlMultipleProps) => {
       </Paper>
     </BaseInput>
   )
-})
+}, compareKeys(['loading', 'configuration']))
 
 const useClasses = makeStyles((theme) => ({
   headerContainer: {

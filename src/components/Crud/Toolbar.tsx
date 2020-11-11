@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react'
+import React, { memo, ReactNode, useState } from 'react'
 import {
   Button,
   Collapse,
@@ -13,6 +13,7 @@ import {
   Typography,
 } from '@material-ui/core'
 import { FaEllipsisV, FaFilter } from 'react-icons/fa'
+import { compareKeysOmit } from '../../utils/addOns'
 import { useLang } from '../../utils/CrudContext'
 import Form from '../Form'
 import { FieldProps, StepProps } from '../Form/FormTypes'
@@ -48,7 +49,7 @@ interface Props {
 
 export const createMoreOptions = (props: MoreOptionsProps[]) => props
 
-export default (props: Props) => {
+export default memo((props: Props) => {
   const lang = useLang()
   const { editObj, noTitle, Left, loading, title, gender, hide } = props
   const {
@@ -161,7 +162,7 @@ export default (props: Props) => {
       </Menu>
     </React.Fragment>
   )
-}
+}, compareKeysOmit(['handleShow', 'Left', 'onFilter', 'onNew']))
 
 const useClasses = makeStyles((theme) => ({
   root: {
