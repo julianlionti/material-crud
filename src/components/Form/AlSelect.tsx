@@ -48,7 +48,7 @@ export default memo((props: AlSelectProps) => {
   const { select } = useFilters()
   const [anchorFilter, setAnchorFilter] = useState<HTMLElement | null>(null)
 
-  const finalTitle = `${title} ${filter && validate ? '*' : ''}`
+  const finalTitle = `${title} ${!filter && validate ? '*' : ''}`
 
   const finalValue = useMemo(() => {
     if (filter) {
