@@ -42,6 +42,19 @@ export default () => {
           },
           { id: 'fecha', type: FormTypes.Date, title: 'Fecha' },
           {
+            id: 'select',
+            type: FormTypes.Options,
+            title: 'Select multiple',
+            options: [
+              { id: 'Una', title: 'Sarasa' },
+              { id: 'Dos' },
+              { id: 'Tres' },
+              { id: 'Cuatro' },
+            ],
+            placeholder: 'Select multiple',
+            // multiple: true,
+          },
+          {
             type: FormTypes.Autocomplete,
             title: 'Prueba con opciones',
             id: 'prueba',

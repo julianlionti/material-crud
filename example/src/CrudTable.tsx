@@ -36,6 +36,19 @@ export default () => {
           },
           options: opciones,
         },
+        {
+          id: 'select',
+          type: FormTypes.Options,
+          title: 'Select multiple',
+          options: [
+            { id: 'Una', title: 'Sarasa' },
+            { id: 'Dos' },
+            { id: 'Tres' },
+            { id: 'Cuatro' },
+          ],
+          placeholder: 'Select multiple',
+          // multiple: true,
+        },
       ]),
     [opciones],
   )

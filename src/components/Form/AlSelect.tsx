@@ -11,6 +11,7 @@ import {
   IconButton,
   Tooltip,
   makeStyles,
+  Chip,
 } from '@material-ui/core'
 import { useField } from 'formik'
 import { FaPlus } from 'react-icons/fa'
@@ -25,9 +26,11 @@ export interface AlSelectProps extends ComunesProps {
   placeholder: string
   options: OpcionesProps[]
   onAddItem?: (props: HTMLDivElement) => void
+  multiple?: boolean
 }
 
-type SelectFilter = Filter<string>
+type SelectFilter = Filter<OpcionesProps | OpcionesProps[]>
+type ValueType = OpcionesProps | OpcionesProps[]
 export default memo((props: AlSelectProps) => {
   const inputRef = useRef<any>()
   const {
@@ -41,25 +44,38 @@ export default memo((props: AlSelectProps) => {
     hide,
     filter,
     onAddItem,
+    multiple,
   } = props
-  const [{ value }, { error, touched }, { setValue }] = useField<string | SelectFilter>(id)
+  const [{ value }, { error, touched }, { setValue }] = useField<ValueType | SelectFilter>(id)
 
   const lang = useLang()
   const { select } = useFilters()
   const [anchorFilter, setAnchorFilter] = useState<HTMLElement | null>(null)
 
-  const finalTitle = `${title} ${!filter && validate ? '*' : ''}`
+  const finalTitle = useMemo(() => {
+    return `${title} ${!filter && validate ? '*' : ''}`
+  }, [title, filter, validate])
 
   const finalValue = useMemo(() => {
+    if (multiple && filter) return (value as SelectFilter).value
+    if (multiple && !filter) return value
+
     if (filter) {
-      return (value as SelectFilter).value
+      const filval = (value as SelectFilter).value as OpcionesProps
+      return filval // .title || filval.id
     }
-    return value as string
-  }, [value, filter])
+    const singlevalue = value as OpcionesProps
+    return singlevalue // .title || singlevalue.id
+  }, [value, filter, multiple])
 
   const selectItem = useCallback(
-    (valInput: string) => {
-      const finalValInput = valInput === '-1' ? '' : valInput
+    (valInput: ValueType) => {
+      let finalValInput: ValueType = valInput
+      if (!multiple) {
+        const vinput = valInput as OpcionesProps
+        finalValInput = vinput.id === '-1' ? { id: '' } : vinput
+      }
+
       if (filter) {
         setValue({
           filter: (value as SelectFilter).filter,
@@ -69,7 +85,7 @@ export default memo((props: AlSelectProps) => {
         setValue(finalValInput)
       }
     },
-    [filter, setValue, value],
+    [filter, setValue, value, multiple],
   )
 
   const classes = useClasses()
@@ -77,9 +93,10 @@ export default memo((props: AlSelectProps) => {
   return (
     <BaseInput grow={grow} ocultar={hide}>
       <div style={{ display: 'flex' }} ref={(e) => (inputRef.current = e)}>
-        <FormControl fullWidth error={touched && !!error} variant="outlined">
+        <FormControl disabled={loading} fullWidth error={touched && !!error} variant="outlined">
           <InputLabel htmlFor={id}>{finalTitle}</InputLabel>
           <Select
+            multiple={multiple}
             startAdornment={
               filter && (
                 <Tooltip aria-label={AriaLabels.BtnFilterTypes} title={lang.tooltips.defineFilter}>
@@ -93,18 +110,32 @@ export default memo((props: AlSelectProps) => {
                 </Tooltip>
               )
             }
-            disabled={loading}
+            renderValue={
+              !multiple
+                ? undefined
+                : () => {
+                    return (
+                      <div className={classes.chips}>
+                        {(value as OpcionesProps[]).map(({ id, title }) => (
+                          <Chip key={id} label={title || id} className={classes.chip} />
+                        ))}
+                      </div>
+                    )
+                  }
+            }
             placeholder={placeholder}
             labelId={id}
             id={`${id}-select`}
             value={finalValue}
-            onChange={({ target: { value: valInput } }) => selectItem(valInput as string)}
+            onChange={({ target: { value: valInput } }) => {
+              selectItem(valInput as ValueType)
+            }}
             label={finalTitle}>
             <MenuItem value="">
               <em>{placeholder || 'Seleccione una opción'}</em>
             </MenuItem>
             {options.map((e) => (
-              <MenuItem key={e.id} value={e.id}>
+              <MenuItem key={e.id} value={e as any}>
                 {e.title || e.id}
               </MenuItem>
             ))}
@@ -141,5 +172,12 @@ export default memo((props: AlSelectProps) => {
 const useClasses = makeStyles((theme) => ({
   addIcon: {
     marginRight: theme.spacing(1),
+  },
+  chips: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  chip: {
+    margin: 2,
   },
 }))

@@ -46,6 +46,10 @@ export const generateDefault = (item: AllInputTypes): DefResponse => {
       return null
     case FormTypes.Date:
       return null
+    case FormTypes.Options: {
+      if (item.multiple) return []
+      return null
+    }
     case FormTypes.Draggable:
       return []
     default:
