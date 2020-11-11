@@ -28,6 +28,7 @@ export interface AlSelectProps extends ComunesProps {
   options: OpcionesProps[]
   onAddItem?: (props: HTMLDivElement) => void
   multiple?: boolean
+  onSelect?: (val: ValueType) => void
 }
 
 type SelectFilter = Filter<OpcionesProps | OpcionesProps[]>
@@ -46,6 +47,7 @@ export default memo((props: AlSelectProps) => {
     filter,
     onAddItem,
     multiple,
+    onSelect,
   } = props
   const [{ value }, { error, touched }, { setValue }] = useField<ValueType | SelectFilter>(id)
 
@@ -129,6 +131,7 @@ export default memo((props: AlSelectProps) => {
             id={`${id}-select`}
             value={finalValue}
             onChange={({ target: { value: valInput } }) => {
+              if (onSelect) onSelect(valInput as ValueType)
               selectItem(valInput as ValueType)
             }}
             label={finalTitle}>
