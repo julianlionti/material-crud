@@ -35,6 +35,11 @@ export default () => {
         loading={loading}
         fields={[
           { id: 'pruebaa', type: FormTypes.Input, title: 'Prueba' },
+          {
+            id: 'title',
+            type: FormTypes.OnlyTitle,
+            title: 'Titulo',
+          },
           { id: 'fecha', type: FormTypes.Date, title: 'Fecha' },
           {
             type: FormTypes.Autocomplete,

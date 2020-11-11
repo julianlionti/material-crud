@@ -11,6 +11,7 @@ import AlDropFiles from './AlDropFiles'
 import AlImagen from './AlImagen'
 import AlInput from './AlInput'
 import AlMultiple from './AlMultiple'
+import AlOnlyTitle from './AlOnlyTitle'
 import AlSelect from './AlSelect'
 import AlSwitch from './AlSwitch'
 import { AllInputTypes, FieldProps, FormTypes } from './FormTypes'
@@ -28,6 +29,8 @@ export default memo(
     const renderInput = useCallback(
       (campo: AllInputTypes, values: any) => {
         if (campo.type === FormTypes.Expandable) return null
+        if (campo.type === FormTypes.OnlyTitle) return <AlOnlyTitle key={campo.id} {...campo} />
+
         const { depends } = campo
         const hidden = depends && depends(values) === false
         switch (campo.type) {
@@ -65,14 +68,18 @@ export default memo(
     const valSchema = useMemo(
       () =>
         fields.flat().reduce((acc, it) => {
-          if (it.type === FormTypes.Expandable) return acc
-          return { ...acc, [it.id]: it.validate }
+          if (it.type === FormTypes.Expandable || it.type === FormTypes.OnlyTitle) return acc
+          else return { ...acc, [it.id]: it.validate }
         }, {}),
       [fields],
     )
 
     const defaultValues = useMemo(
-      () => fields.flat().reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it) }), {}),
+      () =>
+        fields
+          .flat()
+          .filter((e) => e.type !== FormTypes.Expandable && e.type !== FormTypes.OnlyTitle)
+          .reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it) }), {}),
       [fields],
     )
 

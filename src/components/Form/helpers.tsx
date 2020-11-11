@@ -8,6 +8,7 @@ export const multipleDefault = (conf: AllInputTypes[]) =>
 export type DefResponse = boolean | null | '' | any[] | Filter | Moment
 export const generateDefault = (item: AllInputTypes): DefResponse => {
   if (item.type === FormTypes.Expandable) return null
+  if (item.type === FormTypes.OnlyTitle) return null
   if (item.filter) {
     switch (item.type) {
       case FormTypes.Autocomplete: {
