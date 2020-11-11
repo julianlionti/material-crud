@@ -29,7 +29,7 @@ export interface Props {
   onClose?: () => void
   titleSize?: number
   subtitleSize?: number
-  width: number | string
+  width?: number | string
 }
 
 export default memo((props: Props) => {
