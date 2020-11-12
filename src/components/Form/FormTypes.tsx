@@ -50,6 +50,7 @@ export interface ComunesProps extends BaseProps {
   depends?: (props: any) => boolean
   hide?: boolean
   edit?: boolean
+  new?: boolean
   filter?: boolean
 }
 

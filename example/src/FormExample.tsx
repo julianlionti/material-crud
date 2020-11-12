@@ -34,13 +34,13 @@ export default () => {
       <Form
         loading={loading}
         fields={[
-          { id: 'pruebaa', type: FormTypes.Input, title: 'Prueba' },
+          { id: 'pruebaa', type: FormTypes.Input, title: 'Prueba', new: false },
           {
             id: 'title',
             type: FormTypes.OnlyTitle,
             title: 'Titulo',
           },
-          { id: 'fecha', type: FormTypes.Date, title: 'Fecha' },
+          { id: 'fecha', type: FormTypes.Date, title: 'Fecha', edit: false },
           {
             id: 'select',
             type: FormTypes.Options,
