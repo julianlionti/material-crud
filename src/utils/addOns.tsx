@@ -7,7 +7,11 @@ export const compareKeys = <T extends object>(keys: (keyof T)[]) => (prev: T, ne
   const finalPrev = subset(prev)
   const finalNext = subset(next)
 
-  return JSON.stringify(finalPrev) === JSON.stringify(finalNext)
+  try {
+    return JSON.stringify(finalPrev) === JSON.stringify(finalNext)
+  } catch {
+    return false
+  }
 }
 
 export const compareKeysOmit = <T extends object>(keys: (keyof T)[]) => (
