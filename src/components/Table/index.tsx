@@ -78,9 +78,7 @@ export default memo((props: Props) => {
 
   return (
     <Paper elevation={5} className={classes.container}>
-      <Collapse in={loading} timeout="auto" unmountOnExit>
-        <LinearProgress />
-      </Collapse>
+      {loading && <LinearProgress />}
       <Collapse in={rowsSelected.length > 0} timeout="auto" unmountOnExit>
         <div className={classes.selected}>
           <Typography style={{ flex: 1 }} color="inherit" variant="subtitle1" component="div">

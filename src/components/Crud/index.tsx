@@ -335,6 +335,7 @@ export default memo((props: CrudProps) => {
           onChangePagination={(page, perPage) => {
             getDataCall({
               ...interactions,
+              ...lastFilter.current,
               [interaction?.page || lang.pagination?.page || 'page']: page,
               [interaction?.perPage || lang.pagination?.rowsPerPage || 'perPage']: perPage,
             })
