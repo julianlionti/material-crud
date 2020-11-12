@@ -154,6 +154,7 @@ export default memo((props: Props) => {
           setRowSelected([])
           if (listRef.current) {
             listRef.current.resetAfterIndex(0)
+            listRef.current.scrollTo(0)
           }
           onChangePagination(page, perpage)
         }}
