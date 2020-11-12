@@ -50,6 +50,7 @@ export interface CrudProps extends TableProps {
   transformFilter?: (props: any) => any
   moreOptions?: MoreOptionsProps[]
   big?: boolean
+  logicalDeleteCol?: string
 }
 
 interface DataCallProps {
@@ -76,11 +77,14 @@ interface NoGetCallProps extends DataCallProps {
   setCartel: (value: React.SetStateAction<CartelState>) => void
   transform?: (what: 'query' | 'new' | 'update', rowData: any) => Record<string, any>
   isFormData?: boolean
+  logicalDeleteCol?: string
 }
 
 const postData = async (props: NoGetCallProps) => {
   const { url, data, editing, idInUrl, itemId, onFinished, isDelete, gender, transform } = props
-  const { call, response, editABM, add, deleteCall, setEditObj, setCartel, isFormData } = props
+  const { call, response, editABM, add, deleteCall } = props
+  const { setEditObj, setCartel, isFormData, logicalDeleteCol } = props
+
   const finalId = data[itemId]
   let finalURL = url
   if ((editing || isDelete) && idInUrl) {
@@ -104,11 +108,14 @@ const postData = async (props: NoGetCallProps) => {
 
   if (status && status >= 200 && status < 300) {
     if (isDelete) {
+      if (logicalDeleteCol) {
+        editABM({ id: finalId, item: { ...finalData, [logicalDeleteCol]: false } })
+      }
       deleteCall(finalId)
       setCartel({ visible: false })
     } else if (editing && response.edit) {
       const item = response.edit(data, responseWs)
-      editABM({ id: finalId, item: { ...item, edited: true } })
+      editABM({ id: finalId, item })
       setEditObj(null)
     } else if (response.new) {
       const item = response?.new(data, responseWs)
@@ -138,8 +145,9 @@ export default memo((props: CrudProps) => {
   const lastFilter = useRef<any>({})
 
   const { url, response, interaction, onFinished, onError, title, noTitle, transformFilter } = props
-  const { Left, gender, description, isFormData, transform, transformToEdit, big } = props
-  const { name, titleSize, idInUrl, itemName, fields, steps, filters, columns, moreOptions } = props
+  const { Left, gender, description, isFormData, transform } = props
+  const { name, titleSize, idInUrl, itemName, fields, steps } = props
+  const { transformToEdit, big, logicalDeleteCol, filters, columns, moreOptions } = props
 
   const lang = useLang()
   const called = useRef(false)
@@ -178,6 +186,7 @@ export default memo((props: CrudProps) => {
         isDelete,
         transform,
         isFormData,
+        logicalDeleteCol,
       }),
     [
       call,
@@ -196,6 +205,7 @@ export default memo((props: CrudProps) => {
       setCartel,
       transform,
       isFormData,
+      logicalDeleteCol,
     ],
   )
 
@@ -221,24 +231,24 @@ export default memo((props: CrudProps) => {
 
   const onDeleteCall = useCallback(
     (item) => {
-      const it = item
+      // const it = item
       setCartel({
         visible: true,
         contenido: itemName
-          ? lang.delExplanation(it[itemName])
+          ? lang.delExplanation(item[itemName])
           : "Para setear este texto es necesario incluir el 'itemName'",
         titulo: `${lang.delete} ${name}`,
         onCerrar: (aceptado: boolean) => {
           if (aceptado) {
-            const data = { [itemId]: it[itemId] }
-            postDataCall(data, true)
+            // const data = { [itemId]: it[itemId] }
+            postDataCall(item, true)
           } else {
             setCartel({ visible: false })
           }
         },
       })
     },
-    [name, lang, itemId, itemName, postDataCall],
+    [name, lang, itemName, postDataCall],
   )
 
   useEffect(() => {
