@@ -113,8 +113,22 @@ export default memo(
       [finalFields],
     )
 
+    const onSubmitCall = useCallback(
+      (vals: any, helpers: FormikHelpers<any>) => {
+        let finalData = vals
+        if (isFormData)
+          finalData = serialize(vals, {
+            indices: true,
+            allowEmptyArrays: true,
+          })
+
+        if (onSubmit) onSubmit(finalData, helpers)
+      },
+      [isFormData, onSubmit],
+    )
+
     const renderFields = useCallback(
-      (submitForm: (() => Promise<void>) & (() => Promise<any>), values: any) => {
+      ({ submitForm, values }: { submitForm: () => Promise<any>; values: any }) => {
         return (
           <div className={classes.container}>
             {finalFields.map((field, index) => {
@@ -145,20 +159,6 @@ export default memo(
       [accept, classes, finalFields, inline, loading, renderInput],
     )
 
-    const onSubmitCall = useCallback(
-      (vals: any, helpers: FormikHelpers<any>) => {
-        let finalData = vals
-        if (isFormData)
-          finalData = serialize(vals, {
-            indices: true,
-            allowEmptyArrays: true,
-          })
-
-        if (onSubmit) onSubmit(finalData, helpers)
-      },
-      [isFormData, onSubmit],
-    )
-
     return (
       <Formik
         innerRef={ref}
@@ -166,7 +166,7 @@ export default memo(
         initialValues={isEditing ? intials : defaultValues}
         validationSchema={noValidate ? null : Yup.object().shape(valSchema)}
         onSubmit={onSubmitCall}>
-        {({ submitForm, values }) => renderFields(submitForm, values)}
+        {renderFields}
       </Formik>
     )
   }),
