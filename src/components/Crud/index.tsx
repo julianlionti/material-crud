@@ -24,6 +24,11 @@ interface ResponseProps {
   edit?: (data: any, responseWs?: any) => any
 }
 
+type TransformType = (
+  what: 'query' | 'new' | 'update' | 'delete',
+  rowData: any,
+) => Record<string, any>
+
 export interface CrudProps extends TableProps {
   columns: ColumnsProps[]
   url: string
@@ -45,7 +50,7 @@ export interface CrudProps extends TableProps {
   interaction?: Interactions
   onFinished?: (what: 'new' | 'update' | 'delete', genero?: 'M' | 'F') => void
   onError?: (err: Error) => void
-  transform?: (what: 'query' | 'new' | 'update', rowData: any) => Record<string, any>
+  transform?: TransformType
   transformToEdit?: (props: any) => any
   transformFilter?: (props: any) => any
   moreOptions?: MoreOptionsProps[]
@@ -59,7 +64,7 @@ interface DataCallProps {
   response: ResponseProps
   replace: (props: ReplaceProps) => void
   params?: any
-  transform?: (what: 'query' | 'new' | 'update', rowData: any) => Record<string, any>
+  transform?: TransformType
 }
 
 interface NoGetCallProps extends DataCallProps {
@@ -75,7 +80,7 @@ interface NoGetCallProps extends DataCallProps {
   add: (items: object[]) => void
   deleteCall: (id: string) => void
   setCartel: (value: React.SetStateAction<CartelState>) => void
-  transform?: (what: 'query' | 'new' | 'update', rowData: any) => Record<string, any>
+  transform?: TransformType
   isFormData?: boolean
   logicalDeleteCol?: string
 }
@@ -91,7 +96,12 @@ const postData = async (props: NoGetCallProps) => {
     finalURL = `${finalURL}${finalURL.substring(url.length - 1) === '/' ? '' : '/'}${finalId}/`
   }
 
-  let finalData = transform ? transform(editing ? 'update' : 'new', data) : data
+  let finalData = data /* transform ? transform(editing ? 'update' : 'new', data) : data */
+  if (transform) {
+    if (isDelete) finalData = transform('delete', data)
+    else if (editing) finalData = transform('update', data)
+    else transform('new', data)
+  }
   if (isFormData && !isDelete) {
     finalData = serialize(finalData, {
       indices: true,
@@ -109,7 +119,10 @@ const postData = async (props: NoGetCallProps) => {
   if (status && status >= 200 && status < 300) {
     if (isDelete) {
       if (logicalDeleteCol) {
-        editABM({ id: finalId, item: { ...finalData, [logicalDeleteCol]: false } })
+        editABM({
+          id: finalId,
+          item: { ...finalData, [logicalDeleteCol]: !finalData[logicalDeleteCol] },
+        })
       }
       deleteCall(finalId)
       setCartel({ visible: false })
