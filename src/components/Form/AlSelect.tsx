@@ -122,10 +122,10 @@ export default memo((props: AlSelectProps) => {
                       <div className={classes.chips}>
                         {finalValue.map(({ id, title }) => (
                           <Chip
-                            onDelete={(e) => {
-                              e.stopPropagation()
-                              e.preventDefault()
-
+                            onMouseDown={(event) => {
+                              event.stopPropagation()
+                            }}
+                            onDelete={() => {
                               setValue(finalValue.filter((e) => e.id !== id))
                             }}
                             key={id}

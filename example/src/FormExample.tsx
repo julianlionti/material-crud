@@ -52,7 +52,7 @@ export default () => {
               { id: 'Cuatro' },
             ],
             placeholder: 'Select multiple',
-            // multiple: true,
+            multiple: true,
           },
           {
             type: FormTypes.Autocomplete,
