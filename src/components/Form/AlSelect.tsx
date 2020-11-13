@@ -117,10 +117,16 @@ export default memo((props: AlSelectProps) => {
               !multiple
                 ? undefined
                 : () => {
+                    const finalValue = value as OpcionesProps[]
                     return (
                       <div className={classes.chips}>
-                        {(value as OpcionesProps[]).map(({ id, title }) => (
-                          <Chip key={id} label={title || id} className={classes.chip} />
+                        {finalValue.map(({ id, title }) => (
+                          <Chip
+                            onDelete={() => setValue(finalValue.filter((e) => e.id !== id))}
+                            key={id}
+                            label={title || id}
+                            className={classes.chip}
+                          />
                         ))}
                       </div>
                     )
