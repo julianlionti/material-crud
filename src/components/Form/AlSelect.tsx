@@ -122,7 +122,12 @@ export default memo((props: AlSelectProps) => {
                       <div className={classes.chips}>
                         {finalValue.map(({ id, title }) => (
                           <Chip
-                            onDelete={() => setValue(finalValue.filter((e) => e.id !== id))}
+                            onDelete={(e) => {
+                              e.stopPropagation()
+                              e.preventDefault()
+
+                              setValue(finalValue.filter((e) => e.id !== id))
+                            }}
                             key={id}
                             label={title || id}
                             className={classes.chip}
