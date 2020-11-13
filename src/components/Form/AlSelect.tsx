@@ -146,7 +146,7 @@ export default memo((props: AlSelectProps) => {
               selectItem(valInput as ValueType)
             }}
             label={finalTitle}>
-            <MenuItem value="">
+            <MenuItem disabled value="">
               <em>{placeholder || 'Seleccione una opción'}</em>
             </MenuItem>
             {options.map((e) => (
