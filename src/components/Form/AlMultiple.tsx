@@ -21,14 +21,14 @@ export interface AlMultipleProps extends ComunesProps {
 }
 
 export default memo((props: AlMultipleProps) => {
-  const { id, title, grow, hide, configuration, loading } = props
+  const { id, title, grow, hide, configuration, loading, keepMounted } = props
   const [{ value }, { error }, { setValue }] = useField<ValuesProps[]>(id)
   const classes = useClasses()
 
   const valFinal = useMemo(() => value || [], [value])
 
   return (
-    <BaseInput grow={grow} ocultar={hide}>
+    <BaseInput grow={grow} ocultar={hide} keepMounted={keepMounted}>
       <Paper elevation={0}>
         <div className={classes.headerContainer}>
           <Typography variant="body1">{`${title} (${valFinal?.length})`}</Typography>

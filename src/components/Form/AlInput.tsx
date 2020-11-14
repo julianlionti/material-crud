@@ -55,6 +55,7 @@ export default memo((props: AlInputProps) => {
     hide,
     filter,
     onBlur,
+    keepMounted,
   } = props
   const [hasSecure, setHasSecure] = useState(true)
   const lang = useLang()
@@ -108,7 +109,7 @@ export default memo((props: AlInputProps) => {
   }, [type, hasSecure])
 
   return (
-    <BaseInput grow={grow} fullWidth={fullWidth} ocultar={hide}>
+    <BaseInput grow={grow} fullWidth={fullWidth} ocultar={hide} keepMounted={keepMounted}>
       <FormControl
         fullWidth
         error={(touched && !!error) || (finalValue?.length || 0) > valMax}

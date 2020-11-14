@@ -28,79 +28,82 @@ const niceBytes = (x: number) => {
   return n.toFixed(n < 10 && l > 0 ? 1 : 0) + ' ' + units[l]
 }
 
-export default memo(({ title, id, accept, grow, hide, ImgIcon, multiple }: AlDropFilesProps) => {
-  const [{ value }, { error, touched }, { setValue, setTouched }] = useField<File[]>(id)
+export default memo(
+  ({ title, id, accept, grow, hide, ImgIcon, multiple, keepMounted }: AlDropFilesProps) => {
+    const [{ value }, { error, touched }, { setValue, setTouched }] = useField<File[]>(id)
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: (accepted) => {
-      if (multiple) {
-        const ids = new Set(value.map((d) => d.name))
-        const merged = [...value, ...accepted.filter((d) => !ids.has(d.name))]
-        setValue(merged)
-      } else {
-        setValue(accepted)
-      }
-    },
-  })
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+      onDrop: (accepted) => {
+        if (multiple) {
+          const ids = new Set(value.map((d) => d.name))
+          const merged = [...value, ...accepted.filter((d) => !ids.has(d.name))]
+          setValue(merged)
+        } else {
+          setValue(accepted)
+        }
+      },
+    })
 
-  const renderTitle = useCallback(() => {
-    if (typeof title === 'string') return <Typography>{title}</Typography>
-    return title
-  }, [title])
+    const renderTitle = useCallback(() => {
+      if (typeof title === 'string') return <Typography>{title}</Typography>
+      return title
+    }, [title])
 
-  const classes = useClasses({ isDragActive })
-  return (
-    <BaseInput grow={grow} ocultar={hide}>
-      <div className={classes.base}>
-        {renderTitle()}
-        <div {...getRootProps({ className: classes.dropzone })}>
-          <input
-            {...getInputProps({
-              name: id,
-              accept,
-              multiple,
-              onChange: () => {
-                setTouched(true)
-              },
-            })}
-          />
-          <Typography>Arrastre el archivo AQUI</Typography>
-          <div className={classes.imgContainer}>
-            {ImgIcon || <FaFile className={classes.verticalSpace} />}
-          </div>
-          <div className={classes.valContainer}>
-            {value.map((e) => (
-              <Paper elevation={3} key={e.name} style={{ padding: 8, margin: 8 }}>
-                <div className={classes.paperRoot}>
-                  <div className={classes.textContainer}>
-                    <div className={classes.imgContainer2}>{ImgIcon || <FaFile />}</div>
-                    <Typography variant="subtitle2" noWrap>
-                      {e.name}
-                    </Typography>
-                    <Typography variant="subtitle2" noWrap>
-                      {niceBytes(e.size)}
-                    </Typography>
+    const classes = useClasses({ isDragActive })
+    return (
+      <BaseInput grow={grow} ocultar={hide} keepMounted={keepMounted}>
+        <div className={classes.base}>
+          {renderTitle()}
+          <div {...getRootProps({ className: classes.dropzone })}>
+            <input
+              {...getInputProps({
+                name: id,
+                accept,
+                multiple,
+                onChange: () => {
+                  setTouched(true)
+                },
+              })}
+            />
+            <Typography>Arrastre el archivo AQUI</Typography>
+            <div className={classes.imgContainer}>
+              {ImgIcon || <FaFile className={classes.verticalSpace} />}
+            </div>
+            <div className={classes.valContainer}>
+              {value.map((e) => (
+                <Paper elevation={3} key={e.name} style={{ padding: 8, margin: 8 }}>
+                  <div className={classes.paperRoot}>
+                    <div className={classes.textContainer}>
+                      <div className={classes.imgContainer2}>{ImgIcon || <FaFile />}</div>
+                      <Typography variant="subtitle2" noWrap>
+                        {e.name}
+                      </Typography>
+                      <Typography variant="subtitle2" noWrap>
+                        {niceBytes(e.size)}
+                      </Typography>
+                    </div>
+                    <div>
+                      <IconButton
+                        onClick={(ev) => {
+                          ev.preventDefault()
+                          ev.stopPropagation()
+                          setValue(value.filter((v) => v.name !== e.name))
+                        }}>
+                        <FaTrashAlt />
+                      </IconButton>
+                    </div>
                   </div>
-                  <div>
-                    <IconButton
-                      onClick={(ev) => {
-                        ev.preventDefault()
-                        ev.stopPropagation()
-                        setValue(value.filter((v) => v.name !== e.name))
-                      }}>
-                      <FaTrashAlt />
-                    </IconButton>
-                  </div>
-                </div>
-              </Paper>
-            ))}
+                </Paper>
+              ))}
+            </div>
           </div>
+          {error && touched && <Typography className={classes.error}>{error}</Typography>}
         </div>
-        {error && touched && <Typography className={classes.error}>{error}</Typography>}
-      </div>
-    </BaseInput>
-  )
-}, compareKeys(['loading', 'hide']))
+      </BaseInput>
+    )
+  },
+  compareKeys(['loading', 'hide']),
+)
 
 const useClasses = makeStyles((theme) => ({
   base: {

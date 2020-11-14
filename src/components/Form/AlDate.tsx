@@ -45,6 +45,7 @@ export default memo((props: AlDateProps) => {
     format,
     filter,
     loading,
+    keepMounted,
   } = props
   const [{ value }, { error, touched }, { setTouched, setValue }] = useField<
     DateValue | DateFilter
@@ -64,7 +65,7 @@ export default memo((props: AlDateProps) => {
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeWrapper[locale || 'es']}>
-      <BaseInput grow={grow} fullWidth={fullWidth} ocultar={hide}>
+      <BaseInput grow={grow} fullWidth={fullWidth} ocultar={hide} keepMounted={keepMounted}>
         <DatePicker
           autoOk
           disabled={loading}

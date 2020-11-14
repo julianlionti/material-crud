@@ -48,6 +48,7 @@ export interface ComunesProps extends BaseProps {
   loading?: boolean
   readonly?: boolean
   depends?: (props: any) => boolean
+  keepMounted?: boolean
   hide?: boolean
   edit?: boolean
   new?: boolean

@@ -53,6 +53,7 @@ export default memo((props: AlAutocompleteProps) => {
     filter,
     hide,
     onAddItem,
+    keepMounted,
   } = props
   const lang = useLang()
   const { autocomplete } = useFilters()
@@ -107,7 +108,7 @@ export default memo((props: AlAutocompleteProps) => {
   )
 
   return (
-    <BaseInput grow={grow} ocultar={hide}>
+    <BaseInput grow={grow} ocultar={hide} keepMounted={keepMounted}>
       <Autocomplete
         innerRef={(e) => (inputRef.current = e)}
         loadingText={lang.loading}

@@ -48,6 +48,7 @@ export default memo((props: AlSelectProps) => {
     onAddItem,
     multiple,
     onSelect,
+    keepMounted,
   } = props
   const [{ value }, { error, touched }, { setValue }] = useField<ValueType | SelectFilter>(id)
 
@@ -93,7 +94,7 @@ export default memo((props: AlSelectProps) => {
 
   const classes = useClasses()
   return (
-    <BaseInput grow={grow} ocultar={hide}>
+    <BaseInput grow={grow} ocultar={hide} keepMounted={keepMounted}>
       <div style={{ display: 'flex' }} ref={(e) => (inputRef.current = e)}>
         <FormControl disabled={loading} fullWidth error={touched && !!error} variant="outlined">
           <InputLabel htmlFor={id}>{finalTitle}</InputLabel>
