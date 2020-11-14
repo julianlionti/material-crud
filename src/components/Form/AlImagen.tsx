@@ -131,7 +131,7 @@ export default memo((props: AlImagenProps) => {
       />
     </BaseInput>
   )
-}, compareKeys(['loading']))
+}, compareKeys(['loading', 'hide']))
 
 const useClases = makeStyles(() => ({
   contenedor: {

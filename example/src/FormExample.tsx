@@ -40,8 +40,9 @@ export default () => {
             type: FormTypes.OnlyTitle,
             title: 'Titulo',
           },
-          { id: 'fecha', type: FormTypes.Date, title: 'Fecha', edit: false },
+          { id: 'switch', type: FormTypes.Switch, title: 'switch' },
           {
+            depends: (rowdata) => rowdata.switch,
             id: 'select',
             type: FormTypes.Options,
             title: 'Select multiple',

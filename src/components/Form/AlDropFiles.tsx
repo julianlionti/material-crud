@@ -100,7 +100,7 @@ export default memo(({ title, id, accept, grow, hide, ImgIcon, multiple }: AlDro
       </div>
     </BaseInput>
   )
-}, compareKeys(['loading']))
+}, compareKeys(['loading', 'hide']))
 
 const useClasses = makeStyles((theme) => ({
   base: {

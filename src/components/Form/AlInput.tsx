@@ -189,4 +189,4 @@ export default memo((props: AlInputProps) => {
       </FormControl>
     </BaseInput>
   )
-}, compareKeys(['loading']))
+}, compareKeys(['loading', 'hide']))

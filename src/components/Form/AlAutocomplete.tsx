@@ -195,7 +195,7 @@ export default memo((props: AlAutocompleteProps) => {
       )}
     </BaseInput>
   )
-}, compareKeys(['loading', 'options', 'renderAggregate', 'onChangeText']))
+}, compareKeys(['loading', 'options', 'renderAggregate', 'onChangeText', 'hide']))
 
 const useClases = makeStyles((tema) => ({
   agregado: {

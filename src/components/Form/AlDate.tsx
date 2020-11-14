@@ -126,4 +126,4 @@ export default memo((props: AlDateProps) => {
       </BaseInput>
     </MuiPickersUtilsProvider>
   )
-}, compareKeys(['loading']))
+}, compareKeys(['loading', 'hide']))

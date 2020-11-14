@@ -115,7 +115,7 @@ export default memo((props: AlMultipleProps) => {
       </Paper>
     </BaseInput>
   )
-}, compareKeys(['loading', 'configuration']))
+}, compareKeys(['loading', 'configuration', 'hide']))
 
 const useClasses = makeStyles((theme) => ({
   headerContainer: {

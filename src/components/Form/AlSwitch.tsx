@@ -47,4 +47,4 @@ export default memo((props: AlSwitchProps) => {
       </Collapse>
     </BaseInput>
   )
-}, compareKeys(['loading']))
+}, compareKeys(['loading', 'hide']))

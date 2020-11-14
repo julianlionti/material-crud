@@ -92,7 +92,6 @@ export default memo((props: AlSelectProps) => {
   )
 
   const classes = useClasses()
-
   return (
     <BaseInput grow={grow} ocultar={hide}>
       <div style={{ display: 'flex' }} ref={(e) => (inputRef.current = e)}>
@@ -182,7 +181,7 @@ export default memo((props: AlSelectProps) => {
       )}
     </BaseInput>
   )
-}, compareKeys(['loading', 'options']))
+}, compareKeys(['loading', 'hide', 'options']))
 
 const useClasses = makeStyles((theme) => ({
   addIcon: {
