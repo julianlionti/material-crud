@@ -131,7 +131,13 @@ export default memo((props: AlAutocompleteProps) => {
             {...inputProps}
             InputProps={{
               ...InputProps,
-              startAdornment: onAddItem ? startAdornment : InputProps.startAdornment,
+              startAdornment: (
+                <React.Fragment>
+                  {onAddItem && startAdornment}
+                  {InputProps.startAdornment}
+                </React.Fragment>
+              ),
+              // startAdornment: onAddItem ? startAdornment : InputProps.startAdornment,
               // startAdornment: [
               //   filter && (
               //     <Tooltip
