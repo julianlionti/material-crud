@@ -8,8 +8,9 @@ import {
   useWindowSize,
   TableTypes,
   createSteps,
+  useAxios,
 } from 'material-crud'
-import { FaIceCream, FaUserFriends } from 'react-icons/fa'
+import { FaBeer, FaIceCream, FaUserFriends } from 'react-icons/fa'
 import { IconButton } from '@material-ui/core'
 import { OpcionesProps } from '../../dist/components/Form/FormTypes'
 
@@ -18,12 +19,14 @@ export default () => {
   const [opciones, setOpciones] = useState<OpcionesProps[]>([{ id: 'assda', title: 'asdas' }])
 
   const [name, setName] = useState('Titulo prueba')
+  const { call, response } = useAxios()
 
   useEffect(() => {
+    call({ url: 'http://192.168.102.50:8000/c2/types', method: 'GET' })
     setTimeout(() => {
-      setName('Vamo Racing')
+      setName('Vamo ✌')
     }, 1500)
-  }, [])
+  }, [call])
 
   const filters = useMemo(
     () =>
@@ -74,6 +77,17 @@ export default () => {
               placeholder: 'Nombre de la categoría',
               type: FormTypes.Input,
               validate: Yup.string().required(),
+            },
+            {
+              id: 'type',
+              title: 'Type',
+              type: FormTypes.Options,
+              placeholder: 'Select one type',
+              multiple: true,
+              options: [
+                { id: '1', title: 'empire' },
+                { id: '2', title: 'empire' },
+              ],
             },
             {
               type: FormTypes.Autocomplete,
@@ -209,7 +223,8 @@ export default () => {
   return (
     <React.Fragment>
       <Crud
-        url={'http://localhost:5050/api/contact'}
+        url={'http://192.168.102.50:8000/c2'}
+        // url={'http://localhost:5050/api/contact'}
         gender="F"
         name={name}
         steps={steps}
@@ -218,28 +233,26 @@ export default () => {
         actions={{ edit: true, delete: false }}
         extraActions={(rowData) => [
           <IconButton key="ice">
-            <FaIceCream />
+            {name === 'Titulo prueba' ? <FaIceCream /> : <FaBeer />}
           </IconButton>,
         ]}
         height={height - 100}
         rowHeight={75}
         description={'Los productos tendrán asociada una o más categorías.'}
         response={{
-          list: ({ data }) => ({
-            items: data.docs,
-            ...data,
+          list: (cList: any) => ({
+            items: cList.results,
+            page: cList.current,
+            limit: 10,
+            totalDocs: cList.count,
           }),
-          new: (data, response) => response,
-          edit: (data, response) => ({ id: '_id', ...response }),
+          new: (data: any, response: any) => response,
+          edit: (data: any, response: any) => response,
         }}
-        interaction={{
-          page: 'pagina',
-          perPage: 'porPagina',
-          filter: 'filtros',
-          sort: 'ordenado',
-        }}
+        interaction={{ page: 'page', perPage: 'limit' }}
         itemName="nombre"
         onError={(err) => console.log(err)}
+        transformToEdit={(rowData) => ({ ...rowData, type: [rowData.id] })}
       />
     </React.Fragment>
   )
