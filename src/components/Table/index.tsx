@@ -2,6 +2,7 @@ import React, { memo, useCallback, useMemo, useRef, useState } from 'react'
 import { Collapse, lighten, LinearProgress, makeStyles, Paper, Typography } from '@material-ui/core'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import { VariableSizeList as List } from 'react-window'
+import { compareKeysOmit } from '../../utils/addOns'
 import { useLang } from '../../utils/CrudContext'
 import { useABM } from '../../utils/DataContext'
 import useWindowSize from '../../utils/useWindowSize'
@@ -77,9 +78,7 @@ export default memo((props: Props) => {
 
   return (
     <Paper elevation={5} className={classes.container}>
-      <Collapse in={loading} timeout="auto" unmountOnExit>
-        <LinearProgress />
-      </Collapse>
+      {loading && <LinearProgress />}
       <Collapse in={rowsSelected.length > 0} timeout="auto" unmountOnExit>
         <div className={classes.selected}>
           <Typography style={{ flex: 1 }} color="inherit" variant="subtitle1" component="div">
@@ -155,13 +154,14 @@ export default memo((props: Props) => {
           setRowSelected([])
           if (listRef.current) {
             listRef.current.resetAfterIndex(0)
+            listRef.current.scrollTo(0)
           }
           onChangePagination(page, perpage)
         }}
       />
     </Paper>
   )
-})
+}, compareKeysOmit(['onSort', 'actions', 'onChangePagination', 'onDelete', 'onEdit']))
 
 const useClasses = makeStyles((theme) => ({
   container: ({ height }: any) => ({

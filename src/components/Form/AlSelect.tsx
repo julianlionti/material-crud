@@ -11,9 +11,11 @@ import {
   IconButton,
   Tooltip,
   makeStyles,
+  Chip,
 } from '@material-ui/core'
 import { useField } from 'formik'
 import { FaPlus } from 'react-icons/fa'
+import { compareKeys } from '../../utils/addOns'
 import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 import useFilters, { Filter } from '../../utils/useFilters'
@@ -25,9 +27,12 @@ export interface AlSelectProps extends ComunesProps {
   placeholder: string
   options: OpcionesProps[]
   onAddItem?: (props: HTMLDivElement) => void
+  multiple?: boolean
+  onSelect?: (val: ValueType) => void
 }
 
-type SelectFilter = Filter<string>
+type SelectFilter = Filter<string | string[]>
+type ValueType = string | string[]
 export default memo((props: AlSelectProps) => {
   const inputRef = useRef<any>()
   const {
@@ -41,45 +46,68 @@ export default memo((props: AlSelectProps) => {
     hide,
     filter,
     onAddItem,
+    multiple,
+    onSelect,
+    keepMounted,
   } = props
-  const [{ value }, { error, touched }, { setValue }] = useField<string | SelectFilter>(id)
+  const [{ value }, { error, touched }, { setValue }] = useField<ValueType | SelectFilter>(id)
 
   const lang = useLang()
   const { select } = useFilters()
   const [anchorFilter, setAnchorFilter] = useState<HTMLElement | null>(null)
 
-  const finalTitle = `${title} ${filter && validate ? '*' : ''}`
+  const finalTitle = useMemo(() => {
+    return `${title} ${!filter && validate ? '*' : ''}`
+  }, [title, filter, validate])
 
   const finalValue = useMemo(() => {
+    if (multiple && filter) return (value as SelectFilter).value
+    if (multiple && !filter) return (value as string[]).map((e) => e.toString())
+
     if (filter) {
-      return (value as SelectFilter).value
+      const filval = (value as SelectFilter).value
+      return filval // .title || filval.id
     }
-    return value as string
-  }, [value, filter])
+    const singlevalue = value
+    return singlevalue // .title || singlevalue.id
+  }, [value, filter, multiple])
 
   const selectItem = useCallback(
-    (valInput: string) => {
-      const finalValInput = valInput === '-1' ? '' : valInput
+    (valInput: ValueType) => {
+      let finalValInput: ValueType = valInput
+      if (!multiple) {
+        // const vinput = valInput as OpcionesProps
+        finalValInput = valInput // === '-1' ? { id: '' } : vinput
+      }
+
       if (filter) {
         setValue({
           filter: (value as SelectFilter).filter,
           value: finalValInput,
         })
       } else {
-        setValue(finalValInput)
+        const finalValInputArray = finalValInput as string[]
+        setValue(
+          finalValInputArray
+            .filter((x) => x)
+            .map((e): string => {
+              const item = options.find((elem) => elem.id.toString() === e)
+              return item?.id || e || '-'
+            }),
+        )
       }
     },
-    [filter, setValue, value],
+    [filter, setValue, value, multiple, options],
   )
 
   const classes = useClasses()
-
   return (
-    <BaseInput grow={grow} ocultar={hide}>
+    <BaseInput grow={grow} ocultar={hide} keepMounted={keepMounted}>
       <div style={{ display: 'flex' }} ref={(e) => (inputRef.current = e)}>
-        <FormControl fullWidth error={touched && !!error} variant="outlined">
+        <FormControl disabled={loading} fullWidth error={touched && !!error} variant="outlined">
           <InputLabel htmlFor={id}>{finalTitle}</InputLabel>
           <Select
+            multiple={multiple}
             startAdornment={
               filter && (
                 <Tooltip aria-label={AriaLabels.BtnFilterTypes} title={lang.tooltips.defineFilter}>
@@ -93,12 +121,42 @@ export default memo((props: AlSelectProps) => {
                 </Tooltip>
               )
             }
-            disabled={loading}
+            renderValue={
+              !multiple
+                ? undefined
+                : () => {
+                    const finalValueArray = finalValue as string[]
+                    return (
+                      <div className={classes.chips}>
+                        {finalValueArray?.map((e) => {
+                          const { id, title } =
+                            options.find((elem) => elem.id.toString() === e) || {}
+                          return (
+                            <Chip
+                              onMouseDown={(event) => {
+                                event.stopPropagation()
+                              }}
+                              onDelete={() => {
+                                setValue(finalValueArray.filter((e) => e !== id))
+                              }}
+                              key={id}
+                              label={title || id}
+                              className={classes.chip}
+                            />
+                          )
+                        })}
+                      </div>
+                    )
+                  }
+            }
             placeholder={placeholder}
             labelId={id}
             id={`${id}-select`}
             value={finalValue}
-            onChange={({ target: { value: valInput } }) => selectItem(valInput as string)}
+            onChange={({ target: { value: valInput } }) => {
+              if (onSelect) onSelect(valInput as ValueType)
+              selectItem(valInput as ValueType)
+            }}
             label={finalTitle}>
             <MenuItem value="">
               <em>{placeholder || 'Seleccione una opción'}</em>
@@ -136,10 +194,17 @@ export default memo((props: AlSelectProps) => {
       )}
     </BaseInput>
   )
-})
+}, compareKeys(['loading', 'hide', 'options']))
 
 const useClasses = makeStyles((theme) => ({
   addIcon: {
     marginRight: theme.spacing(1),
+  },
+  chips: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  chip: {
+    margin: 2,
   },
 }))

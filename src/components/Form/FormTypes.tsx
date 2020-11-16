@@ -6,6 +6,7 @@ import { AlDropFilesProps } from './AlDropFiles'
 import { AlImagenProps } from './AlImagen'
 import { AlInputProps } from './AlInput'
 import { AlMultipleProps } from './AlMultiple'
+import { AlOnlyTitleProps } from './AlOnlyTitle'
 import { AlSelectProps } from './AlSelect'
 import { AlSwitchProps } from './AlSwitch'
 
@@ -26,6 +27,7 @@ export enum FormTypes {
   Secure,
   Date,
   Draggable,
+  OnlyTitle,
 }
 
 export interface OpcionesProps {
@@ -46,8 +48,10 @@ export interface ComunesProps extends BaseProps {
   loading?: boolean
   readonly?: boolean
   depends?: (props: any) => boolean
+  keepMounted?: boolean
   hide?: boolean
   edit?: boolean
+  new?: boolean
   filter?: boolean
 }
 
@@ -73,6 +77,7 @@ export type AllInputTypes =
   | AlDateProps
   | AlDropFilesProps
   | AlExpandableProps
+  | AlOnlyTitleProps
 
 export type FieldProps = AllInputTypes | AllInputTypes[]
 

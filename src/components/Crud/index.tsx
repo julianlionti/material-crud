@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, ReactNode, useCallback, memo, useMe
 import { Collapse, makeStyles, LinearProgress, Typography } from '@material-ui/core'
 import { serialize } from 'object-to-formdata'
 import qs from 'qs'
+import { compareKeysOmit } from '../../utils/addOns'
 import { useLang } from '../../utils/CrudContext'
 import { PaginationProps, ReplaceProps, useABM } from '../../utils/DataContext'
 import useAxios, { CallProps, Error } from '../../utils/useAxios'
@@ -22,6 +23,11 @@ interface ResponseProps {
   new?: (data: any, responseWs?: any) => any
   edit?: (data: any, responseWs?: any) => any
 }
+
+type TransformType = (
+  what: 'query' | 'new' | 'update' | 'delete',
+  rowData: any,
+) => Record<string, any>
 
 export interface CrudProps extends TableProps {
   columns: ColumnsProps[]
@@ -44,11 +50,12 @@ export interface CrudProps extends TableProps {
   interaction?: Interactions
   onFinished?: (what: 'new' | 'update' | 'delete', genero?: 'M' | 'F') => void
   onError?: (err: Error) => void
-  transform?: (what: 'query' | 'new' | 'update', rowData: any) => Record<string, any>
+  transform?: TransformType
   transformToEdit?: (props: any) => any
   transformFilter?: (props: any) => any
   moreOptions?: MoreOptionsProps[]
   big?: boolean
+  logicalDeleteCol?: string
 }
 
 interface DataCallProps {
@@ -57,7 +64,7 @@ interface DataCallProps {
   response: ResponseProps
   replace: (props: ReplaceProps) => void
   params?: any
-  transform?: (what: 'query' | 'new' | 'update', rowData: any) => Record<string, any>
+  transform?: TransformType
 }
 
 interface NoGetCallProps extends DataCallProps {
@@ -73,20 +80,28 @@ interface NoGetCallProps extends DataCallProps {
   add: (items: object[]) => void
   deleteCall: (id: string) => void
   setCartel: (value: React.SetStateAction<CartelState>) => void
-  transform?: (what: 'query' | 'new' | 'update', rowData: any) => Record<string, any>
+  transform?: TransformType
   isFormData?: boolean
+  logicalDeleteCol?: string
 }
 
 const postData = async (props: NoGetCallProps) => {
   const { url, data, editing, idInUrl, itemId, onFinished, isDelete, gender, transform } = props
-  const { call, response, editABM, add, deleteCall, setEditObj, setCartel, isFormData } = props
+  const { call, response, editABM, add, deleteCall } = props
+  const { setEditObj, setCartel, isFormData, logicalDeleteCol } = props
+
   const finalId = data[itemId]
   let finalURL = url
   if ((editing || isDelete) && idInUrl) {
     finalURL = `${finalURL}${finalURL.substring(url.length - 1) === '/' ? '' : '/'}${finalId}/`
   }
 
-  let finalData = transform ? transform(editing ? 'update' : 'new', data) : data
+  let finalData = data /* transform ? transform(editing ? 'update' : 'new', data) : data */
+  if (transform) {
+    if (isDelete) finalData = transform('delete', data)
+    else if (editing) finalData = transform('update', data)
+    else transform('new', data)
+  }
   if (isFormData && !isDelete) {
     finalData = serialize(finalData, {
       indices: true,
@@ -103,11 +118,17 @@ const postData = async (props: NoGetCallProps) => {
 
   if (status && status >= 200 && status < 300) {
     if (isDelete) {
+      if (logicalDeleteCol) {
+        editABM({
+          id: finalId,
+          item: { ...finalData, [logicalDeleteCol]: !finalData[logicalDeleteCol] },
+        })
+      }
       deleteCall(finalId)
       setCartel({ visible: false })
     } else if (editing && response.edit) {
       const item = response.edit(data, responseWs)
-      editABM({ id: finalId, item: { ...item, edited: true } })
+      editABM({ id: finalId, item })
       setEditObj(null)
     } else if (response.new) {
       const item = response?.new(data, responseWs)
@@ -137,8 +158,9 @@ export default memo((props: CrudProps) => {
   const lastFilter = useRef<any>({})
 
   const { url, response, interaction, onFinished, onError, title, noTitle, transformFilter } = props
-  const { Left, gender, description, isFormData, transform, transformToEdit, big } = props
-  const { name, titleSize, idInUrl, itemName, fields, steps, filters, columns, moreOptions } = props
+  const { Left, gender, description, isFormData, transform } = props
+  const { name, titleSize, idInUrl, itemName, fields, steps } = props
+  const { transformToEdit, big, logicalDeleteCol, filters, columns, moreOptions } = props
 
   const lang = useLang()
   const called = useRef(false)
@@ -177,6 +199,7 @@ export default memo((props: CrudProps) => {
         isDelete,
         transform,
         isFormData,
+        logicalDeleteCol,
       }),
     [
       call,
@@ -195,6 +218,7 @@ export default memo((props: CrudProps) => {
       setCartel,
       transform,
       isFormData,
+      logicalDeleteCol,
     ],
   )
 
@@ -220,24 +244,24 @@ export default memo((props: CrudProps) => {
 
   const onDeleteCall = useCallback(
     (item) => {
-      const it = item
+      // const it = item
       setCartel({
         visible: true,
         contenido: itemName
-          ? lang.delExplanation(it[itemName])
+          ? lang.delExplanation(item[itemName])
           : "Para setear este texto es necesario incluir el 'itemName'",
         titulo: `${lang.delete} ${name}`,
         onCerrar: (aceptado: boolean) => {
           if (aceptado) {
-            const data = { [itemId]: it[itemId] }
-            postDataCall(data, true)
+            // const data = { [itemId]: it[itemId] }
+            postDataCall(item, true)
           } else {
             setCartel({ visible: false })
           }
         },
       })
     },
-    [name, lang, itemId, itemName, postDataCall],
+    [name, lang, itemName, postDataCall],
   )
 
   useEffect(() => {
@@ -311,6 +335,7 @@ export default memo((props: CrudProps) => {
           onChangePagination={(page, perPage) => {
             getDataCall({
               ...interactions,
+              ...lastFilter.current,
               [interaction?.page || lang.pagination?.page || 'page']: page,
               [interaction?.perPage || lang.pagination?.rowsPerPage || 'perPage']: perPage,
             })
@@ -356,7 +381,7 @@ export default memo((props: CrudProps) => {
       />
     </div>
   )
-})
+}, compareKeysOmit(['Left', 'response', 'transform', 'transformFilter', 'transformToEdit']))
 
 const useClasses = makeStyles((tema) => ({
   contenedor: {

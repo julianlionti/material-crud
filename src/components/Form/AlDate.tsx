@@ -1,10 +1,11 @@
-import React, { useMemo, useState } from 'react'
+import React, { memo, useMemo, useState } from 'react'
 import DateFnsUtils from '@date-io/date-fns'
 import { IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip } from '@material-ui/core'
 import { DatePicker, DatePickerProps, MuiPickersUtilsProvider } from '@material-ui/pickers'
 import enLocale from 'date-fns/locale/en-US'
 import esLocale from 'date-fns/locale/es'
 import { useField } from 'formik'
+import { compareKeys } from '../../utils/addOns'
 import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 import useFilters, { Filter } from '../../utils/useFilters'
@@ -26,7 +27,7 @@ export interface AlDateProps extends ComunesProps {
 
 type DateValue = Date | null
 type DateFilter = Filter<DateValue>
-export default (props: AlDateProps) => {
+export default memo((props: AlDateProps) => {
   const lang = useLang()
   const { date } = useFilters()
 
@@ -44,6 +45,7 @@ export default (props: AlDateProps) => {
     format,
     filter,
     loading,
+    keepMounted,
   } = props
   const [{ value }, { error, touched }, { setTouched, setValue }] = useField<
     DateValue | DateFilter
@@ -63,7 +65,7 @@ export default (props: AlDateProps) => {
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeWrapper[locale || 'es']}>
-      <BaseInput grow={grow} fullWidth={fullWidth} ocultar={hide}>
+      <BaseInput grow={grow} fullWidth={fullWidth} ocultar={hide} keepMounted={keepMounted}>
         <DatePicker
           autoOk
           disabled={loading}
@@ -125,4 +127,4 @@ export default (props: AlDateProps) => {
       </BaseInput>
     </MuiPickersUtilsProvider>
   )
-}
+}, compareKeys(['loading', 'hide']))

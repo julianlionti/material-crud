@@ -2,6 +2,7 @@ import React, { memo, ReactNode, useCallback, useMemo } from 'react'
 import { Checkbox, IconButton, makeStyles, TableRow, Tooltip, Typography } from '@material-ui/core'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { ListChildComponentProps } from 'react-window'
+import { compareKeysOmit } from '../../utils/addOns'
 import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 import { useABM } from '../../utils/DataContext'
@@ -140,7 +141,8 @@ export default memo((props: Props) => {
     if (!onEdit && !onDelete && (!extraActions || (extraActions && extraActions.length === 0)))
       return null
 
-    if (!fields && !steps) return null
+    if (!fields && !steps && (!extraActions || (extraActions && extraActions.length === 0)))
+      return null
 
     if (isHeader) return <CustomHeader col={{ width: 2, title: lang.crudCol, align: 'flex-end' }} />
 
@@ -180,7 +182,7 @@ export default memo((props: Props) => {
       {renderCrud()}
     </TableRow>
   )
-})
+}, compareKeysOmit(['onDelete', 'onEdit', 'onExpanded', 'onSelect', 'onSort']))
 
 const useClasses = makeStyles((theme) => ({
   row: ({ index, isChild }: any) => ({

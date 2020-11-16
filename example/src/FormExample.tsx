@@ -34,8 +34,27 @@ export default () => {
       <Form
         loading={loading}
         fields={[
-          { id: 'pruebaa', type: FormTypes.Input, title: 'Prueba' },
-          { id: 'fecha', type: FormTypes.Date, title: 'Fecha' },
+          { id: 'pruebaa', type: FormTypes.Input, title: 'Prueba', new: false },
+          {
+            id: 'title',
+            type: FormTypes.OnlyTitle,
+            title: 'Titulo',
+          },
+          { id: 'switch', type: FormTypes.Switch, title: 'switch' },
+          {
+            depends: (rowdata) => rowdata.switch,
+            id: 'select',
+            type: FormTypes.Options,
+            title: 'Select multiple',
+            options: [
+              { id: 'Una', title: 'Sarasa' },
+              { id: 'Dos' },
+              { id: 'Tres' },
+              { id: 'Cuatro' },
+            ],
+            placeholder: 'Select multiple',
+            multiple: true,
+          },
           {
             type: FormTypes.Autocomplete,
             title: 'Prueba con opciones',

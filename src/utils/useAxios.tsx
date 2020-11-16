@@ -16,6 +16,7 @@ export interface UseAxiosProps {
 export type CallProps = (props: AxiosRequestConfig, authorize?: boolean) => Promise<CallResponse>
 interface Response<T> extends Status<T> {
   call: CallProps
+  clean: () => void
 }
 
 export interface ErrorResponse {
@@ -117,6 +118,10 @@ export default <T extends any = any>(props?: UseAxiosProps): Response<T> => {
     [headers, lang],
   )
 
+  const clean = useCallback(() => {
+    dispatch({ response: undefined, error: undefined, status: undefined, loading: false })
+  }, [])
+
   useEffect(() => {
     if (!onInitRef.current && onInit) {
       call(onInit)
@@ -124,5 +129,5 @@ export default <T extends any = any>(props?: UseAxiosProps): Response<T> => {
     }
   }, [onInit, call])
 
-  return { call, ...state }
+  return { call, clean, ...state }
 }

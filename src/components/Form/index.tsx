@@ -4,6 +4,7 @@ import { FormikValues, FormikHelpers, FormikProps } from 'formik'
 import { FaCheck, FaTimes } from 'react-icons/fa'
 import SwipeableViews from 'react-swipeable-views'
 import * as Yup from 'yup'
+import { compareKeys } from '../../utils/addOns'
 import { StepProps, FieldProps } from './FormTypes'
 import Step from './Step'
 
@@ -85,6 +86,7 @@ export default memo((props: FormProps) => {
       <SwipeableViews className={classes.stepRoot} index={tab} onChangeIndex={(tab) => setTab(tab)}>
         {steps.map(({ fields, id }) => (
           <Step
+            intials={props.intials}
             key={id}
             isFormData={isFormData}
             fields={fields}
@@ -113,7 +115,7 @@ export default memo((props: FormProps) => {
       </Button>
     </React.Fragment>
   )
-})
+}, compareKeys(['loading', 'fields', 'intials', 'steps']))
 
 const useClasses = makeStyles((theme) => ({
   root: {

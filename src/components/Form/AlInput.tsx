@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core'
 import { useField, useFormikContext } from 'formik'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
+import { compareKeys } from '../../utils/addOns'
 import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 import useFilters, { Filter } from '../../utils/useFilters'
@@ -33,6 +34,7 @@ export interface AlInputProps extends ComunesProps {
   willSubmit?: boolean
   placeholder?: string
   fullWidth?: boolean
+  onBlur?: (val: string) => void
 }
 
 type InputFilter = Filter<string>
@@ -52,6 +54,8 @@ export default memo((props: AlInputProps) => {
     help,
     hide,
     filter,
+    onBlur,
+    keepMounted,
   } = props
   const [hasSecure, setHasSecure] = useState(true)
   const lang = useLang()
@@ -105,7 +109,7 @@ export default memo((props: AlInputProps) => {
   }, [type, hasSecure])
 
   return (
-    <BaseInput grow={grow} fullWidth={fullWidth} ocultar={hide}>
+    <BaseInput grow={grow} fullWidth={fullWidth} ocultar={hide} keepMounted={keepMounted}>
       <FormControl
         fullWidth
         error={(touched && !!error) || (finalValue?.length || 0) > valMax}
@@ -154,6 +158,11 @@ export default memo((props: AlInputProps) => {
               formik.submitForm()
             }
           }}
+          onBlur={() => {
+            if (!filter && onBlur) {
+              onBlur(value as string)
+            }
+          }}
           placeholder={placeholder}
           type={inputType}
           label={finalTitle}
@@ -181,4 +190,4 @@ export default memo((props: AlInputProps) => {
       </FormControl>
     </BaseInput>
   )
-})
+}, compareKeys(['loading', 'hide']))

@@ -3,6 +3,7 @@ import { makeStyles, IconButton, Typography, CircularProgress, Collapse } from '
 import { red } from '@material-ui/core/colors'
 import { useField } from 'formik'
 import { FaCamera, FaFile } from 'react-icons/fa'
+import { compareKeys } from '../../utils/addOns'
 import { useLang } from '../../utils/CrudContext'
 import BaseInput from './BaseInput'
 import { FormTypes, ComunesProps } from './FormTypes'
@@ -29,6 +30,7 @@ export default memo((props: AlImagenProps) => {
     accept,
     title,
     validate,
+    keepMounted,
   } = props
   const [base64, setBase64] = useState<string | null>(null)
   const [{ value }, { error, touched }, { setValue, setTouched }] = useField<string | File | null>(
@@ -83,7 +85,7 @@ export default memo((props: AlImagenProps) => {
   }, [title, validate])
 
   return (
-    <BaseInput grow={grow} ocultar={hide}>
+    <BaseInput grow={grow} ocultar={hide} keepMounted={keepMounted}>
       <Typography>{finalTitle}</Typography>
       <Collapse in={!subiendo} timeout="auto">
         <div className={clases.contenedor}>
@@ -130,7 +132,7 @@ export default memo((props: AlImagenProps) => {
       />
     </BaseInput>
   )
-})
+}, compareKeys(['loading', 'hide']))
 
 const useClases = makeStyles(() => ({
   contenedor: {

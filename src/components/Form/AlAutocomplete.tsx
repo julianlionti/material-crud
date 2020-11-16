@@ -14,6 +14,7 @@ import {
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import { useField } from 'formik'
 import { FaPlus, FaRegCheckSquare, FaRegSquare } from 'react-icons/fa'
+import { compareKeys } from '../../utils/addOns'
 import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 import useFilters, { Filter } from '../../utils/useFilters'
@@ -52,6 +53,7 @@ export default memo((props: AlAutocompleteProps) => {
     filter,
     hide,
     onAddItem,
+    keepMounted,
   } = props
   const lang = useLang()
   const { autocomplete } = useFilters()
@@ -106,7 +108,7 @@ export default memo((props: AlAutocompleteProps) => {
   )
 
   return (
-    <BaseInput grow={grow} ocultar={hide}>
+    <BaseInput grow={grow} ocultar={hide} keepMounted={keepMounted}>
       <Autocomplete
         innerRef={(e) => (inputRef.current = e)}
         loadingText={lang.loading}
@@ -129,7 +131,13 @@ export default memo((props: AlAutocompleteProps) => {
             {...inputProps}
             InputProps={{
               ...InputProps,
-              startAdornment: onAddItem ? startAdornment : InputProps.startAdornment,
+              startAdornment: (
+                <React.Fragment>
+                  {onAddItem && startAdornment}
+                  {InputProps.startAdornment}
+                </React.Fragment>
+              ),
+              // startAdornment: onAddItem ? startAdornment : InputProps.startAdornment,
               // startAdornment: [
               //   filter && (
               //     <Tooltip
@@ -194,7 +202,7 @@ export default memo((props: AlAutocompleteProps) => {
       )}
     </BaseInput>
   )
-})
+}, compareKeys(['loading', 'options', 'renderAggregate', 'onChangeText', 'hide']))
 
 const useClases = makeStyles((tema) => ({
   agregado: {

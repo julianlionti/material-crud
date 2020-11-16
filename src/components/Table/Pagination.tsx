@@ -1,6 +1,7 @@
 import React, { memo } from 'react'
 import { Collapse, makeStyles, MenuItem, Select, Typography } from '@material-ui/core'
 import Pagination from '@material-ui/lab/Pagination'
+import { compareKeysOmit } from '../../utils/addOns'
 import { useLang } from '../../utils/CrudContext'
 import { useABM } from '../../utils/DataContext'
 
@@ -52,7 +53,7 @@ export default memo(({ onChange, loading }: Props) => {
       />
     </div>
   )
-})
+}, compareKeysOmit(['onChange']))
 
 const useClasses = makeStyles((theme) => ({
   pagContainer: {
