@@ -83,7 +83,6 @@ export default () => {
               title: 'Type',
               type: FormTypes.Options,
               placeholder: 'Select one type',
-              multiple: true,
               options: [
                 { id: '1', title: 'empire' },
                 { id: '2', title: 'empire' },

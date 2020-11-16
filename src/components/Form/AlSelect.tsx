@@ -74,10 +74,12 @@ export default memo((props: AlSelectProps) => {
 
   const selectItem = useCallback(
     (valInput: ValueType) => {
-      let finalValInput: ValueType = valInput
+      const finalValInput: ValueType = valInput
       if (!multiple) {
         // const vinput = valInput as OpcionesProps
-        finalValInput = valInput // === '-1' ? { id: '' } : vinput
+        setValue(finalValInput)
+        // finalValInput = valInput  === '-1' ? { id: '' } : vinput
+        return
       }
 
       if (filter) {
