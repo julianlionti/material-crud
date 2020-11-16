@@ -86,6 +86,7 @@ export default memo((props: FormProps) => {
       <SwipeableViews className={classes.stepRoot} index={tab} onChangeIndex={(tab) => setTab(tab)}>
         {steps.map(({ fields, id }) => (
           <Step
+            intials={props.intials}
             key={id}
             isFormData={isFormData}
             fields={fields}

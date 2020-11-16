@@ -31,8 +31,8 @@ export interface AlSelectProps extends ComunesProps {
   onSelect?: (val: ValueType) => void
 }
 
-type SelectFilter = Filter<OpcionesProps | OpcionesProps[]>
-type ValueType = OpcionesProps | OpcionesProps[]
+type SelectFilter = Filter<string | string[]>
+type ValueType = string | string[]
 export default memo((props: AlSelectProps) => {
   const inputRef = useRef<any>()
   const {
@@ -62,13 +62,13 @@ export default memo((props: AlSelectProps) => {
 
   const finalValue = useMemo(() => {
     if (multiple && filter) return (value as SelectFilter).value
-    if (multiple && !filter) return value
+    if (multiple && !filter) return (value as string[]).map((e) => e.toString())
 
     if (filter) {
-      const filval = (value as SelectFilter).value as OpcionesProps
+      const filval = (value as SelectFilter).value
       return filval // .title || filval.id
     }
-    const singlevalue = value as OpcionesProps
+    const singlevalue = value
     return singlevalue // .title || singlevalue.id
   }, [value, filter, multiple])
 
@@ -76,8 +76,8 @@ export default memo((props: AlSelectProps) => {
     (valInput: ValueType) => {
       let finalValInput: ValueType = valInput
       if (!multiple) {
-        const vinput = valInput as OpcionesProps
-        finalValInput = vinput.id === '-1' ? { id: '' } : vinput
+        // const vinput = valInput as OpcionesProps
+        finalValInput = valInput // === '-1' ? { id: '' } : vinput
       }
 
       if (filter) {
@@ -86,10 +86,18 @@ export default memo((props: AlSelectProps) => {
           value: finalValInput,
         })
       } else {
-        setValue(finalValInput)
+        const finalValInputArray = finalValInput as string[]
+        setValue(
+          finalValInputArray
+            .filter((x) => x)
+            .map((e): string => {
+              const item = options.find((elem) => elem.id.toString() === e)
+              return item?.id || e || '-'
+            }),
+        )
       }
     },
-    [filter, setValue, value, multiple],
+    [filter, setValue, value, multiple, options],
   )
 
   const classes = useClasses()
@@ -117,22 +125,26 @@ export default memo((props: AlSelectProps) => {
               !multiple
                 ? undefined
                 : () => {
-                    const finalValue = value as OpcionesProps[]
+                    const finalValueArray = finalValue as string[]
                     return (
                       <div className={classes.chips}>
-                        {finalValue.map(({ id, title }) => (
-                          <Chip
-                            onMouseDown={(event) => {
-                              event.stopPropagation()
-                            }}
-                            onDelete={() => {
-                              setValue(finalValue.filter((e) => e.id !== id))
-                            }}
-                            key={id}
-                            label={title || id}
-                            className={classes.chip}
-                          />
-                        ))}
+                        {finalValueArray?.map((e) => {
+                          const { id, title } =
+                            options.find((elem) => elem.id.toString() === e) || {}
+                          return (
+                            <Chip
+                              onMouseDown={(event) => {
+                                event.stopPropagation()
+                              }}
+                              onDelete={() => {
+                                setValue(finalValueArray.filter((e) => e !== id))
+                              }}
+                              key={id}
+                              label={title || id}
+                              className={classes.chip}
+                            />
+                          )
+                        })}
                       </div>
                     )
                   }
@@ -146,11 +158,11 @@ export default memo((props: AlSelectProps) => {
               selectItem(valInput as ValueType)
             }}
             label={finalTitle}>
-            <MenuItem disabled value="">
+            <MenuItem value="">
               <em>{placeholder || 'Seleccione una opción'}</em>
             </MenuItem>
             {options.map((e) => (
-              <MenuItem key={e.id} value={e as any}>
+              <MenuItem key={e.id} value={e.id}>
                 {e.title || e.id}
               </MenuItem>
             ))}
