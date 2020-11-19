@@ -39,15 +39,15 @@ export const CrudProvider = <T extends any>(props: ProviderProps<T>) => {
   useEffect(() => {
     if (onUser && user !== undefined) {
       onUser(user)
-      // setConf((conf) => ({ ...conf, user }))
+      setConf((conf) => ({ ...conf, user }))
     }
   }, [user, onUser, setConf])
 
-  // useEffect(() => {
-  //   if (headers) {
-  //     setConf((conf) => ({ ...conf, headers }))
-  //   }
-  // }, [headers, setConf])
+  useEffect(() => {
+    if (headers) {
+      setConf((conf) => ({ ...conf, headers }))
+    }
+  }, [headers, setConf])
 
   return <CrudContext.Provider value={state}>{children}</CrudContext.Provider>
 }
