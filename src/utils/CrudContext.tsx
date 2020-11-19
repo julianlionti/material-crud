@@ -30,14 +30,25 @@ const CrudContext = createContext<[Context, Dispatch<SetStateAction<Context>>]>(
   () => {},
 ])
 
-export const CrudProvider = <T extends any>({ children, onUser, ...context }: ProviderProps<T>) => {
+export const CrudProvider = <T extends any>(props: ProviderProps<T>) => {
+  const { children, onUser, headers, ...context } = props
   const state = useState<Context<T>>({ ...context, lang: context.lang || enUS })
+  const [conf, setConf] = state
+
   const [{ user }] = state
   useEffect(() => {
     if (onUser && user !== undefined) {
       onUser(user)
+      setConf((conf) => ({ ...conf, user }))
     }
-  }, [user, onUser])
+  }, [user, onUser, setConf])
+
+  useEffect(() => {
+    if (headers) {
+      setConf((conf) => ({ ...conf, headers }))
+    }
+  }, [headers, setConf])
+
   return <CrudContext.Provider value={state}>{children}</CrudContext.Provider>
 }
 
