@@ -1,93 +1,240 @@
-import React, { useCallback, useState } from 'react'
-import { Dialog, CenteredCard, Form, FormTypes } from 'material-crud'
-import { useHistory } from 'react-router'
-import CustomField from './extra/CustomField'
-import { OpcionesProps } from '../../dist/components/Form/FormTypes'
-import { Autocomplete } from '@material-ui/lab'
-import { TextField } from '@material-ui/core'
+import React, { useEffect, useMemo } from 'react'
+import { CenteredCard, createFields, Form, FormTypes, OpcionesProps, useUser } from 'material-crud'
+import * as Yup from 'yup'
+import useAxios from './utils/useAxios'
 
 export default () => {
-  const history = useHistory()
-  const [dialog, setDialog] = useState<null | Object>(null)
-  const [loading, setLoading] = useState(false)
+  const [provincias, loadingProvincias] = useAxios<any>({
+    onInit: { url: 'http://localhost:5050/api/servicios/provincias' },
+  })
 
-  const submitForm = useCallback(async (vals) => {
-    setLoading(true)
-    await new Promise((res) => setTimeout(res, 2000))
-    setDialog(vals)
-    setLoading(false)
-  }, [])
+  const [dptos, loadingDptos, getDptos] = useAxios<any>()
+  const [localidades, loadingLocali, getLocalidades, cleanLocali] = useAxios<any>()
+  const [tipoOrga, loadingTipoOrga] = useAxios<any>({
+    onInit: {
+      url: 'http://localhost:5050/api/tipo_organizacion',
+    },
+  })
 
-  const [opciones, setOpciones] = useState<OpcionesProps[]>([])
+  const [cadenaProductiva, loadingCadena] = useAxios<any>({
+    onInit: {
+      url: 'http://localhost:5050/api/cadena_productiva',
+    },
+  })
+
+  const [asistencias, loadingAsistencia] = useAxios<any>({
+    onInit: {
+      url: 'http://localhost:5050/api/asistencia',
+    },
+  })
+
+  const [solicitud, loadingSolicitud, nuevaSolicitud] = useAxios<any>()
+
+  useEffect(() => {
+    console.log(solicitud)
+  }, [solicitud])
+
+  const fields = useMemo(
+    () =>
+      createFields([
+        {
+          id: 'organizacion',
+          title: '1. Organización',
+          type: FormTypes.OnlyTitle,
+        },
+        [
+          {
+            id: 'cuit',
+            title: 'CUIT',
+            type: FormTypes.Number,
+            validate: Yup.string().required().min(11).max(11),
+          },
+          {
+            id: 'nombre',
+            title: 'Nombre',
+            type: FormTypes.Input,
+            validate: Yup.string().required(),
+          },
+        ],
+        [
+          {
+            id: 'integrantes',
+            title: 'Cantidad de Integrantes',
+            type: FormTypes.Number,
+            grow: 3,
+            validate: Yup.number()
+              .required('La cantidad de integrantes es obligatoria')
+              .moreThan(0, 'El campo debe ser mayor a 0'),
+          },
+          {
+            id: 'tipoOrganizacion',
+            title: 'Tipo',
+            type: FormTypes.Options,
+            placeholder: 'Seleccione el tipo de organización',
+            options:
+              tipoOrga?.map(
+                ({ _id, nombre }: any): OpcionesProps => ({ id: _id, title: nombre }),
+              ) || [],
+            grow: 7,
+            validate: Yup.string().nullable().required(),
+          },
+        ],
+        {
+          id: 'personeriaVigente',
+          title: 'Personería vigente',
+          type: FormTypes.Switch,
+        },
+        { id: 'locacion', title: '2. Localización', type: FormTypes.OnlyTitle },
+        [
+          {
+            id: 'provincia',
+            title: 'Provincia',
+            type: FormTypes.Options,
+            placeholder: 'Seleccione su provincia',
+            options:
+              provincias?.map(
+                ({ Id, Nombre }: any): OpcionesProps => ({ id: Id, title: Nombre }),
+              ) || [],
+            validate: Yup.string().nullable().required('La provincia es obligatoria'),
+            onSelect: (val) => {
+              cleanLocali()
+              getDptos({
+                url: 'http://localhost:5050/api/servicios/departamentos',
+                params: { provincia_id: val },
+              })
+            },
+          },
+          {
+            id: 'departamento',
+            title: 'Departamento',
+            type: FormTypes.Options,
+            placeholder: 'Seleccione su departamento',
+            options:
+              dptos?.map(
+                ({ Id, NombreMayuscula }: any): OpcionesProps => ({
+                  id: Id,
+                  title: NombreMayuscula,
+                }),
+              ) || [],
+            validate: Yup.string().nullable().required(),
+            onSelect: (val) => {
+              getLocalidades({
+                url: 'http://localhost:5050/api/servicios/localidades',
+                params: { dpto_id: val },
+              })
+            },
+          },
+          {
+            id: 'localidad',
+            title: 'Localidad',
+            type: FormTypes.Options,
+            placeholder: 'Seleccione su localidad',
+            options:
+              localidades?.map(
+                ({ Id, Nombre }: any): OpcionesProps => ({ id: Id, title: Nombre }),
+              ) || [],
+          },
+        ],
+        { id: 'detalle', title: '3. Detalle', type: FormTypes.OnlyTitle },
+        {
+          id: 'cadenaProductiva',
+          title: 'Cadena productiva',
+          type: FormTypes.Options,
+          placeholder: 'Seleccione la cadena productiva',
+          options:
+            cadenaProductiva?.map(
+              ({ _id, nombre }: any): OpcionesProps => ({ id: _id, title: nombre }),
+            ) || [],
+          // validate: Yup.string().required(),
+        },
+        {
+          id: 'cadenaProductivaOtro',
+          title: 'Otro',
+          depends: ({ cadenaproductiva: cadena }) =>
+            cadenaProductiva
+              ?.find((e: any) => e._id === cadena)
+              ?.nombre.toLowerCase()
+              .includes('otro') || false,
+          type: FormTypes.Input,
+          validate: Yup.string()
+            .required('La cadena productiva es obligatoria')
+            .when(['cadenaProductiva'], (cadenaProductiva: any, schema: any) => {
+              console.log(cadenaProductiva)
+              return schema.required()
+            }),
+        },
+        {
+          id: 'detalleproyecto',
+          title: '4. Detalle del proyecto',
+          type: FormTypes.OnlyTitle,
+        },
+        {
+          id: 'descripcionProyecto',
+          title: 'Descripción del proyecto',
+          type: FormTypes.Multiline,
+          validate: Yup.string().required('La descripción del proyecto es obligatoria').max(500),
+          help: 'Breve descripción del proyecto',
+        },
+        {
+          id: 'asistenciaSolicitada',
+          title: 'Asistencia solicitada',
+          type: FormTypes.Options,
+          options:
+            asistencias?.map(
+              ({ _id, nombre }: any): OpcionesProps => ({ id: _id, title: nombre }),
+            ) || [],
+          placeholder: 'Seleccione la asistencia solicitada',
+          validate: Yup.array().min(1, 'Debe seleccionar al menos una opción'),
+          multiple: true,
+        },
+        {
+          id: 'detalleAsistencia',
+          title: 'Detalle de asistencia',
+          type: FormTypes.Input,
+          validate: Yup.string().required('El detalle de la asistencia es obligatorio').max(200),
+        },
+        {
+          id: 'presupuestoEstimulado',
+          title: 'Presupuesto estimulado (OPCIONAL)',
+          type: FormTypes.Options,
+          placeholder: 'Seleccione su departamento',
+          options: [
+            { id: 'mini', title: '0 a 2.000.000' },
+            { id: 'medio', title: '2.000.000 a 4.000.000' },
+            { id: 'maxi', title: 'Mayor a 4.000.000' },
+          ],
+        },
+        {
+          id: 'historialSolicitudes',
+          title: 'Historial de solicitud de asistencia estatal y/o internacional (Opcional)',
+          type: FormTypes.Multiline,
+          help: 'Enumere los organismos donde solicitaste asistencia',
+        },
+      ]),
+    [
+      provincias,
+      dptos,
+      localidades,
+      getDptos,
+      getLocalidades,
+      cleanLocali,
+      tipoOrga,
+      cadenaProductiva,
+      asistencias,
+    ],
+  )
 
   return (
     <CenteredCard
-      title="Ejemplo"
-      subtitle={'Subtitulo'}
-      onClose={() => history.push('/')}
-      // Right={
-      //   <Button color="inherit" onClick={() => history.push('/')}>
-      //     <FaTimes />
-      //   </Button>
-      // }
-    >
+      title="Nueva solicitud"
+      subtitle={'Complete los siguientes datos para llenar su solicitud'}>
       <Form
-        loading={loading}
-        fields={[
-          { id: 'pruebaa', type: FormTypes.Input, title: 'Prueba', new: false },
-          {
-            id: 'title',
-            type: FormTypes.OnlyTitle,
-            title: 'Titulo',
-          },
-          { id: 'switch', type: FormTypes.Switch, title: 'switch' },
-          {
-            depends: (rowdata) => rowdata.switch,
-            id: 'select',
-            type: FormTypes.Options,
-            title: 'Select multiple',
-            options: [
-              { id: 'Una', title: 'Sarasa' },
-              { id: 'Dos' },
-              { id: 'Tres' },
-              { id: 'Cuatro' },
-            ],
-            placeholder: 'Select multiple',
-            multiple: true,
-          },
-          {
-            type: FormTypes.Autocomplete,
-            title: 'Prueba con opciones',
-            id: 'prueba',
-            multiple: true,
-            onChangeText: (text) => {
-              if (text.length > 2) {
-                setOpciones([
-                  { id: 'prueba1', title: 'prueba 1' },
-                  { id: 'prueba2', title: 'prueba 2' },
-                ])
-              }
-            },
-            options: opciones,
-          },
-          {
-            id: 'custom',
-            type: FormTypes.Custom,
-            component: (props) => <CustomField {...props} />,
-            title: '',
-          },
-        ]}
-        accept={'Submit'}
-        onSubmit={submitForm}
-      />
-      <Dialog
-        show={!!dialog}
-        onClose={(confirmated) => {
-          alert(`Clicked ${confirmated ? 'Accept' : 'Cancel'}`)
-          setDialog(null)
+        onSubmit={(data) => {
+          console.log(data)
+          nuevaSolicitud({ url: 'http://localhost:5050/api/solicitud', data, method: 'POST' })
         }}
-        title={'Material-CRUD'}
-        content={JSON.stringify(dialog || {})}
+        accept="Enviar"
+        fields={fields}
       />
     </CenteredCard>
   )
