@@ -166,10 +166,7 @@ export default memo(
         initialValues={isEditing ? intials : defaultValues}
         validationSchema={noValidate ? null : Yup.object().shape(valSchema)}
         onSubmit={onSubmitCall}>
-        {({ submitForm, values, errors }) => {
-          console.log(errors)
-          return renderFields({ submitForm, values })
-        }}
+        {renderFields}
       </Formik>
     )
   }),

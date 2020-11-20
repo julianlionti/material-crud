@@ -19,7 +19,7 @@ import useWindowSize from './utils/useWindowSize'
 export type { CustomComponentProps } from './components/Form/AlCustom'
 export type { UseAxiosProps, CallProps, Error, ErrorResponse } from './utils/useAxios'
 export type { OpcionesProps } from './components/Form/FormTypes'
-export type { RefProps, CrudProps } from './components/Crud/index'
+export type { RefProps as CrudRefProps, CrudProps } from './components/Crud/index'
 
 export {
   Crud,
