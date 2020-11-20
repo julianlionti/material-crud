@@ -1,10 +1,20 @@
-import React, { useState, useEffect, useRef, ReactNode, useCallback, memo, useMemo } from 'react'
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  ReactNode,
+  useCallback,
+  memo,
+  useMemo,
+  forwardRef,
+  useImperativeHandle,
+} from 'react'
 import { Collapse, makeStyles, LinearProgress, Typography } from '@material-ui/core'
 import { serialize } from 'object-to-formdata'
 import qs from 'qs'
 import { compareKeysOmit } from '../../utils/addOns'
 import { useLang } from '../../utils/CrudContext'
-import { PaginationProps, ReplaceProps, useABM } from '../../utils/DataContext'
+import { ABMResponse, PaginationProps, ReplaceProps, useABM } from '../../utils/DataContext'
 import useAxios, { CallProps, Error } from '../../utils/useAxios'
 import Formulario from '../Form'
 import { Interactions, FieldProps, StepProps } from '../Form/FormTypes'
@@ -154,40 +164,83 @@ const getData = async ({ call, response, replace, params, url, transform }: Data
   }
 }
 
-export default memo((props: CrudProps) => {
-  const lastFilter = useRef<any>({})
+export interface RefProps extends ABMResponse<any> {
+  refresh: () => Promise<void>
+}
 
-  const { url, response, interaction, onFinished, onError, title, noTitle, transformFilter } = props
-  const { Left, gender, description, isFormData, transform } = props
-  const { name, titleSize, idInUrl, itemName, fields, steps } = props
-  const { transformToEdit, big, logicalDeleteCol, filters, columns, moreOptions } = props
+export default memo(
+  forwardRef<RefProps, CrudProps>((props, ref) => {
+    const lastFilter = useRef<any>({})
 
-  const lang = useLang()
-  const called = useRef(false)
+    const {
+      url,
+      response,
+      interaction,
+      onFinished,
+      onError,
+      title,
+      noTitle,
+      transformFilter,
+    } = props
+    const { Left, gender, description, isFormData, transform } = props
+    const { name, titleSize, idInUrl, itemName, fields, steps } = props
+    const { transformToEdit, big, logicalDeleteCol, filters, columns, moreOptions } = props
 
-  const { add, edit: editABM, replace, deleteCall, pagination, itemId } = useABM()
-  const { loading, call } = useAxios<any>({ onError })
+    const lang = useLang()
+    const called = useRef(false)
 
-  const [cartel, setCartel] = useState<CartelState>({ visible: false })
-  const [toolbar, setToolbar] = useState(false)
-  const [editObj, setEditObj] = useState<object | null>(null)
+    const {
+      add,
+      edit: editABM,
+      replace,
+      deleteCall,
+      pagination,
+      itemId,
+      insertIndex,
+      removeIndex,
+    } = useABM()
+    const { loading, call } = useAxios<any>({ onError })
 
-  const editing = useMemo(() => (editObj ? Object.keys(editObj).length > 0 : false), [editObj])
+    const [cartel, setCartel] = useState<CartelState>({ visible: false })
+    const [toolbar, setToolbar] = useState(false)
+    const [editObj, setEditObj] = useState<object | null>(null)
 
-  const getDataCall = useCallback(
-    (params) => getData({ call, params, replace, response, url, transform }),
-    [call, replace, response, url, transform],
-  )
-  const postDataCall = useCallback(
-    (data, isDelete = false) =>
-      postData({
+    const editing = useMemo(() => (editObj ? Object.keys(editObj).length > 0 : false), [editObj])
+
+    const getDataCall = useCallback(
+      (params) => getData({ call, params, replace, response, url, transform }),
+      [call, replace, response, url, transform],
+    )
+    const postDataCall = useCallback(
+      (data, isDelete = false) =>
+        postData({
+          call,
+          replace,
+          response,
+          url,
+          data,
+          editing,
+          idInUrl,
+          itemId,
+          onFinished,
+          gender,
+          add,
+          editABM,
+          setEditObj,
+          deleteCall,
+          setCartel,
+          isDelete,
+          transform,
+          isFormData,
+          logicalDeleteCol,
+        }),
+      [
         call,
         replace,
         response,
         url,
-        data,
-        editing,
         idInUrl,
+        editing,
         itemId,
         onFinished,
         gender,
@@ -196,192 +249,184 @@ export default memo((props: CrudProps) => {
         setEditObj,
         deleteCall,
         setCartel,
-        isDelete,
         transform,
         isFormData,
         logicalDeleteCol,
+      ],
+    )
+
+    const classes = useClasses({ titleSize })
+
+    const interactions = useMemo(
+      () => ({
+        [interaction?.page || 'page']: pagination.page,
+        [interaction?.perPage || 'perPage']: pagination.limit,
+        ...lastFilter.current,
       }),
-    [
-      call,
-      replace,
-      response,
-      url,
-      idInUrl,
-      editing,
-      itemId,
-      onFinished,
-      gender,
-      add,
-      editABM,
-      setEditObj,
-      deleteCall,
-      setCartel,
-      transform,
-      isFormData,
-      logicalDeleteCol,
-    ],
-  )
+      [interaction, pagination],
+    )
 
-  const classes = useClasses({ titleSize })
+    const onEditCall = useCallback(
+      (item) => {
+        let finalItem = item
+        if (transformToEdit) finalItem = transformToEdit(item)
+        setEditObj(finalItem)
+      },
+      [transformToEdit],
+    )
 
-  const interactions = useMemo(
-    () => ({
-      [interaction?.page || 'page']: pagination.page,
-      [interaction?.perPage || 'perPage']: pagination.limit,
-      ...lastFilter.current,
-    }),
-    [interaction, pagination],
-  )
+    const onDeleteCall = useCallback(
+      (item) => {
+        // const it = item
+        setCartel({
+          visible: true,
+          contenido: itemName
+            ? lang.delExplanation(item[itemName])
+            : "Para setear este texto es necesario incluir el 'itemName'",
+          titulo: `${lang.delete} ${name}`,
+          onCerrar: (aceptado: boolean) => {
+            if (aceptado) {
+              // const data = { [itemId]: it[itemId] }
+              postDataCall(item, true)
+            } else {
+              setCartel({ visible: false })
+            }
+          },
+        })
+      },
+      [name, lang, itemName, postDataCall],
+    )
 
-  const onEditCall = useCallback(
-    (item) => {
-      let finalItem = item
-      if (transformToEdit) finalItem = transformToEdit(item)
-      setEditObj(finalItem)
-    },
-    [transformToEdit],
-  )
+    useImperativeHandle(ref, () => ({
+      refresh: () => getDataCall(interactions),
+      editItem: editABM,
+      addItems: add,
+      deleteItem: deleteCall,
+      insertItemIndex: insertIndex,
+      removeItemIndex: removeIndex,
+      replaceItem: replace,
+    }))
 
-  const onDeleteCall = useCallback(
-    (item) => {
-      // const it = item
-      setCartel({
-        visible: true,
-        contenido: itemName
-          ? lang.delExplanation(item[itemName])
-          : "Para setear este texto es necesario incluir el 'itemName'",
-        titulo: `${lang.delete} ${name}`,
-        onCerrar: (aceptado: boolean) => {
-          if (aceptado) {
-            // const data = { [itemId]: it[itemId] }
-            postDataCall(item, true)
-          } else {
-            setCartel({ visible: false })
-          }
-        },
-      })
-    },
-    [name, lang, itemName, postDataCall],
-  )
+    useEffect(() => {
+      if (!called.current) {
+        getDataCall(interactions)
+        called.current = true
+      }
+    }, [getDataCall, interactions])
 
-  useEffect(() => {
-    if (!called.current) {
-      getDataCall(interactions)
-      called.current = true
+    if (columns.length === 0) {
+      return <Typography>No están configuradas las columnas</Typography>
     }
-  }, [getDataCall, interactions])
 
-  if (columns.length === 0) {
-    return <Typography>No están configuradas las columnas</Typography>
-  }
-
-  return (
-    <div className={classes.contenedor}>
-      <Toolbar
-        fields={fields}
-        filters={filters}
-        steps={steps}
-        hide={noTitle || (!filters && !fields)}
-        editObj={editObj}
-        Left={Left}
-        onNew={() => setEditObj({})}
-        noTitle={noTitle}
-        gender={gender}
-        title={title}
-        loading={loading}
-        moreOptions={moreOptions}
-        name={name}
-        big={big}
-        show={toolbar}
-        titleSize={titleSize}
-        handleShow={() => {
-          setToolbar((t) => {
-            const final = !t
-            if (!final) {
-              lastFilter.current = {
-                ...lastFilter.current,
-                [interaction?.filter || 'filter']: {},
-                [interaction?.page || 'page']: 1,
-              }
-              // getDataCall(lastFilter.current)
-            }
-            return final
-          })
-        }}
-        onFilter={(filters) => {
-          let finalFilters = filters
-          if (transformFilter) finalFilters = transformFilter(filters)
-
-          lastFilter.current = {
-            ...lastFilter.current,
-            [interaction?.filter || 'filter']: finalFilters,
-            [interaction?.page || 'page']: 1,
-          }
-          getDataCall(lastFilter.current)
-        }}
-      />
-      {loading && <LinearProgress />}
-      <Collapse in={!editObj} timeout="auto" unmountOnExit>
-        <AlTable
-          {...props}
+    return (
+      <div className={classes.contenedor}>
+        <Toolbar
+          fields={fields}
+          filters={filters}
+          steps={steps}
+          hide={noTitle || (!filters && !fields)}
+          editObj={editObj}
+          Left={Left}
+          onNew={() => setEditObj({})}
+          noTitle={noTitle}
+          gender={gender}
+          title={title}
           loading={loading}
-          onSort={(newSort) => {
-            lastFilter.current = {
-              ...lastFilter.current,
-              [interaction?.sort || 'sort']: newSort,
-            }
-            getDataCall({ ...interactions, ...lastFilter.current })
-          }}
-          onChangePagination={(page, perPage) => {
-            getDataCall({
-              ...interactions,
-              ...lastFilter.current,
-              [interaction?.page || lang.pagination?.page || 'page']: page,
-              [interaction?.perPage || lang.pagination?.rowsPerPage || 'perPage']: perPage,
+          moreOptions={moreOptions}
+          name={name}
+          big={big}
+          show={toolbar}
+          titleSize={titleSize}
+          handleShow={() => {
+            setToolbar((t) => {
+              const final = !t
+              if (!final) {
+                lastFilter.current = {
+                  ...lastFilter.current,
+                  [interaction?.filter || 'filter']: {},
+                  [interaction?.page || 'page']: 1,
+                }
+                // getDataCall(lastFilter.current)
+              }
+              return final
             })
           }}
-          onEdit={(rowData) => onEditCall(rowData)}
-          onDelete={(rowData) => onDeleteCall(rowData)}
+          onFilter={(filters) => {
+            let finalFilters = filters
+            if (transformFilter) finalFilters = transformFilter(filters)
+
+            lastFilter.current = {
+              ...lastFilter.current,
+              [interaction?.filter || 'filter']: finalFilters,
+              [interaction?.page || 'page']: 1,
+            }
+            getDataCall(lastFilter.current)
+          }}
         />
-      </Collapse>
-      {(fields || steps) && (
-        <Collapse in={!!editObj} timeout="auto" unmountOnExit>
-          <CenteredCard
-            noPadding
-            onClose={() => setEditObj(null)}
-            title={`${
-              editing
-                ? lang.edit
-                : lang.new
-                ? `${lang.new}${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
-                : `Nuev${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
-            } ${name}`}
-            subtitle={description}>
-            <Formulario
-              intials={editObj}
-              loading={loading}
-              accept={
+        {loading && <LinearProgress />}
+        <Collapse in={!editObj} timeout="auto" unmountOnExit>
+          <AlTable
+            {...props}
+            loading={loading}
+            onSort={(newSort) => {
+              lastFilter.current = {
+                ...lastFilter.current,
+                [interaction?.sort || 'sort']: newSort,
+              }
+              getDataCall({ ...interactions, ...lastFilter.current })
+            }}
+            onChangePagination={(page, perPage) => {
+              getDataCall({
+                ...interactions,
+                ...lastFilter.current,
+                [interaction?.page || lang.pagination?.page || 'page']: page,
+                [interaction?.perPage || lang.pagination?.rowsPerPage || 'perPage']: perPage,
+              })
+            }}
+            onEdit={(rowData) => onEditCall(rowData)}
+            onDelete={(rowData) => onDeleteCall(rowData)}
+          />
+        </Collapse>
+        {(fields || steps) && (
+          <Collapse in={!!editObj} timeout="auto" unmountOnExit>
+            <CenteredCard
+              noPadding
+              onClose={() => setEditObj(null)}
+              title={`${
                 editing
                   ? lang.edit
-                  : `${lang.add}${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''} ${name}`
-              }
-              fields={fields}
-              steps={steps}
-              onSubmit={(vals) => postDataCall(vals)}
-            />
-          </CenteredCard>
-        </Collapse>
-      )}
-      <Dialog
-        show={cartel.visible}
-        title={cartel?.titulo || ''}
-        content={cartel?.contenido || ''}
-        onClose={cartel.onCerrar}
-        loading={loading}
-      />
-    </div>
-  )
-}, compareKeysOmit(['Left', 'response', 'transform', 'transformFilter', 'transformToEdit']))
+                  : lang.new
+                  ? `${lang.new}${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
+                  : `Nuev${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
+              } ${name}`}
+              subtitle={description}>
+              <Formulario
+                intials={editObj}
+                loading={loading}
+                accept={
+                  editing
+                    ? lang.edit
+                    : `${lang.add}${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''} ${name}`
+                }
+                fields={fields}
+                steps={steps}
+                onSubmit={(vals) => postDataCall(vals)}
+              />
+            </CenteredCard>
+          </Collapse>
+        )}
+        <Dialog
+          show={cartel.visible}
+          title={cartel?.titulo || ''}
+          content={cartel?.contenido || ''}
+          onClose={cartel.onCerrar}
+          loading={loading}
+        />
+      </div>
+    )
+  }),
+  compareKeysOmit(['Left', 'response', 'transform', 'transformFilter', 'transformToEdit']),
+)
 
 const useClasses = makeStyles((tema) => ({
   contenedor: {
