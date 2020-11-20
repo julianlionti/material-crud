@@ -335,7 +335,7 @@ export default memo(
           moreOptions={moreOptions}
           name={name}
           big={big}
-          show={toolbar}
+          show={!toolbar}
           titleSize={titleSize}
           handleShow={() => {
             setToolbar((t) => {

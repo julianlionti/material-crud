@@ -83,6 +83,7 @@ export default memo((props: AlSelectProps) => {
   const selectItem = useCallback(
     (valInput: ValueType) => {
       const finalValInput: ValueType = valInput
+
       if (!multiple) {
         setValue(finalValInput)
       }
@@ -93,6 +94,7 @@ export default memo((props: AlSelectProps) => {
           value: finalValInput,
         })
       } else {
+        if (!multiple) return
         const finalValInputArray = finalValInput as string[]
         setValue(
           finalValInputArray

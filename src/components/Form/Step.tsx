@@ -130,17 +130,19 @@ export default memo(
     const renderFields = useCallback(
       ({ submitForm, values }: { submitForm: () => Promise<any>; values: any }) => {
         return (
-          <div className={classes.container}>
-            {finalFields.map((field, index) => {
-              if (Array.isArray(field)) {
-                return (
-                  <div key={`${field[0].id}-row-${index}`} className={classes.horizontal}>
-                    {field.map((e) => renderInput(e, values))}
-                  </div>
-                )
-              }
-              return renderInput(field, values)
-            })}
+          <div className={classes.root}>
+            <div className={classes.fieldsRoot}>
+              {finalFields.map((field, index) => {
+                if (Array.isArray(field)) {
+                  return (
+                    <div key={`${field[0].id}-row-${index}`} className={classes.horizontal}>
+                      {field.map((e) => renderInput(e, values))}
+                    </div>
+                  )
+                }
+                return renderInput(field, values)
+              })}
+            </div>
             {accept && (
               <Button
                 size={inline ? 'small' : 'medium'}
@@ -173,19 +175,26 @@ export default memo(
 )
 
 const useClases = makeStyles((tema) => ({
-  container: ({ inline }: any) => ({
+  root: ({ inline }: any) => ({
     flex: 1,
     display: 'flex',
     flexDirection: inline ? 'row' : 'column',
     alignItems: inline ? 'center' : undefined,
+  }),
+  fieldsRoot: ({ inline }: any) => ({
+    alignItems: inline ? 'start' : undefined,
+    flex: 1,
+    display: 'flex',
+    flexDirection: inline ? 'row' : 'column',
   }),
   btn: {
     marginTop: tema.spacing(2),
     marginBottom: tema.spacing(2),
     alignSelf: 'center',
   },
-  horizontal: {
+  horizontal: ({ inline }: any) => ({
     display: 'flex',
+    flexDirection: inline ? 'column' : 'row',
     flex: 1,
-  },
+  }),
 }))

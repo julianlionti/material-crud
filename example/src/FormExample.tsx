@@ -65,6 +65,7 @@ export default () => {
           title: 'Presupuesto estimulado (OPCIONAL)',
           type: FormTypes.Options,
           placeholder: 'Seleccione su departamento',
+          multiple: true,
           options: [
             { id: 'mini', title: '0 a 2.000.000' },
             { id: 'medio', title: '2.000.000 a 4.000.000' },

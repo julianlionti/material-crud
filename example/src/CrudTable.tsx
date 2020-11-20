@@ -60,6 +60,35 @@ export default () => {
           placeholder: 'Select multiple',
           // multiple: true,
         },
+        [
+          {
+            id: 'select2',
+            type: FormTypes.Options,
+            title: 'Select multiple',
+            options: [
+              { id: 'Una', title: 'Sarasa' },
+              { id: 'Dos' },
+              { id: 'Tres' },
+              { id: 'Cuatro' },
+            ],
+            placeholder: 'Select multiple',
+            // multiple: true,
+          },
+          {
+            id: 'select3',
+            type: FormTypes.Options,
+            title: 'Select multiple',
+            multiple: true,
+            options: [
+              { id: 'Una', title: 'Sarasa' },
+              { id: 'Dos' },
+              { id: 'Tres' },
+              { id: 'Cuatro' },
+            ],
+            placeholder: 'Select multiple',
+            // multiple: true,
+          },
+        ],
       ]),
     [opciones],
   )
@@ -71,23 +100,25 @@ export default () => {
           id: 'uno',
           title: 'Uno',
           fields: [
-            {
-              id: 'nombre',
-              title: 'Nombre',
-              placeholder: 'Nombre de la categoría',
-              type: FormTypes.Input,
-              validate: Yup.string().required(),
-            },
-            {
-              id: 'type',
-              title: 'Type',
-              type: FormTypes.Options,
-              placeholder: 'Select one type',
-              options: [
-                { id: '1', title: 'empire' },
-                { id: '2', title: 'empire' },
-              ],
-            },
+            [
+              {
+                id: 'nombre',
+                title: 'Nombre',
+                placeholder: 'Nombre de la categoría',
+                type: FormTypes.Input,
+                validate: Yup.string().required(),
+              },
+              {
+                id: 'type',
+                title: 'Type',
+                type: FormTypes.Options,
+                placeholder: 'Select one type',
+                options: [
+                  { id: '1', title: 'empire' },
+                  { id: '2', title: 'empire' },
+                ],
+              },
+            ],
             {
               type: FormTypes.Autocomplete,
               title: 'Prueba con opciones',
