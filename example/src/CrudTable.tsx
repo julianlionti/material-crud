@@ -110,7 +110,17 @@ export default () => {
               type: FormTypes.Multiline,
               validate: Yup.string().max(450),
             },
-            { id: 'fecha', type: FormTypes.Date, title: 'Fecha' },
+            {
+              id: 'fecha',
+              type: FormTypes.Date,
+              title: 'Fecha',
+              depends: ({ requiereNormativa }) => requiereNormativa === true,
+              validate: Yup.date().when('requiereNormativa', {
+                is: (val) => val === true,
+                then: Yup.date().required('Obligatorio'),
+                otherwise: Yup.date().notRequired(),
+              }),
+            },
             {
               id: 'requiereNormativa',
               type: FormTypes.Switch,

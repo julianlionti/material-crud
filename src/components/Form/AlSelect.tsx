@@ -61,25 +61,30 @@ export default memo((props: AlSelectProps) => {
   }, [title, filter, validate])
 
   const finalValue = useMemo(() => {
-    if (multiple && filter) return (value as SelectFilter).value
-    if (multiple && !filter) return (value as string[]).map((e) => e.toString())
+    if (!multiple) {
+      if (filter) {
+        const filval = (value as SelectFilter).value
+        return filval // .title || filval.id
+      }
+      const singlevalue = value
+      return singlevalue // .title || singlevalue.id
+    }
 
     if (filter) {
-      const filval = (value as SelectFilter).value
-      return filval // .title || filval.id
+      const val = (value as SelectFilter).value
+      if (val === '') return []
+      const filval = val as string[]
+      return filval.map((e) => e.toString())
+    } else {
+      return (value as string[]).map((e) => e.toString())
     }
-    const singlevalue = value
-    return singlevalue // .title || singlevalue.id
   }, [value, filter, multiple])
 
   const selectItem = useCallback(
     (valInput: ValueType) => {
       const finalValInput: ValueType = valInput
       if (!multiple) {
-        // const vinput = valInput as OpcionesProps
         setValue(finalValInput)
-        // finalValInput = valInput  === '-1' ? { id: '' } : vinput
-        return
       }
 
       if (filter) {
