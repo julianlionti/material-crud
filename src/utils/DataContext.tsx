@@ -59,6 +59,15 @@ export const DataProvider = (props: ProviderProps) => {
   return <DataContext.Provider value={status}>{children}</DataContext.Provider>
 }
 
+export interface ABMResponse<T> {
+  addItems: (items: T) => void
+  editItem: ({ id, item }: { id: string; item: T }) => void
+  deleteItem: (id: string) => void
+  replaceItem: ({ pagination, items }: ReplaceProps<T>) => void
+  insertItemIndex: (index: number, item: T) => void
+  removeItemIndex: (index: number) => void
+}
+
 export const useABM = <T extends object>() => {
   const [config, setConfig] = useContext(DataContext) as Context
 
@@ -123,7 +132,7 @@ export const useABM = <T extends object>() => {
   )
 
   const insertIndex = useCallback(
-    (index: number, item: {}) => {
+    (index: number, item: T) => {
       setConfig(({ list, ...etc }) => ({
         ...etc,
         list: [...list.slice(0, index), item, ...list.slice(index)],
