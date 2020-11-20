@@ -89,7 +89,7 @@ export default memo((props: AlSelectProps) => {
 
       if (filter) {
         setValue({
-          filter: (value as SelectFilter).filter,
+          filter: (value as SelectFilter)?.filter,
           value: finalValInput,
         })
       } else {
