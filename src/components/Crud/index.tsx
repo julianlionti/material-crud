@@ -111,7 +111,7 @@ const postData = async (props: NoGetCallProps) => {
   if (transform) {
     if (isDelete) finalData = transform('delete', data)
     else if (editing) finalData = transform('update', data)
-    else transform('new', data)
+    else finalData = transform('new', data)
   }
   if (isFormData && !isDelete) {
     finalData = serialize(finalData, {

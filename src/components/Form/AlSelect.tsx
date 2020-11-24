@@ -98,6 +98,7 @@ export default memo((props: AlSelectProps) => {
       /*
       if (!multiple) {
         setValue(finalValInput)
+        return
       }
 
       if (filter) {
