@@ -92,11 +92,12 @@ export default <T extends any = any>(props?: UseAxiosProps): Response<T> => {
     if (onError && error) {
       if (error.error) {
         onError(error.error)
-      }
-      if (error.errors) {
+      } else if (error.errors) {
         error.errors.forEach((err) => {
           onError(err)
         })
+      } else {
+        onError(error as Error)
       }
 
       dispatch({ error: undefined, status: undefined })

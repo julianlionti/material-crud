@@ -37,11 +37,13 @@ export default memo((props: AlMultipleProps) => {
       <Paper elevation={0}>
         <div className={classes.headerContainer}>
           <Typography variant="body1">{`${title} (${valFinal?.length})`}</Typography>
-          <IconButton
-            disabled={loading}
-            onClick={() => setValue([...valFinal, multipleDefault(configuration)])}>
-            <FaPlus />
-          </IconButton>
+          {!isOnlyTitle && (
+            <IconButton
+              disabled={loading}
+              onClick={() => setValue([...valFinal, multipleDefault(configuration)])}>
+              <FaPlus />
+            </IconButton>
+          )}
         </div>
         {valFinal.map((_, index) => (
           <div key={index} className={classes.horizontal}>

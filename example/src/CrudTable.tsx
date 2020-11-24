@@ -49,47 +49,15 @@ export default () => {
           options: opciones,
         },
         {
-          id: 'select',
-          type: FormTypes.Options,
-          title: 'Select multiple',
-          options: [
-            { id: 'Una', title: 'Sarasa' },
-            { id: 'Dos' },
-            { id: 'Tres' },
-            { id: 'Cuatro' },
-          ],
-          placeholder: 'Select multiple',
-          // multiple: true,
+          id: 'created_since',
+          type: FormTypes.Date,
+          title: 'Created Since',
         },
-        [
-          {
-            id: 'select2',
-            type: FormTypes.Options,
-            title: 'Select multiple',
-            options: [
-              { id: 'Una', title: 'Sarasa' },
-              { id: 'Dos' },
-              { id: 'Tres' },
-              { id: 'Cuatro' },
-            ],
-            placeholder: 'Select multiple',
-            // multiple: true,
-          },
-          {
-            id: 'select3',
-            type: FormTypes.Options,
-            title: 'Select multiple',
-            multiple: true,
-            options: [
-              { id: 'Una', title: 'Sarasa' },
-              { id: 'Dos' },
-              { id: 'Tres' },
-              { id: 'Cuatro' },
-            ],
-            placeholder: 'Select multiple',
-            // multiple: true,
-          },
-        ],
+        {
+          id: 'created_until',
+          type: FormTypes.Date,
+          title: 'Created Until',
+        },
       ]),
     [opciones],
   )
@@ -337,6 +305,17 @@ export default () => {
         itemName="nombre"
         onError={(err) => console.log(err)}
         transformToEdit={(rowData) => ({ ...rowData, type: [rowData.id] })}
+        transformFilter={(query) => {
+          const keys = Object.keys(query)
+          const finalFilter = keys.reduce((acc, it) => ({ ...acc, [it]: query[it].value }), {})
+          return finalFilter
+        }}
+        transform={(action, rowData) => {
+          if (action === 'query') {
+            return { ...rowData, ...rowData.filter }
+          }
+          return rowData
+        }}
       />
     </React.Fragment>
   )

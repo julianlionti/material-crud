@@ -211,16 +211,7 @@ export default memo(
     )
 
     const renderFields = useCallback(
-      ({
-        submitForm,
-        values,
-        errors,
-      }: {
-        submitForm: () => Promise<any>
-        values: any
-        errors: any
-      }) => {
-        console.log(errors)
+      ({ submitForm, values }: { submitForm: () => Promise<any>; values: any }) => {
         return (
           <div className={classes.root}>
             <div className={classes.fieldsRoot}>
