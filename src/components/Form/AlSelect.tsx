@@ -94,30 +94,6 @@ export default memo((props: AlSelectProps) => {
           value: finalValInput,
         })
       }
-
-      /*
-      if (!multiple) {
-        setValue(finalValInput)
-        return
-      }
-
-      if (filter) {
-        setValue({
-          filter: (value as SelectFilter)?.filter,
-          value: finalValInput,
-        })
-      } else {
-        if (!multiple) return
-        const finalValInputArray = finalValInput as string[]
-        setValue(
-          finalValInputArray
-            .filter((x) => x)
-            .map((e): string => {
-              const item = options.find((elem) => elem.id.toString() === e)
-              return item?.id || e || '-'
-            }),
-        )
-      } */
     },
     [filter, multiple, setValue, value],
   )
