@@ -80,8 +80,10 @@ export default memo((props: AlSelectProps) => {
       const finalValInput: ValueType = valInput
 
       if (multiple && !filter) {
+        if (finalValInput.includes('')) return
         setValue(finalValInput)
       } else if (multiple && filter) {
+        if (finalValInput.includes('')) return
         setValue({
           filter: (value as SelectFilter)?.filter,
           value: finalValInput,

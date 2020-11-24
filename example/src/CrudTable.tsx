@@ -49,6 +49,17 @@ export default () => {
           options: opciones,
         },
         {
+          id: 'type',
+          title: 'Type',
+          type: FormTypes.Options,
+          placeholder: 'Select one type',
+          options: [
+            { id: '1', title: 'empire' },
+            { id: '2', title: 'empire' },
+          ],
+          multiple: true,
+        },
+        {
           id: 'created_since',
           type: FormTypes.Date,
           title: 'Created Since',
@@ -186,6 +197,7 @@ export default () => {
             { id: '1', title: 'empire' },
             { id: '2', title: 'empire' },
           ],
+          multiple: true,
         },
         {
           id: 'options',
