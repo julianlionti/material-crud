@@ -158,6 +158,38 @@ export default () => {
     [opciones],
   )
 
+  const fields = useMemo(
+    () =>
+      createFields([
+        {
+          id: 'nombre',
+          title: 'Nombre',
+          placeholder: 'Nombre de la categoría',
+          type: FormTypes.Input,
+          validate: Yup.string().required(),
+        },
+        {
+          id: 'type',
+          title: 'Type',
+          type: FormTypes.Options,
+          placeholder: 'Select one type',
+          options: [
+            { id: '1', title: 'empire' },
+            { id: '2', title: 'empire' },
+          ],
+        },
+        {
+          id: 'options',
+          title: 'Options',
+          type: FormTypes.Multiple,
+          configuration: [
+            { id: 'empty', type: FormTypes.OnlyTitle, title: 'Select one type first' },
+          ],
+        },
+      ]),
+    [],
+  )
+
   const columns = useMemo(
     () =>
       createColumns([
@@ -236,7 +268,8 @@ export default () => {
         // url={'http://localhost:5050/api/contact'}
         gender="F"
         name={name}
-        steps={steps}
+        // steps={steps}
+        fields={fields}
         columns={columns}
         filters={filters}
         actions={{ edit: true, delete: false }}

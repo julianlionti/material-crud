@@ -85,6 +85,7 @@ export default memo((props: AlSelectProps) => {
       const finalValInput: ValueType = valInput
       if (!multiple) {
         setValue(finalValInput)
+        return
       }
 
       if (filter) {
