@@ -120,12 +120,11 @@ export default memo((props: AlInputProps) => {
           disabled={loading || readonly}
           id={id}
           startAdornment={
+            !noFilterOptions &&
             filter && (
               <Tooltip aria-label={AriaLabels.BtnFilterTypes} title={lang.tooltips.defineFilter}>
                 <div>
-                  <IconButton
-                    disabled={loading || noFilterOptions}
-                    onClick={(e) => setAnchorFilter(e.currentTarget)}>
+                  <IconButton disabled={loading} onClick={(e) => setAnchorFilter(e.currentTarget)}>
                     {filterType.find((e) => e.id === (value as InputFilter).filter)?.icon}
                   </IconButton>
                 </div>

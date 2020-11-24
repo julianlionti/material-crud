@@ -92,11 +92,11 @@ export default memo((props: AlDateProps) => {
           }}
           animateYearScrolling
           InputProps={{
-            startAdornment: filter && (
+            startAdornment: !noFilterOptions && filter && (
               <Tooltip aria-label={AriaLabels.BtnFilterTypes} title={lang.tooltips.defineFilter}>
                 <div>
                   <IconButton
-                    disabled={loading || noFilterOptions}
+                    disabled={loading}
                     onClick={(e) => {
                       e.stopPropagation()
                       e.preventDefault()

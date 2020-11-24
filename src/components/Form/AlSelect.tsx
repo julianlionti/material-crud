@@ -130,11 +130,12 @@ export default memo((props: AlSelectProps) => {
           <Select
             multiple={multiple}
             startAdornment={
+              !noFilterOptions &&
               filter && (
                 <Tooltip aria-label={AriaLabels.BtnFilterTypes} title={lang.tooltips.defineFilter}>
                   <div>
                     <IconButton
-                      disabled={loading || noFilterOptions}
+                      disabled={loading}
                       onClick={(e) => setAnchorFilter(e.currentTarget)}>
                       {select.find((e) => e.id === (value as SelectFilter).filter)?.icon}
                     </IconButton>
