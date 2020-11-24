@@ -56,6 +56,7 @@ export default memo((props: AlInputProps) => {
     filter,
     onBlur,
     keepMounted,
+    noFilterOptions,
   } = props
   const [hasSecure, setHasSecure] = useState(true)
   const lang = useLang()
@@ -119,6 +120,7 @@ export default memo((props: AlInputProps) => {
           disabled={loading || readonly}
           id={id}
           startAdornment={
+            !noFilterOptions &&
             filter && (
               <Tooltip aria-label={AriaLabels.BtnFilterTypes} title={lang.tooltips.defineFilter}>
                 <div>

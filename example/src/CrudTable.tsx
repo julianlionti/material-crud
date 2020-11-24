@@ -32,6 +32,7 @@ export default () => {
     () =>
       createFields([
         { id: 'nombre', type: FormTypes.Input, title: 'Nombre *', willSubmit: true },
+        { id: 'fecha', type: FormTypes.Date, title: 'Fecha' },
         {
           type: FormTypes.Autocomplete,
           title: 'Prueba con opciones',
@@ -48,17 +49,14 @@ export default () => {
           options: opciones,
         },
         {
-          id: 'select',
-          type: FormTypes.Options,
-          title: 'Select multiple',
-          options: [
-            { id: 'Una', title: 'Sarasa' },
-            { id: 'Dos' },
-            { id: 'Tres' },
-            { id: 'Cuatro' },
-          ],
-          placeholder: 'Select multiple',
-          // multiple: true,
+          id: 'created_since',
+          type: FormTypes.Date,
+          title: 'Created Since',
+        },
+        {
+          id: 'created_until',
+          type: FormTypes.Date,
+          title: 'Created Until',
         },
       ]),
     [opciones],
@@ -71,23 +69,39 @@ export default () => {
           id: 'uno',
           title: 'Uno',
           fields: [
-            {
-              id: 'nombre',
-              title: 'Nombre',
-              placeholder: 'Nombre de la categoría',
-              type: FormTypes.Input,
-              validate: Yup.string().required(),
-            },
-            {
-              id: 'type',
-              title: 'Type',
-              type: FormTypes.Options,
-              placeholder: 'Select one type',
-              options: [
-                { id: '1', title: 'empire' },
-                { id: '2', title: 'empire' },
-              ],
-            },
+            [
+              {
+                id: 'nombre',
+                title: 'Nombre',
+                placeholder: 'Nombre de la categoría',
+                type: FormTypes.Input,
+                validate: Yup.string().required(),
+              },
+              {
+                id: 'select3',
+                type: FormTypes.Options,
+                title: 'Select multiple',
+                multiple: true,
+                options: [
+                  { id: 'Una', title: 'Sarasa' },
+                  { id: 'Dos' },
+                  { id: 'Tres' },
+                  { id: 'Cuatro' },
+                ],
+                placeholder: 'Select multiple',
+                // multiple: true,
+              },
+              {
+                id: 'type',
+                title: 'Type',
+                type: FormTypes.Options,
+                placeholder: 'Select one type',
+                options: [
+                  { id: '1', title: 'empire' },
+                  { id: '2', title: 'empire' },
+                ],
+              },
+            ],
             {
               type: FormTypes.Autocomplete,
               title: 'Prueba con opciones',
@@ -115,11 +129,6 @@ export default () => {
               type: FormTypes.Date,
               title: 'Fecha',
               depends: ({ requiereNormativa }) => requiereNormativa === true,
-              validate: Yup.date().when('requiereNormativa', {
-                is: (val) => val === true,
-                then: Yup.date().required('Obligatorio'),
-                otherwise: Yup.date().notRequired(),
-              }),
             },
             {
               id: 'requiereNormativa',
@@ -156,6 +165,38 @@ export default () => {
         },
       ]),
     [opciones],
+  )
+
+  const fields = useMemo(
+    () =>
+      createFields([
+        {
+          id: 'nombre',
+          title: 'Nombre',
+          placeholder: 'Nombre de la categoría',
+          type: FormTypes.Input,
+          validate: Yup.string().required(),
+        },
+        {
+          id: 'type',
+          title: 'Type',
+          type: FormTypes.Options,
+          placeholder: 'Select one type',
+          options: [
+            { id: '1', title: 'empire' },
+            { id: '2', title: 'empire' },
+          ],
+        },
+        {
+          id: 'options',
+          title: 'Options',
+          type: FormTypes.Multiple,
+          configuration: [
+            { id: 'empty', type: FormTypes.OnlyTitle, title: 'Select one type first' },
+          ],
+        },
+      ]),
+    [],
   )
 
   const columns = useMemo(
@@ -236,10 +277,12 @@ export default () => {
         // url={'http://localhost:5050/api/contact'}
         gender="F"
         name={name}
-        steps={steps}
+        // steps={steps}
+        fields={fields}
         columns={columns}
         filters={filters}
         actions={{ edit: true, delete: false }}
+        noFilterOptions
         extraActions={(rowData) => [
           <IconButton key="ice">
             {name === 'Titulo prueba' ? <FaIceCream /> : <FaBeer />}
@@ -262,6 +305,17 @@ export default () => {
         itemName="nombre"
         onError={(err) => console.log(err)}
         transformToEdit={(rowData) => ({ ...rowData, type: [rowData.id] })}
+        transformFilter={(query) => {
+          const keys = Object.keys(query)
+          const finalFilter = keys.reduce((acc, it) => ({ ...acc, [it]: query[it].value }), {})
+          return finalFilter
+        }}
+        transform={(action, rowData) => {
+          if (action === 'query') {
+            return { ...rowData, ...rowData.filter }
+          }
+          return rowData
+        }}
       />
     </React.Fragment>
   )

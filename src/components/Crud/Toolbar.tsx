@@ -45,6 +45,7 @@ interface Props {
   fields?: FieldProps[]
   moreOptions?: MoreOptionsProps[]
   big?: boolean
+  noFilterOptions?: boolean
 }
 
 export const createMoreOptions = (props: MoreOptionsProps[]) => props
@@ -64,6 +65,7 @@ export default memo((props: Props) => {
     steps,
     moreOptions,
     big,
+    noFilterOptions,
   } = props
   const classes = useClasses({ titleSize })
   const [anchorEl, setAnchorEl] = useState<any>(null)
@@ -132,6 +134,7 @@ export default memo((props: Props) => {
               fields={filters}
               onSubmit={onFilter}
               noValidate
+              noFilterOptions={noFilterOptions}
             />
           </Collapse>
         )}

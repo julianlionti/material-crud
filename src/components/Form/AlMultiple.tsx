@@ -7,6 +7,7 @@ import AlAutocomplete from './AlAutocomplete'
 import AlCustom from './AlCustom'
 import AlImagen from './AlImagen'
 import AlInput from './AlInput'
+import AlOnlyTitle from './AlOnlyTitle'
 import AlSelect from './AlSelect'
 import AlSwitch from './AlSwitch'
 import BaseInput from './BaseInput'
@@ -25,6 +26,10 @@ export default memo((props: AlMultipleProps) => {
   const [{ value }, { error }, { setValue }] = useField<ValuesProps[]>(id)
   const classes = useClasses()
 
+  const isOnlyTitle = useMemo(
+    () => configuration.length === 1 && configuration[0].type === FormTypes.OnlyTitle,
+    [configuration],
+  )
   const valFinal = useMemo(() => value || [], [value])
 
   return (
@@ -32,11 +37,13 @@ export default memo((props: AlMultipleProps) => {
       <Paper elevation={0}>
         <div className={classes.headerContainer}>
           <Typography variant="body1">{`${title} (${valFinal?.length})`}</Typography>
-          <IconButton
-            disabled={loading}
-            onClick={() => setValue([...valFinal, multipleDefault(configuration)])}>
-            <FaPlus />
-          </IconButton>
+          {!isOnlyTitle && (
+            <IconButton
+              disabled={loading}
+              onClick={() => setValue([...valFinal, multipleDefault(configuration)])}>
+              <FaPlus />
+            </IconButton>
+          )}
         </div>
         {valFinal.map((_, index) => (
           <div key={index} className={classes.horizontal}>
@@ -100,15 +107,19 @@ export default memo((props: AlMultipleProps) => {
                       {...etc}
                     />
                   )
+                case FormTypes.OnlyTitle:
+                  return <AlOnlyTitle id={`${id}.${index}.${colId}`} key={colId} {...etc} />
                 default:
                   return null
               }
             })}
-            <IconButton
-              disabled={loading}
-              onClick={() => setValue(valFinal.filter((_, i) => i !== index))}>
-              <FaTrash />
-            </IconButton>
+            {!isOnlyTitle && (
+              <IconButton
+                disabled={loading}
+                onClick={() => setValue(valFinal.filter((_, i) => i !== index))}>
+                <FaTrash />
+              </IconButton>
+            )}
           </div>
         ))}
         {error && <Typography className={classes.error}>{error}</Typography>}

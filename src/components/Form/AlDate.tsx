@@ -5,6 +5,7 @@ import { DatePicker, DatePickerProps, MuiPickersUtilsProvider } from '@material-
 import enLocale from 'date-fns/locale/en-US'
 import esLocale from 'date-fns/locale/es'
 import { useField } from 'formik'
+import { FaTimes } from 'react-icons/fa'
 import { compareKeys } from '../../utils/addOns'
 import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
@@ -46,6 +47,7 @@ export default memo((props: AlDateProps) => {
     filter,
     loading,
     keepMounted,
+    noFilterOptions,
   } = props
   const [{ value }, { error, touched }, { setTouched, setValue }] = useField<
     DateValue | DateFilter
@@ -56,7 +58,8 @@ export default memo((props: AlDateProps) => {
   const finalValue = useMemo(() => {
     let actualVal: DateValue = null
     if (filter) {
-      actualVal = (value as DateFilter).value
+      actualVal = (value as DateFilter)?.value
+      if ((actualVal as unknown) === '') actualVal = null
     } else {
       actualVal = value !== null ? (value as Date) : null
     }
@@ -90,7 +93,7 @@ export default memo((props: AlDateProps) => {
           }}
           animateYearScrolling
           InputProps={{
-            startAdornment: filter && (
+            startAdornment: !noFilterOptions && filter && (
               <Tooltip aria-label={AriaLabels.BtnFilterTypes} title={lang.tooltips.defineFilter}>
                 <div>
                   <IconButton
@@ -105,10 +108,25 @@ export default memo((props: AlDateProps) => {
                 </div>
               </Tooltip>
             ),
+            endAdornment: (
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                  if (filter) {
+                    setValue({ filter: (value as DateFilter).filter, value: null })
+                  } else {
+                    setValue(null)
+                  }
+                }}>
+                <FaTimes />
+              </IconButton>
+            ),
           }}
           {...DateProps}
         />
-        {filter && (
+        {filter && !noFilterOptions && (
           <Menu anchorEl={anchorFilter} open={!!anchorFilter}>
             {date.map((e) => (
               <MenuItem

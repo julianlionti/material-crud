@@ -66,6 +66,7 @@ export interface CrudProps extends TableProps {
   moreOptions?: MoreOptionsProps[]
   big?: boolean
   logicalDeleteCol?: string
+  noFilterOptions?: boolean
 }
 
 interface DataCallProps {
@@ -110,7 +111,7 @@ const postData = async (props: NoGetCallProps) => {
   if (transform) {
     if (isDelete) finalData = transform('delete', data)
     else if (editing) finalData = transform('update', data)
-    else transform('new', data)
+    else finalData = transform('new', data)
   }
   if (isFormData && !isDelete) {
     finalData = serialize(finalData, {
@@ -172,18 +173,9 @@ export default memo(
   forwardRef<RefProps, CrudProps>((props, ref) => {
     const lastFilter = useRef<any>({})
 
-    const {
-      url,
-      response,
-      interaction,
-      onFinished,
-      onError,
-      title,
-      noTitle,
-      transformFilter,
-    } = props
-    const { Left, gender, description, isFormData, transform } = props
-    const { name, titleSize, idInUrl, itemName, fields, steps } = props
+    const { url, response, interaction, onFinished, onError, title, noTitle } = props
+    const { Left, gender, description, isFormData, transform, transformFilter } = props
+    const { name, titleSize, idInUrl, itemName, fields, steps, noFilterOptions } = props
     const { transformToEdit, big, logicalDeleteCol, filters, columns, moreOptions } = props
 
     const lang = useLang()
@@ -337,6 +329,7 @@ export default memo(
           big={big}
           show={toolbar}
           titleSize={titleSize}
+          noFilterOptions={noFilterOptions}
           handleShow={() => {
             setToolbar((t) => {
               const final = !t
