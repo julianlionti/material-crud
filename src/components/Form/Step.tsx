@@ -19,11 +19,22 @@ import { generateDefault } from './helpers'
 
 interface Props extends Omit<FormProps, 'steps'> {
   fields: FieldProps[]
+  noFilterOptions?: boolean
 }
 
 export default memo(
   forwardRef<FormikProps<any>, Props>((props, ref) => {
-    const { fields, onSubmit, accept, loading, intials, noValidate, inline, isFormData } = props
+    const {
+      fields,
+      onSubmit,
+      accept,
+      loading,
+      intials,
+      noValidate,
+      inline,
+      isFormData,
+      noFilterOptions,
+    } = props
     const classes = useClases({ inline })
     const isEditing = Object.keys(intials || {}).length > 0
 
@@ -70,29 +81,101 @@ export default memo(
           case FormTypes.Number:
           case FormTypes.Secure:
           case FormTypes.Phone:
-            return <AlInput key={campo.id} {...campo} loading={loading} hide={hidden} />
+            return (
+              <AlInput
+                key={campo.id}
+                {...campo}
+                loading={loading}
+                hide={hidden}
+                noFilterOptions={noFilterOptions}
+              />
+            )
           case FormTypes.Options:
-            return <AlSelect key={campo.id} {...campo} loading={loading} hide={hidden} />
+            return (
+              <AlSelect
+                key={campo.id}
+                {...campo}
+                loading={loading}
+                hide={hidden}
+                noFilterOptions={noFilterOptions}
+              />
+            )
           case FormTypes.File:
           case FormTypes.Image:
-            return <AlImagen key={campo.id} {...campo} loading={loading} hide={hidden} />
+            return (
+              <AlImagen
+                key={campo.id}
+                {...campo}
+                loading={loading}
+                hide={hidden}
+                noFilterOptions={noFilterOptions}
+              />
+            )
           case FormTypes.Autocomplete:
-            return <AlAutocomplete key={campo.id} {...campo} loading={loading} hide={hidden} />
+            return (
+              <AlAutocomplete
+                key={campo.id}
+                {...campo}
+                loading={loading}
+                hide={hidden}
+                noFilterOptions={noFilterOptions}
+              />
+            )
           case FormTypes.Switch:
-            return <AlSwitch key={campo.id} {...campo} loading={loading} hide={hidden} />
+            return (
+              <AlSwitch
+                key={campo.id}
+                {...campo}
+                loading={loading}
+                hide={hidden}
+                noFilterOptions={noFilterOptions}
+              />
+            )
           case FormTypes.Multiple:
-            return <AlMultiple key={campo.id} {...campo} loading={loading} hide={hidden} />
+            return (
+              <AlMultiple
+                key={campo.id}
+                {...campo}
+                loading={loading}
+                hide={hidden}
+                noFilterOptions={noFilterOptions}
+              />
+            )
           case FormTypes.Custom:
-            return <AlCustom key={campo.id} {...campo} loading={loading} hide={hidden} />
+            return (
+              <AlCustom
+                key={campo.id}
+                {...campo}
+                loading={loading}
+                hide={hidden}
+                noFilterOptions={noFilterOptions}
+              />
+            )
           case FormTypes.Date:
-            return <AlDate key={campo.id} {...campo} loading={loading} hide={hidden} />
+            return (
+              <AlDate
+                key={campo.id}
+                {...campo}
+                loading={loading}
+                hide={hidden}
+                noFilterOptions={noFilterOptions}
+              />
+            )
           case FormTypes.Draggable:
-            return <AlDropFiles key={campo.id} {...campo} loading={loading} hide={hidden} />
+            return (
+              <AlDropFiles
+                key={campo.id}
+                {...campo}
+                loading={loading}
+                hide={hidden}
+                noFilterOptions={noFilterOptions}
+              />
+            )
           default:
             return null
         }
       },
-      [loading],
+      [loading, noFilterOptions],
     )
 
     const valSchema = useMemo(
@@ -128,7 +211,16 @@ export default memo(
     )
 
     const renderFields = useCallback(
-      ({ submitForm, values }: { submitForm: () => Promise<any>; values: any }) => {
+      ({
+        submitForm,
+        values,
+        errors,
+      }: {
+        submitForm: () => Promise<any>
+        values: any
+        errors: any
+      }) => {
+        console.log(errors)
         return (
           <div className={classes.root}>
             <div className={classes.fieldsRoot}>

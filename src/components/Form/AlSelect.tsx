@@ -49,6 +49,7 @@ export default memo((props: AlSelectProps) => {
     multiple,
     onSelect,
     keepMounted,
+    noFilterOptions,
   } = props
   const [{ value }, { error, touched }, { setValue }] = useField<ValueType | SelectFilter>(id)
 
@@ -61,22 +62,16 @@ export default memo((props: AlSelectProps) => {
   }, [title, filter, validate])
 
   const finalValue = useMemo(() => {
-    if (!multiple) {
-      if (filter) {
-        const filval = (value as SelectFilter).value
-        return filval // .title || filval.id
-      }
-      const singlevalue = value
-      return singlevalue // .title || singlevalue.id
-    }
-
-    if (filter) {
+    if (!multiple && !filter) {
+      return value
+    } else if (!multiple && filter) {
       const val = (value as SelectFilter).value
-      if (val === '') return []
-      const filval = val as string[]
-      return filval.map((e) => e.toString())
+      return val
+    } else if (multiple && filter) {
+      const val = (value as SelectFilter).value
+      return val || []
     } else {
-      return (value as string[]).map((e) => e.toString())
+      return value
     }
   }, [value, filter, multiple])
 
@@ -84,6 +79,23 @@ export default memo((props: AlSelectProps) => {
     (valInput: ValueType) => {
       const finalValInput: ValueType = valInput
 
+      if (multiple && !filter) {
+        setValue(finalValInput)
+      } else if (multiple && filter) {
+        setValue({
+          filter: (value as SelectFilter)?.filter,
+          value: finalValInput,
+        })
+      } else if (!multiple && !filter) {
+        setValue(finalValInput)
+      } else if (!multiple && filter) {
+        setValue({
+          filter: (value as SelectFilter)?.filter,
+          value: finalValInput,
+        })
+      }
+
+      /*
       if (!multiple) {
         setValue(finalValInput)
       }
@@ -104,9 +116,9 @@ export default memo((props: AlSelectProps) => {
               return item?.id || e || '-'
             }),
         )
-      }
+      } */
     },
-    [filter, setValue, value, multiple, options],
+    [filter, multiple, setValue, value],
   )
 
   const classes = useClasses()
@@ -122,7 +134,7 @@ export default memo((props: AlSelectProps) => {
                 <Tooltip aria-label={AriaLabels.BtnFilterTypes} title={lang.tooltips.defineFilter}>
                   <div>
                     <IconButton
-                      disabled={loading}
+                      disabled={loading || noFilterOptions}
                       onClick={(e) => setAnchorFilter(e.currentTarget)}>
                       {select.find((e) => e.id === (value as SelectFilter).filter)?.icon}
                     </IconButton>
@@ -146,7 +158,18 @@ export default memo((props: AlSelectProps) => {
                                 event.stopPropagation()
                               }}
                               onDelete={() => {
-                                setValue(finalValueArray.filter((e) => e !== id))
+                                if (filter) {
+                                  const finalValue = value as SelectFilter
+                                  const finalArray = (finalValue.value as string[]).filter(
+                                    (e) => e !== id,
+                                  )
+                                  setValue({
+                                    filter: finalValue.filter,
+                                    value: finalArray,
+                                  })
+                                } else {
+                                  setValue((value as string[]).filter((e) => e !== id))
+                                }
                               }}
                               key={id}
                               label={title || id}

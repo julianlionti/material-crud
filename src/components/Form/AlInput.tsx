@@ -56,6 +56,7 @@ export default memo((props: AlInputProps) => {
     filter,
     onBlur,
     keepMounted,
+    noFilterOptions,
   } = props
   const [hasSecure, setHasSecure] = useState(true)
   const lang = useLang()
@@ -122,7 +123,9 @@ export default memo((props: AlInputProps) => {
             filter && (
               <Tooltip aria-label={AriaLabels.BtnFilterTypes} title={lang.tooltips.defineFilter}>
                 <div>
-                  <IconButton disabled={loading} onClick={(e) => setAnchorFilter(e.currentTarget)}>
+                  <IconButton
+                    disabled={loading || noFilterOptions}
+                    onClick={(e) => setAnchorFilter(e.currentTarget)}>
                     {filterType.find((e) => e.id === (value as InputFilter).filter)?.icon}
                   </IconButton>
                 </div>

@@ -9,6 +9,7 @@ interface Props {
   centrado?: boolean
   ocultar?: boolean
   keepMounted?: boolean
+  noFilterOptions?: boolean
 }
 
 export default memo(({ children, grow, fullWidth, centrado, ocultar, keepMounted }: Props) => {

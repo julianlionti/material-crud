@@ -32,6 +32,7 @@ export default () => {
     () =>
       createFields([
         { id: 'nombre', type: FormTypes.Input, title: 'Nombre *', willSubmit: true },
+        { id: 'fecha', type: FormTypes.Date, title: 'Fecha' },
         {
           type: FormTypes.Autocomplete,
           title: 'Prueba con opciones',
@@ -109,6 +110,20 @@ export default () => {
                 validate: Yup.string().required(),
               },
               {
+                id: 'select3',
+                type: FormTypes.Options,
+                title: 'Select multiple',
+                multiple: true,
+                options: [
+                  { id: 'Una', title: 'Sarasa' },
+                  { id: 'Dos' },
+                  { id: 'Tres' },
+                  { id: 'Cuatro' },
+                ],
+                placeholder: 'Select multiple',
+                // multiple: true,
+              },
+              {
                 id: 'type',
                 title: 'Type',
                 type: FormTypes.Options,
@@ -146,11 +161,6 @@ export default () => {
               type: FormTypes.Date,
               title: 'Fecha',
               depends: ({ requiereNormativa }) => requiereNormativa === true,
-              validate: Yup.date().when('requiereNormativa', {
-                is: (val) => val === true,
-                then: Yup.date().required('Obligatorio'),
-                otherwise: Yup.date().notRequired(),
-              }),
             },
             {
               id: 'requiereNormativa',
@@ -271,6 +281,7 @@ export default () => {
         columns={columns}
         filters={filters}
         actions={{ edit: true, delete: false }}
+        noFilterOptions
         extraActions={(rowData) => [
           <IconButton key="ice">
             {name === 'Titulo prueba' ? <FaIceCream /> : <FaBeer />}

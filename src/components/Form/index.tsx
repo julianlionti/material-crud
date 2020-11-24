@@ -27,6 +27,7 @@ export interface FormProps {
   noValidate?: boolean
   inline?: boolean
   isFormData?: boolean
+  noFilterOptions?: boolean
 }
 
 export const createFields = (props: FieldProps[]) => props
@@ -40,7 +41,7 @@ export default memo((props: FormProps) => {
   const hasSubmitedRef = useRef(false)
   const formRef = useRef<RefProps[]>([])
   const [formsValues, setFormsValues] = useState({})
-  const { fields, steps, loading, isFormData, accept, onSubmit } = props
+  const { fields, steps, loading, isFormData, accept, onSubmit, noFilterOptions } = props
 
   const [tab, setTab] = useState(0)
 
@@ -61,7 +62,7 @@ export default memo((props: FormProps) => {
   }
 
   if (!steps && fields) {
-    return <Step {...props} fields={fields} />
+    return <Step {...props} fields={fields} noFilterOptions={noFilterOptions} />
   }
 
   if (!steps) return null
@@ -91,6 +92,7 @@ export default memo((props: FormProps) => {
             isFormData={isFormData}
             fields={fields}
             loading={loading}
+            noFilterOptions={noFilterOptions}
             onSubmit={(vals) => setFormsValues((values) => ({ ...values, [id]: vals }))}
             ref={(e) => {
               const actual = formRef.current?.find((e) => e.id === id)

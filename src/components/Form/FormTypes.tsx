@@ -53,6 +53,7 @@ export interface ComunesProps extends BaseProps {
   edit?: boolean
   new?: boolean
   filter?: boolean
+  noFilterOptions?: boolean
 }
 
 export interface Interactions {

@@ -46,6 +46,7 @@ export default memo((props: AlDateProps) => {
     filter,
     loading,
     keepMounted,
+    noFilterOptions,
   } = props
   const [{ value }, { error, touched }, { setTouched, setValue }] = useField<
     DateValue | DateFilter
@@ -57,6 +58,7 @@ export default memo((props: AlDateProps) => {
     let actualVal: DateValue = null
     if (filter) {
       actualVal = (value as DateFilter).value
+      if ((actualVal as unknown) === '') actualVal = null
     } else {
       actualVal = value !== null ? (value as Date) : null
     }
@@ -94,7 +96,7 @@ export default memo((props: AlDateProps) => {
               <Tooltip aria-label={AriaLabels.BtnFilterTypes} title={lang.tooltips.defineFilter}>
                 <div>
                   <IconButton
-                    disabled={loading}
+                    disabled={loading || noFilterOptions}
                     onClick={(e) => {
                       e.stopPropagation()
                       e.preventDefault()
