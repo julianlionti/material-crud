@@ -33,7 +33,7 @@ export interface AlAutocompleteProps extends ComunesProps {
   }) => ReactNode
   placeholder?: string
   onAddItem?: (props: HTMLDivElement) => void
-  onSelect?: (formik: FormikContextType<any>) => void
+  onSelect?: (val: AutoValue, formik: FormikContextType<any>) => void
 }
 
 type AutoValue = null | OpcionesProps | OpcionesProps[]
@@ -123,7 +123,7 @@ export default memo((props: AlAutocompleteProps) => {
           if (filter) {
             setValue({ filter: (value as AutoFilter).filter, value: vals })
           } else if (!filter) {
-            if (onSelect) onSelect(formik)
+            if (onSelect) onSelect(vals, formik)
             setValue(vals)
           }
         }}
