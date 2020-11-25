@@ -106,6 +106,7 @@ export default <T extends any = any>(props?: UseAxiosProps): Response<T> => {
 
   const call = useCallback(
     async (config: AxiosRequestConfig, noHeader?: boolean) => {
+      console.log(headers)
       if (!calling.current) {
         calling.current = true
         dispatch({ loading: true, error: undefined, response: undefined, status: undefined })

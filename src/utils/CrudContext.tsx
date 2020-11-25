@@ -32,16 +32,16 @@ const CrudContext = createContext<[Context, Dispatch<SetStateAction<Context>>]>(
 
 export const CrudProvider = <T extends any>(props: ProviderProps<T>) => {
   const { children, onUser, headers, ...context } = props
-  const state = useState<Context<T>>({ ...context, lang: context.lang || enUS })
+  const state = useState<Context<T>>({ ...context, lang: context.lang || enUS, headers })
   const [conf, setConf] = state
 
   const [{ user }] = state
   useEffect(() => {
     if (onUser && user !== undefined) {
       onUser(user)
-      setConf((conf) => ({ ...conf, user }))
+      setConf((conf) => ({ ...conf, user, headers }))
     }
-  }, [user, onUser, setConf])
+  }, [user, onUser, setConf, headers])
 
   useEffect(() => {
     if (headers) {
@@ -59,7 +59,6 @@ export const useLang = () => {
 
 export const useUser = <T extends any = any>() => {
   const [configuration, setConfiguration] = useContext(CrudContext)
-
   const setUser = useCallback((user: T | null) => setConfiguration((conf) => ({ ...conf, user })), [
     setConfiguration,
   ])
