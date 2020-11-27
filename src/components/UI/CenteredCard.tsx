@@ -54,32 +54,34 @@ export default memo((props: Props) => {
     <div className={clases.contenedor}>
       <Card elevation={noElevation ? 0 : undefined} className={clases.card}>
         {loading && <LinearProgress />}
-        <div className={clases.textos}>
-          <div style={{ flex: 1 }}>
-            {title && (
-              <Typography variant="h1" className={clases.titulo} gutterBottom>
-                {title}
-              </Typography>
-            )}
-            {subtitle && (
-              <Typography
-                variant="h2"
-                className={clases.subtitulo}
-                color="textSecondary"
-                gutterBottom>
-                {subtitle}
-              </Typography>
-            )}
-          </div>
-          {onClose && (
-            <div>
-              <IconButton onClick={onClose}>
-                <FaTimes />
-              </IconButton>
+        {(title || subtitle) && (
+          <div className={clases.textos}>
+            <div style={{ flex: 1 }}>
+              {title && (
+                <Typography variant="h1" className={clases.titulo} gutterBottom>
+                  {title}
+                </Typography>
+              )}
+              {subtitle && (
+                <Typography
+                  variant="h2"
+                  className={clases.subtitulo}
+                  color="textSecondary"
+                  gutterBottom>
+                  {subtitle}
+                </Typography>
+              )}
             </div>
-          )}
-          {Right && <div>{Right}</div>}
-        </div>
+            {onClose && (
+              <div>
+                <IconButton onClick={onClose}>
+                  <FaTimes />
+                </IconButton>
+              </div>
+            )}
+            {Right && <div>{Right}</div>}
+          </div>
+        )}
         {(title || subtitle) && <Divider className={clases.separador} />}
         <div className={clases.contenido}>{children}</div>
         {button?.show && (
