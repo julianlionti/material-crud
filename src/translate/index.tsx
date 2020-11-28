@@ -1,5 +1,7 @@
 export interface Translations {
   listOf: string
+  detailOf: string
+  seeDetail: string
   new: string
   edit: string
   add: string

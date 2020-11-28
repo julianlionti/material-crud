@@ -90,6 +90,21 @@ export default () => {
       height={height - 100}
       interaction={{ page: 'pagina', perPage: 'porPagina', filter: 'filtros', sort: 'orden' }}
       onError={(error) => console.log(error)}
+      detailView={(rowdata) => [
+        {
+          title: 'Contacto solicitante',
+          section: [
+            [
+              ['Nombre', rowdata.nombre],
+              ['DNI', rowdata.dni],
+            ],
+            [
+              ['Nombre', rowdata.nombre],
+              ['DNI', rowdata.dni],
+            ],
+          ],
+        },
+      ]}
     />
   )
 }

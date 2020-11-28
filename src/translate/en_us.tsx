@@ -2,6 +2,8 @@ import { createTranslation } from '.'
 
 export const enUS = createTranslation({
   listOf: 'List of',
+  detailOf: 'Detail of',
+  seeDetail: 'See detail',
   add: 'Add',
   addItem: 'Add item',
   new: 'New',

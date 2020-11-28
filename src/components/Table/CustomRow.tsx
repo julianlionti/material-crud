@@ -1,6 +1,6 @@
 import React, { memo, ReactNode, useCallback, useMemo } from 'react'
 import { Checkbox, IconButton, makeStyles, TableRow, Tooltip, Typography } from '@material-ui/core'
-import { FaEdit, FaTrash } from 'react-icons/fa'
+import { FaEdit, FaEye, FaTrash } from 'react-icons/fa'
 import { ListChildComponentProps } from 'react-window'
 import { compareKeysOmit } from '../../utils/addOns'
 import AriaLabels from '../../utils/AriaLabels'
@@ -20,6 +20,7 @@ interface Props extends Partial<ListChildComponentProps> {
   onExpanded?: (index: number) => void
   onEdit?: false | ((rowData: any) => void)
   onDelete?: false | ((rowData: any) => void)
+  onDetail?: (row: any) => void
   showSelecting?: boolean
   isHeader?: boolean
   fields?: FieldProps[]
@@ -41,6 +42,7 @@ export default memo((props: Props) => {
     onExpanded,
     onEdit,
     onDelete,
+    onDetail,
     showSelecting,
     isHeader,
     fields,
@@ -138,7 +140,12 @@ export default memo((props: Props) => {
 
   const renderCrud = useCallback(() => {
     if (rowData?.child) return null
-    if (!onEdit && !onDelete && (!extraActions || (extraActions && extraActions.length === 0)))
+    if (
+      !onEdit &&
+      !onDelete &&
+      !onDetail &&
+      (!extraActions || (extraActions && extraActions.length === 0))
+    )
       return null
 
     if (!fields && !steps && (!extraActions || (extraActions && extraActions.length === 0)))
@@ -153,6 +160,13 @@ export default memo((props: Props) => {
         rowHeight={rowHeight}
         rowIndex={index}>
         {extraActions && extraActions(rowData)}
+        {onDetail && (
+          <Tooltip title={lang.seeDetail}>
+            <IconButton size="small" onClick={() => onDetail(rowData)}>
+              <FaEye />
+            </IconButton>
+          </Tooltip>
+        )}
         {onEdit && (
           <Tooltip title={lang.edit}>
             <IconButton size="small" onClick={() => onEdit(rowData)}>
@@ -169,7 +183,19 @@ export default memo((props: Props) => {
         )}
       </CustomCell>
     )
-  }, [isHeader, rowHeight, lang, index, onEdit, onDelete, rowData, fields, extraActions, steps])
+  }, [
+    isHeader,
+    rowHeight,
+    lang,
+    index,
+    onEdit,
+    onDelete,
+    rowData,
+    fields,
+    extraActions,
+    steps,
+    onDetail,
+  ])
 
   return (
     <TableRow
