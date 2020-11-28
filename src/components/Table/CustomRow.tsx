@@ -148,7 +148,12 @@ export default memo((props: Props) => {
     )
       return null
 
-    if (!fields && !steps && (!extraActions || (extraActions && extraActions.length === 0)))
+    if (
+      !fields &&
+      !steps &&
+      !onDetail &&
+      (!extraActions || (extraActions && extraActions.length === 0))
+    )
       return null
 
     if (isHeader) return <CustomHeader col={{ width: 1, title: lang.crudCol, align: 'flex-end' }} />

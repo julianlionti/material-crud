@@ -76,7 +76,7 @@ export default () => {
     <Crud
       itemName="usuario"
       gender="M"
-      fields={fields}
+      // fields={fields}
       columns={columns}
       name="Usuarios"
       url={'http://localhost:5050/api/solicitud'}
