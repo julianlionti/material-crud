@@ -109,6 +109,7 @@ export default memo((props: Props) => {
         isHeader
         fields={fields}
         steps={steps}
+        onDetail={onDetail}
         columns={columns}
         extraActions={extraActions}
       />

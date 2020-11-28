@@ -151,11 +151,11 @@ export default memo((props: Props) => {
     if (!fields && !steps && (!extraActions || (extraActions && extraActions.length === 0)))
       return null
 
-    if (isHeader) return <CustomHeader col={{ width: 2, title: lang.crudCol, align: 'flex-end' }} />
+    if (isHeader) return <CustomHeader col={{ width: 1, title: lang.crudCol, align: 'flex-end' }} />
 
     return (
       <CustomCell
-        col={{ width: 2, align: 'flex-end' }}
+        col={{ width: 1, align: 'flex-end' }}
         horizontal
         rowHeight={rowHeight}
         rowIndex={index}>
@@ -208,7 +208,7 @@ export default memo((props: Props) => {
       {renderCrud()}
     </TableRow>
   )
-}, compareKeysOmit(['onDelete', 'onEdit', 'onExpanded', 'onSelect', 'onSort']))
+}, compareKeysOmit(['onDelete', 'onEdit', 'onExpanded', 'onSelect', 'onSort', 'onDetail']))
 
 const useClasses = makeStyles((theme) => ({
   row: ({ index, isChild }: any) => ({

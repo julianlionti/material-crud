@@ -1,7 +1,5 @@
 import React, { useCallback } from 'react'
 import { Card, Chip, Divider, makeStyles, Typography } from '@material-ui/core'
-import { useLang } from '../../utils/CrudContext'
-import CenteredCard from '../UI/CenteredCard'
 
 type ValProps = string[] | string | number | boolean
 type RenderSectionData = ValProps[][][]
