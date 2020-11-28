@@ -21,6 +21,7 @@ interface NumberType extends CommonProps {
 
 interface StringType extends CommonProps {
   type?: TableTypes.String
+  truncate?: number
 }
 
 interface DateType extends CommonProps {

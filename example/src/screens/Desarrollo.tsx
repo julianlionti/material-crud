@@ -1,3 +1,4 @@
+import { Chip } from '@material-ui/core'
 import {
   createColumns,
   createFields,
@@ -21,8 +22,30 @@ export default () => {
   const columns = useMemo(
     () =>
       createColumns([
-        { id: 'usuario', title: 'Usuario', width: 7, sort: true },
-        { id: 'activo', title: 'Activo', type: TableTypes.Switch, width: 1 },
+        {
+          id: 'nombrecuit',
+          title: 'Nombre/Cuit',
+          width: 2,
+          sort: true,
+          type: TableTypes.String,
+          truncate: 25,
+        },
+        { id: 'tipoOrganizacion', title: 'Tipo Orga', width: 2, sort: true },
+        { id: 'provincia', title: 'Provincia', width: 2, sort: true },
+        { id: 'cadenaProductiva', title: 'C. Productiva', width: 2 },
+        {
+          id: 'asistenciaSolicitada',
+          title: 'Asistencia',
+          width: 4,
+          type: TableTypes.Custom,
+          content: () => null,
+          cellComponent: ({ rowData: { asistenciaSolicitada } }) =>
+            asistenciaSolicitada.map(({ _id, nombre }: any) => (
+              <li key={_id}>
+                <Chip label={nombre} />
+              </li>
+            )),
+        },
       ]),
     [],
   )
@@ -40,7 +63,7 @@ export default () => {
           onChangeText: (apellido) => {
             call({ url: 'http://localhost:5050/api/servicios/usuariosAD', params: { apellido } })
           },
-          onSelect: ({ setValues }) => {
+          onSelect: (val, { setValues }) => {
             setValues({ usuario: 'sarasa' })
           },
         },
@@ -55,14 +78,15 @@ export default () => {
       fields={fields}
       columns={columns}
       name="Usuarios"
-      url={'http://localhost:5050/api/usuario'}
+      url={'http://localhost:5050/api/solicitud'}
+      rowHeight={50}
       actions={{ edit: true, delete: true }}
       response={{
         list: ({ data }: any) => ({ items: data?.docs, ...data }),
         new: (data: any, response: any) => response.item,
         edit: (data: any, response: any) => response.item,
       }}
-      height={height - 190}
+      height={height - 100}
       interaction={{ page: 'pagina', perPage: 'porPagina', filter: 'filtros', sort: 'orden' }}
       onError={(error) => console.log(error)}
     />
