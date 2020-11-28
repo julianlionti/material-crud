@@ -58,15 +58,17 @@ export default memo((props: PropsWithChildren<Props>) => {
         let finalString = cellData || '-'
         if (Array.isArray(cellData)) finalString = cellData.join(' - ')
 
+        let noWrap = true
         finalString = String(finalString)
         const notTruncated = finalString
         if (col?.type === TableTypes.String) {
+          if (col.noWrap !== undefined) noWrap = col.noWrap
           if (col.truncate) finalString = (finalString as string).substring(0, col.truncate) + '...'
         }
 
         return (
           <Tooltip title={notTruncated}>
-            <Typography>{finalString}</Typography>
+            <Typography noWrap={noWrap}>{finalString}</Typography>
           </Tooltip>
         )
       }
@@ -80,7 +82,7 @@ export default memo((props: PropsWithChildren<Props>) => {
   )
 })
 
-const useClasses = makeStyles(() => ({
+const useClasses = makeStyles((theme) => ({
   cell: ({ width, align, isChild, horizontal }: any) => ({
     flex: 1,
     flexDirection: horizontal ? 'row' : 'column',
@@ -91,5 +93,7 @@ const useClasses = makeStyles(() => ({
 
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+
+    padding: theme.spacing(1),
   }),
 }))

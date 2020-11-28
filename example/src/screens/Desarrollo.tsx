@@ -29,6 +29,7 @@ export default () => {
           sort: true,
           type: TableTypes.String,
           truncate: 25,
+          // noWrap: false,
         },
         { id: 'tipoOrganizacion', title: 'Tipo Orga', width: 2, sort: true },
         { id: 'provincia', title: 'Provincia', width: 2, sort: true },
@@ -79,7 +80,7 @@ export default () => {
       columns={columns}
       name="Usuarios"
       url={'http://localhost:5050/api/solicitud'}
-      rowHeight={50}
+      // rowHeight={50}
       actions={{ edit: true, delete: true }}
       response={{
         list: ({ data }: any) => ({ items: data?.docs, ...data }),
