@@ -19,6 +19,7 @@ interface Props extends TableProps {
   onSort: (sort: SortProps) => void
   onEdit?: (row: any) => void
   onDelete?: (row: any) => void
+  onDetail?: (row: any) => void
   headerClassName?: string
   fields?: FieldProps[]
   steps?: StepProps[]
@@ -43,6 +44,7 @@ export default memo((props: Props) => {
     steps,
     columns,
     extraActions,
+    onDetail,
   } = props
 
   const { height: windowHeight } = useWindowSize()
@@ -107,6 +109,7 @@ export default memo((props: Props) => {
         isHeader
         fields={fields}
         steps={steps}
+        onDetail={onDetail}
         columns={columns}
         extraActions={extraActions}
       />
@@ -139,6 +142,7 @@ export default memo((props: Props) => {
                   }}
                   onEdit={actions?.edit && onEdit}
                   onDelete={actions?.delete && onDelete}
+                  onDetail={onDetail}
                   showSelecting={showSelecting}
                   columns={columns}
                   extraActions={extraActions}

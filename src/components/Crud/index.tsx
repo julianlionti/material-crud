@@ -9,19 +9,31 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from 'react'
-import { Collapse, makeStyles, LinearProgress, Typography } from '@material-ui/core'
+import {
+  Collapse,
+  makeStyles,
+  LinearProgress,
+  Typography,
+  Dialog as MuiDialog,
+  AppBar,
+  Toolbar as MuiToolbar,
+  IconButton,
+} from '@material-ui/core'
+
 import { serialize } from 'object-to-formdata'
 import qs from 'qs'
+import { FaTimes } from 'react-icons/fa'
 import { compareKeysOmit } from '../../utils/addOns'
 import { useLang } from '../../utils/CrudContext'
 import { ABMResponse, PaginationProps, ReplaceProps, useABM } from '../../utils/DataContext'
 import useAxios, { CallProps, Error } from '../../utils/useAxios'
 import Formulario from '../Form'
 import { Interactions, FieldProps, StepProps } from '../Form/FormTypes'
+import ReadOnly, { ReadOnlyConf } from '../Form/ReadOnly'
 import AlTable from '../Table/index'
 import { ColumnsProps, TableProps } from '../Table/TableTypes'
 import CenteredCard from '../UI/CenteredCard'
-import Dialog, { CartelState } from '../UI/Dialog'
+import Dialog, { CartelState, Transition } from '../UI/Dialog'
 import Toolbar, { MoreOptionsProps } from './Toolbar'
 
 interface OnFlyResponse extends PaginationProps {
@@ -67,6 +79,7 @@ export interface CrudProps extends TableProps {
   big?: boolean
   logicalDeleteCol?: string
   noFilterOptions?: boolean
+  detailView?: (rowData: any) => ReadOnlyConf[]
 }
 
 interface DataCallProps {
@@ -176,7 +189,15 @@ export default memo(
     const { url, response, interaction, onFinished, onError, title, noTitle } = props
     const { Left, gender, description, isFormData, transform, transformFilter } = props
     const { name, titleSize, idInUrl, itemName, fields, steps, noFilterOptions } = props
-    const { transformToEdit, big, logicalDeleteCol, filters, columns, moreOptions } = props
+    const {
+      transformToEdit,
+      big,
+      logicalDeleteCol,
+      filters,
+      columns,
+      moreOptions,
+      detailView,
+    } = props
 
     const lang = useLang()
     const called = useRef(false)
@@ -196,6 +217,7 @@ export default memo(
     const [cartel, setCartel] = useState<CartelState>({ visible: false })
     const [toolbar, setToolbar] = useState(false)
     const [editObj, setEditObj] = useState<object | null>(null)
+    const [detailConf, setDetailConf] = useState<ReadOnlyConf[] | null>(null)
 
     const editing = useMemo(() => (editObj ? Object.keys(editObj).length > 0 : false), [editObj])
 
@@ -378,6 +400,7 @@ export default memo(
             }}
             onEdit={(rowData) => onEditCall(rowData)}
             onDelete={(rowData) => onDeleteCall(rowData)}
+            onDetail={(rowData) => detailView && setDetailConf(detailView(rowData))}
           />
         </Collapse>
         {(fields || steps) && (
@@ -408,6 +431,23 @@ export default memo(
             </CenteredCard>
           </Collapse>
         )}
+        <MuiDialog
+          open={!!detailConf}
+          fullScreen
+          onClose={() => setDetailConf(null)}
+          TransitionComponent={Transition}>
+          <AppBar className={classes.appBar}>
+            <MuiToolbar>
+              <Typography variant="h6" className={classes.title}>
+                {`${lang.detailOf} ${name}`}
+              </Typography>
+              <IconButton edge="start" color="inherit" onClick={() => setDetailConf(null)}>
+                <FaTimes />
+              </IconButton>
+            </MuiToolbar>
+          </AppBar>
+          <ReadOnly configuration={detailConf} />
+        </MuiDialog>
         <Dialog
           show={cartel.visible}
           title={cartel?.titulo || ''}
@@ -421,7 +461,7 @@ export default memo(
   compareKeysOmit(['Left', 'response', 'transform', 'transformFilter', 'transformToEdit']),
 )
 
-const useClasses = makeStyles((tema) => ({
+const useClasses = makeStyles((theme) => ({
   contenedor: {
     width: '85%',
     margin: '0 auto',
@@ -437,7 +477,14 @@ const useClasses = makeStyles((tema) => ({
   verMas: {
     display: 'flex',
     justifyContent: 'center',
-    marginTop: tema.spacing(1),
-    marginBottom: tema.spacing(1),
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+  },
+  appBar: {
+    position: 'relative',
+  },
+  title: {
+    marginLeft: theme.spacing(2),
+    flex: 1,
   },
 }))

@@ -12,7 +12,7 @@ import {
   ListItemText,
 } from '@material-ui/core'
 import Autocomplete from '@material-ui/lab/Autocomplete'
-import { useField } from 'formik'
+import { FormikContextType, useField, useFormikContext } from 'formik'
 import { FaPlus, FaRegCheckSquare, FaRegSquare } from 'react-icons/fa'
 import { compareKeys } from '../../utils/addOns'
 import AriaLabels from '../../utils/AriaLabels'
@@ -33,6 +33,7 @@ export interface AlAutocompleteProps extends ComunesProps {
   }) => ReactNode
   placeholder?: string
   onAddItem?: (props: HTMLDivElement) => void
+  onSelect?: (val: AutoValue, formik: FormikContextType<any>) => void
 }
 
 type AutoValue = null | OpcionesProps | OpcionesProps[]
@@ -54,7 +55,9 @@ export default memo((props: AlAutocompleteProps) => {
     hide,
     onAddItem,
     keepMounted,
+    onSelect,
   } = props
+  const formik = useFormikContext()
   const lang = useLang()
   const { autocomplete } = useFilters()
   const warnRef = useRef(false)
@@ -119,7 +122,10 @@ export default memo((props: AlAutocompleteProps) => {
         onChange={(_, vals) => {
           if (filter) {
             setValue({ filter: (value as AutoFilter).filter, value: vals })
-          } else if (!filter) setValue(vals)
+          } else if (!filter) {
+            if (onSelect) onSelect(vals, formik)
+            setValue(vals)
+          }
         }}
         onInputChange={(_, texto) => {
           if (texto.length > 1) onChangeText(texto)
@@ -164,11 +170,13 @@ export default memo((props: AlAutocompleteProps) => {
         )}
         renderOption={(option, { selected }) => (
           <React.Fragment>
-            <Checkbox
-              icon={<FaRegSquare />}
-              checkedIcon={<FaRegCheckSquare />}
-              checked={selected}
-            />
+            {multiple && (
+              <Checkbox
+                icon={<FaRegSquare />}
+                checkedIcon={<FaRegCheckSquare />}
+                checked={selected}
+              />
+            )}
             {option.title}
           </React.Fragment>
         )}

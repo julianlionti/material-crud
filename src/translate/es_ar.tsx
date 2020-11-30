@@ -2,6 +2,8 @@ import { createTranslation } from './index'
 
 export const esAR = createTranslation({
   listOf: 'Listado de',
+  detailOf: 'Detalle de',
+  seeDetail: 'Ver detalle',
   add: 'Agregar nuev',
   addItem: 'Agregar item',
   new: 'Nuev',

@@ -13,7 +13,7 @@ import {
   makeStyles,
   Chip,
 } from '@material-ui/core'
-import { useField } from 'formik'
+import { FormikContextType, useField, useFormikContext } from 'formik'
 import { FaPlus } from 'react-icons/fa'
 import { compareKeys } from '../../utils/addOns'
 import AriaLabels from '../../utils/AriaLabels'
@@ -28,7 +28,7 @@ export interface AlSelectProps extends ComunesProps {
   options: OpcionesProps[]
   onAddItem?: (props: HTMLDivElement) => void
   multiple?: boolean
-  onSelect?: (val: ValueType) => void
+  onSelect?: (val: ValueType, formik: FormikContextType<any>) => void
 }
 
 type SelectFilter = Filter<string | string[]>
@@ -51,6 +51,7 @@ export default memo((props: AlSelectProps) => {
     keepMounted,
     noFilterOptions,
   } = props
+  const formik = useFormikContext()
   const [{ value }, { error, touched }, { setValue }] = useField<ValueType | SelectFilter>(id)
 
   const lang = useLang()
@@ -166,7 +167,7 @@ export default memo((props: AlSelectProps) => {
             id={`${id}-select`}
             value={finalValue}
             onChange={({ target: { value: valInput } }) => {
-              if (onSelect) onSelect(valInput as ValueType)
+              if (onSelect) onSelect(valInput as ValueType, formik)
               selectItem(valInput as ValueType)
             }}
             label={finalTitle}>
