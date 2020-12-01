@@ -116,8 +116,10 @@ const postData = async (props: NoGetCallProps) => {
 
   const finalId = data[itemId]
   let finalURL = url
-  if ((editing || isDelete) && idInUrl) {
-    finalURL = `${finalURL}${finalURL.substring(url.length - 1) === '/' ? '' : '/'}${finalId}/`
+  if (idInUrl) {
+    if (isDelete || editing)
+      finalURL = `${finalURL}${finalURL.substring(url.length - 1) === '/' ? '' : '/'}${finalId}/`
+    else finalURL = `${finalURL}/`
   }
 
   let finalData = data /* transform ? transform(editing ? 'update' : 'new', data) : data */
@@ -400,7 +402,7 @@ export default memo(
             }}
             onEdit={(rowData) => onEditCall(rowData)}
             onDelete={(rowData) => onDeleteCall(rowData)}
-            onDetail={(rowData) => detailView && setDetailConf(detailView(rowData))}
+            onDetail={detailView ? (rowData) => setDetailConf(detailView(rowData)) : undefined}
           />
         </Collapse>
         {(fields || steps) && (
