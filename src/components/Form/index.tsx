@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef, useState } from 'react'
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { Button, CircularProgress, makeStyles, Tab, Tabs, Typography } from '@material-ui/core'
 import { FormikValues, FormikHelpers, FormikProps } from 'formik'
 import { FaCheck, FaTimes } from 'react-icons/fa'
@@ -41,11 +41,39 @@ export default memo((props: FormProps) => {
   const hasSubmitedRef = useRef(false)
   const formRef = useRef<RefProps[]>([])
   const [formsValues, setFormsValues] = useState({})
-  const { fields, steps, loading, isFormData, accept, onSubmit, noFilterOptions } = props
+  const { fields, steps, loading, isFormData, accept, onSubmit, noFilterOptions, intials } = props
 
   const [tab, setTab] = useState(0)
 
   const classes = useClasses()
+
+  const renderSteps = useCallback(
+    () =>
+      intials &&
+      steps?.map(({ fields, id }) => {
+        const finalIntials = fields
+          .flat()
+          .reduce((acc, actual) => ({ ...acc, [actual.id]: intials[actual.id] }), {})
+        return (
+          <Step
+            intials={finalIntials}
+            key={id}
+            isFormData={isFormData}
+            fields={fields}
+            loading={loading}
+            noFilterOptions={noFilterOptions}
+            onSubmit={(vals) => setFormsValues((values) => ({ ...values, [id]: vals }))}
+            ref={(e) => {
+              const actual = formRef.current?.find((e) => e.id === id)
+              if (!actual && e) {
+                formRef.current = [...formRef.current, { id, form: e }]
+              }
+            }}
+          />
+        )
+      }),
+    [steps, isFormData, loading, noFilterOptions, intials],
+  )
 
   useEffect(() => {
     if (Object.keys(formsValues).length === steps?.length && onSubmit && !hasSubmitedRef.current) {
@@ -85,23 +113,7 @@ export default memo((props: FormProps) => {
         ))}
       </Tabs>
       <SwipeableViews className={classes.stepRoot} index={tab} onChangeIndex={(tab) => setTab(tab)}>
-        {steps.map(({ fields, id }) => (
-          <Step
-            intials={props.intials}
-            key={id}
-            isFormData={isFormData}
-            fields={fields}
-            loading={loading}
-            noFilterOptions={noFilterOptions}
-            onSubmit={(vals) => setFormsValues((values) => ({ ...values, [id]: vals }))}
-            ref={(e) => {
-              const actual = formRef.current?.find((e) => e.id === id)
-              if (!actual && e) {
-                formRef.current = [...formRef.current, { id, form: e }]
-              }
-            }}
-          />
-        ))}
+        {renderSteps() || <div />}
       </SwipeableViews>
       <Button
         disabled={loading}

@@ -82,7 +82,7 @@ export default () => {
           fields: [
             [
               {
-                id: 'nombre',
+                id: 'c2_type',
                 title: 'Nombre',
                 placeholder: 'Nombre de la categoría',
                 type: FormTypes.Input,
@@ -92,7 +92,6 @@ export default () => {
                 id: 'select3',
                 type: FormTypes.Options,
                 title: 'Select multiple',
-                multiple: true,
                 options: [
                   { id: 'Una', title: 'Sarasa' },
                   { id: 'Dos' },
@@ -285,12 +284,12 @@ export default () => {
   return (
     <React.Fragment>
       <Crud
-        url={'http://192.168.102.50:8000/c2'}
+        url={'http://192.168.102.50:8000/c2/'}
         // url={'http://localhost:5050/api/contact'}
         gender="F"
         name={name}
-        // steps={steps}
-        fields={fields}
+        steps={steps}
+        // fields={fields}
         columns={columns}
         filters={filters}
         actions={{ edit: true, delete: false }}
@@ -300,6 +299,7 @@ export default () => {
             {name === 'Titulo prueba' ? <FaIceCream /> : <FaBeer />}
           </IconButton>,
         ]}
+        itemId="id"
         height={height - 100}
         rowHeight={75}
         description={'Los productos tendrán asociada una o más categorías.'}
@@ -316,7 +316,7 @@ export default () => {
         interaction={{ page: 'page', perPage: 'limit' }}
         itemName="nombre"
         onError={(err) => console.log(err)}
-        transformToEdit={(rowData) => ({ ...rowData, type: [rowData.id] })}
+        // transformToEdit={(rowData) => ({ ...rowData, type: [rowData.id] })}
         transformFilter={(query) => {
           const keys = Object.keys(query)
           const finalFilter = keys.reduce((acc, it) => ({ ...acc, [it]: query[it].value }), {})

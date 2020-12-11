@@ -426,7 +426,12 @@ export default memo(
                 }
                 fields={fields}
                 steps={steps}
-                onSubmit={(vals) => postDataCall(vals)}
+                onSubmit={(vals) => {
+                  const finalVals =
+                    editing && editObj ? { ...vals, [itemId]: editObj[itemId] } : vals
+                  console.log(finalVals)
+                  postDataCall(finalVals)
+                }}
               />
             </CenteredCard>
           </Collapse>

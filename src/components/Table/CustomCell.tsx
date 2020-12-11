@@ -48,9 +48,12 @@ export default memo((props: PropsWithChildren<Props>) => {
       }
       case TableTypes.Date: {
         const format = col.format || 'DD/MM/YYYY'
-        if (format) return moment(cellData).format(format)
+        let finalCellData = cellData
+        if (format && cellData) {
+          finalCellData = moment(cellData).format(format)
+        }
 
-        return <Typography variant="body2">{String(cellData || '-')}</Typography>
+        return <Typography variant="body2">{String(finalCellData || '-')}</Typography>
       }
       case TableTypes.Switch:
         return cellData ? <FaCheck size={18} color="green" /> : <FaTimes size={18} color="red" />
@@ -68,7 +71,9 @@ export default memo((props: PropsWithChildren<Props>) => {
 
         return (
           <Tooltip title={notTruncated}>
-            <Typography noWrap={noWrap}>{finalString}</Typography>
+            <Typography variant="body2" noWrap={noWrap}>
+              {finalString}
+            </Typography>
           </Tooltip>
         )
       }
