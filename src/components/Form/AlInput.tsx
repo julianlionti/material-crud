@@ -79,8 +79,6 @@ export default memo((props: AlInputProps) => {
     return false
   }, [readonly, isEditing])
 
-  console.log(readonly, isEditing)
-
   const finalTitle = useMemo<string>(() => {
     if (filter && title) {
       return title

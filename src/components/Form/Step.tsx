@@ -99,6 +99,7 @@ export default memo(
                 loading={loading}
                 hide={hidden}
                 noFilterOptions={noFilterOptions}
+                isEditing={isEditing}
               />
             )
           case FormTypes.File:
