@@ -181,14 +181,26 @@ export default () => {
   const fields = useMemo(
     () =>
       createFields([
-        {
-          id: 'nombre',
-          title: 'Nombre',
-          placeholder: 'Nombre de la categoría',
-          type: FormTypes.Input,
-          validate: Yup.string().required(),
-          readonly: 'edit',
-        },
+        [
+          {
+            id: 'nombre',
+            title: 'Nombre',
+            placeholder: 'Nombre de la categoría',
+            type: FormTypes.Input,
+            validate: Yup.string().required(),
+            readonly: 'edit',
+            help: 'Prueba con ayuda e icono',
+          },
+          {
+            id: 'nombre2',
+            title: 'Nombre 2',
+            placeholder: 'Nombre de la categoría',
+            type: FormTypes.Input,
+            validate: Yup.string().required(),
+            readonly: 'edit',
+            help: 'Prueba con ayuda e icono',
+          },
+        ],
         {
           id: 'type',
           title: 'Type',
@@ -286,6 +298,7 @@ export default () => {
   return (
     <React.Fragment>
       <Crud
+        showHelpIcon
         url={'http://192.168.102.50:8000/c2/'}
         // url={'http://localhost:5050/api/contact'}
         gender="F"

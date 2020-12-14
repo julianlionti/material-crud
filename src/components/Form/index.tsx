@@ -28,6 +28,7 @@ export interface FormProps {
   inline?: boolean
   isFormData?: boolean
   noFilterOptions?: boolean
+  showHelpIcon?: boolean
 }
 
 export const createFields = (props: FieldProps[]) => props
@@ -41,7 +42,17 @@ export default memo((props: FormProps) => {
   const hasSubmitedRef = useRef(false)
   const formRef = useRef<RefProps[]>([])
   const [formsValues, setFormsValues] = useState({})
-  const { fields, steps, loading, isFormData, accept, onSubmit, noFilterOptions, intials } = props
+  const {
+    fields,
+    steps,
+    loading,
+    isFormData,
+    accept,
+    onSubmit,
+    noFilterOptions,
+    intials,
+    showHelpIcon,
+  } = props
 
   const [tab, setTab] = useState(0)
 
@@ -57,6 +68,7 @@ export default memo((props: FormProps) => {
         }, {})
         return (
           <Step
+            showHelpIcon={showHelpIcon}
             intials={finalIntials}
             key={id}
             isFormData={isFormData}
@@ -73,7 +85,7 @@ export default memo((props: FormProps) => {
           />
         )
       }),
-    [steps, isFormData, loading, noFilterOptions, intials],
+    [steps, isFormData, loading, noFilterOptions, intials, showHelpIcon],
   )
 
   useEffect(() => {

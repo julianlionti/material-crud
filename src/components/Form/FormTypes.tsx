@@ -54,6 +54,7 @@ export interface ComunesProps extends BaseProps {
   new?: boolean
   filter?: boolean
   noFilterOptions?: boolean
+  showHelpIcon?: boolean
 }
 
 export interface Interactions {

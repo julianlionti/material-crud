@@ -34,6 +34,7 @@ export default memo(
       inline,
       isFormData,
       noFilterOptions,
+      showHelpIcon,
     } = props
     const classes = useClases({ inline })
     const isEditing = useMemo(() => Object.keys(intials || {}).length > 0, [intials])
@@ -89,6 +90,7 @@ export default memo(
                 hide={hidden}
                 isEditing={isEditing}
                 noFilterOptions={noFilterOptions}
+                showHelpIcon={showHelpIcon}
               />
             )
           case FormTypes.Options:
@@ -100,6 +102,7 @@ export default memo(
                 hide={hidden}
                 noFilterOptions={noFilterOptions}
                 isEditing={isEditing}
+                showHelpIcon={showHelpIcon}
               />
             )
           case FormTypes.File:
@@ -177,7 +180,7 @@ export default memo(
             return null
         }
       },
-      [loading, noFilterOptions, isEditing],
+      [loading, noFilterOptions, isEditing, showHelpIcon],
     )
 
     const valSchema = useMemo(

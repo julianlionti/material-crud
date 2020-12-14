@@ -10,9 +10,10 @@ import {
   ListItemIcon,
   ListItemText,
   Tooltip,
+  makeStyles,
 } from '@material-ui/core'
 import { useField, useFormikContext } from 'formik'
-import { FaEye, FaEyeSlash } from 'react-icons/fa'
+import { FaExclamationCircle, FaEye, FaEyeSlash, FaQuestionCircle } from 'react-icons/fa'
 import { compareKeys } from '../../utils/addOns'
 import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
@@ -59,6 +60,7 @@ export default memo((props: AlInputProps) => {
     onBlur,
     keepMounted,
     noFilterOptions,
+    showHelpIcon,
   } = props
   const [hasSecure, setHasSecure] = useState(true)
   const lang = useLang()
@@ -120,9 +122,17 @@ export default memo((props: AlInputProps) => {
     }
   }, [type, hasSecure])
 
+  const classes = useClasses({ showHelpIcon })
+
   return (
-    <BaseInput grow={grow} fullWidth={fullWidth} ocultar={hide} keepMounted={keepMounted}>
+    <BaseInput
+      grow={grow}
+      fullWidth={fullWidth}
+      ocultar={hide}
+      keepMounted={keepMounted}
+      showHelpIcon={showHelpIcon}>
       <FormControl
+        className={classes.root}
         fullWidth
         error={(touched && !!error) || (finalValue?.length || 0) > valMax}
         variant="outlined">
@@ -181,7 +191,14 @@ export default memo((props: AlInputProps) => {
           label={finalTitle}
           inputProps={{ maxLength: max || undefined }}
         />
-        {((touched && error) || help) && (
+        {showHelpIcon && help && (
+          <Tooltip title={help} className={classes.helpIcon}>
+            <IconButton size="small" color="inherit">
+              <FaExclamationCircle />
+            </IconButton>
+          </Tooltip>
+        )}
+        {((touched && error) || (!showHelpIcon && help)) && (
           <FormHelperText id={id}>{(touched && error) || help}</FormHelperText>
         )}
         {filter && (
@@ -204,3 +221,15 @@ export default memo((props: AlInputProps) => {
     </BaseInput>
   )
 }, compareKeys(['loading', 'hide']))
+
+const useClasses = makeStyles((theme) => ({
+  root: {
+    position: 'relative',
+  },
+  helpIcon: {
+    position: 'absolute',
+    bottom: 10,
+    top: 10,
+    right: -theme.spacing(5),
+  },
+}))
