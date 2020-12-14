@@ -87,6 +87,7 @@ export default () => {
                 placeholder: 'Nombre de la categoría',
                 type: FormTypes.Input,
                 validate: Yup.string().required(),
+                readonly: 'edit',
               },
               {
                 id: 'select3',
@@ -186,6 +187,7 @@ export default () => {
           placeholder: 'Nombre de la categoría',
           type: FormTypes.Input,
           validate: Yup.string().required(),
+          readonly: 'edit',
         },
         {
           id: 'type',
@@ -288,8 +290,8 @@ export default () => {
         // url={'http://localhost:5050/api/contact'}
         gender="F"
         name={name}
-        steps={steps}
-        // fields={fields}
+        // steps={steps}
+        fields={fields}
         columns={columns}
         filters={filters}
         actions={{ edit: true, delete: false }}

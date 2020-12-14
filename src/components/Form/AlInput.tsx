@@ -35,6 +35,7 @@ export interface AlInputProps extends ComunesProps {
   placeholder?: string
   fullWidth?: boolean
   onBlur?: (val: string) => void
+  isEditing?: boolean
 }
 
 type InputFilter = Filter<string>
@@ -54,6 +55,7 @@ export default memo((props: AlInputProps) => {
     help,
     hide,
     filter,
+    isEditing,
     onBlur,
     keepMounted,
     noFilterOptions,
@@ -67,6 +69,17 @@ export default memo((props: AlInputProps) => {
 
   const mandatory = !!validate?.describe().tests.find((e) => e.name === 'required')
   const valMax = validate?.describe().tests.find((e) => e.name === 'max')?.params.max
+
+  const disabled = useMemo(() => {
+    if (typeof readonly === 'boolean') return readonly
+
+    if (isEditing && readonly === 'edit') return true
+    if (!isEditing && readonly === 'new') return true
+
+    return false
+  }, [readonly, isEditing])
+
+  console.log(readonly, isEditing)
 
   const finalTitle = useMemo<string>(() => {
     if (filter && title) {
@@ -117,7 +130,7 @@ export default memo((props: AlInputProps) => {
         variant="outlined">
         <InputLabel htmlFor={id}>{finalTitle}</InputLabel>
         <OutlinedInput
-          disabled={loading || readonly}
+          disabled={loading || disabled}
           id={id}
           startAdornment={
             !noFilterOptions &&

@@ -36,7 +36,7 @@ export default memo(
       noFilterOptions,
     } = props
     const classes = useClases({ inline })
-    const isEditing = Object.keys(intials || {}).length > 0
+    const isEditing = useMemo(() => Object.keys(intials || {}).length > 0, [intials])
 
     const finalFields = useMemo(
       () =>
@@ -66,7 +66,7 @@ export default memo(
           }),
       [isEditing, fields],
     )
-
+    console.log(isEditing, intials)
     const renderInput = useCallback(
       (campo: AllInputTypes, values: any) => {
         if (campo.type === FormTypes.Expandable) return null
@@ -87,6 +87,7 @@ export default memo(
                 {...campo}
                 loading={loading}
                 hide={hidden}
+                isEditing={isEditing}
                 noFilterOptions={noFilterOptions}
               />
             )
@@ -175,7 +176,7 @@ export default memo(
             return null
         }
       },
-      [loading, noFilterOptions],
+      [loading, noFilterOptions, isEditing],
     )
 
     const valSchema = useMemo(
