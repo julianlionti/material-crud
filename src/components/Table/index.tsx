@@ -20,6 +20,7 @@ interface Props extends TableProps {
   onEdit?: (row: any) => void
   onDelete?: (row: any) => void
   onDetail?: (row: any) => void
+  onClickRow?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, row: any) => void
   headerClassName?: string
   fields?: FieldProps[]
   steps?: StepProps[]
@@ -45,6 +46,7 @@ export default memo((props: Props) => {
     columns,
     extraActions,
     onDetail,
+    onClickRow,
   } = props
 
   const { height: windowHeight } = useWindowSize()
@@ -143,6 +145,7 @@ export default memo((props: Props) => {
                   onEdit={actions?.edit && onEdit}
                   onDelete={actions?.delete && onDelete}
                   onDetail={onDetail}
+                  onClickRow={onClickRow}
                   showSelecting={showSelecting}
                   columns={columns}
                   extraActions={extraActions}

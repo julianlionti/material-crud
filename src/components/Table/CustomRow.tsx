@@ -21,6 +21,7 @@ interface Props extends Partial<ListChildComponentProps> {
   onEdit?: false | ((rowData: any) => void)
   onDelete?: false | ((rowData: any) => void)
   onDetail?: (row: any) => void
+  onClickRow?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, rowData: any) => void
   showSelecting?: boolean
   isHeader?: boolean
   fields?: FieldProps[]
@@ -43,6 +44,7 @@ export default memo((props: Props) => {
     onEdit,
     onDelete,
     onDetail,
+    onClickRow,
     showSelecting,
     isHeader,
     fields,
@@ -167,21 +169,36 @@ export default memo((props: Props) => {
         {extraActions && extraActions(rowData)}
         {onDetail && (
           <Tooltip title={lang.seeDetail}>
-            <IconButton size="small" onClick={() => onDetail(rowData)}>
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation()
+                onDetail(rowData)
+              }}>
               <FaEye />
             </IconButton>
           </Tooltip>
         )}
         {onEdit && (
           <Tooltip title={lang.edit}>
-            <IconButton size="small" onClick={() => onEdit(rowData)}>
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation()
+                onEdit(rowData)
+              }}>
               <FaEdit />
             </IconButton>
           </Tooltip>
         )}
         {onDelete && (
           <Tooltip title={lang.delete}>
-            <IconButton size="small" onClick={() => onDelete(rowData)}>
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation()
+                onDelete(rowData)
+              }}>
               <FaTrash />
             </IconButton>
           </Tooltip>
@@ -204,6 +221,9 @@ export default memo((props: Props) => {
 
   return (
     <TableRow
+      onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
+        onClickRow && onClickRow(event, rowData)
+      }
       aria-label={isHeader ? AriaLabels.RowHeader : AriaLabels.RowContent}
       component="div"
       className={`${classes.row} ${(isHeader && customClassName) || ''}`}
@@ -213,7 +233,7 @@ export default memo((props: Props) => {
       {renderCrud()}
     </TableRow>
   )
-}, compareKeysOmit(['onDelete', 'onEdit', 'onExpanded', 'onSelect', 'onSort', 'onDetail']))
+}, compareKeysOmit(['onDelete', 'onEdit', 'onExpanded', 'onSelect', 'onSort', 'onDetail', 'onClickRow']))
 
 const useClasses = makeStyles((theme) => ({
   row: ({ index, isChild }: any) => ({

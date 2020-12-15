@@ -308,9 +308,10 @@ export default () => {
         columns={columns}
         filters={filters}
         actions={{ edit: true, delete: false }}
+        // onClickRow={(e, rowData) => console.log(e, rowData)}
         noFilterOptions
         extraActions={(rowData) => [
-          <IconButton key="ice">
+          <IconButton key="ice" onClick={(e) => e.stopPropagation()}>
             {name === 'Titulo prueba' ? <FaIceCream /> : <FaBeer />}
           </IconButton>,
         ]}

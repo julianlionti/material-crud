@@ -80,6 +80,7 @@ export interface CrudProps extends TableProps {
   logicalDeleteCol?: string
   noFilterOptions?: boolean
   detailView?: (rowData: any) => ReadOnlyConf[]
+  onClickRow?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, rowData: any) => void
   showHelpIcon?: boolean
 }
 
