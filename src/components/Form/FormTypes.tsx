@@ -46,7 +46,7 @@ export interface ComunesProps extends BaseProps {
   grow?: number
   help?: string
   loading?: boolean
-  readonly?: boolean
+  readonly?: boolean | 'new' | 'edit'
   depends?: (props: any) => boolean
   keepMounted?: boolean
   hide?: boolean
@@ -54,6 +54,7 @@ export interface ComunesProps extends BaseProps {
   new?: boolean
   filter?: boolean
   noFilterOptions?: boolean
+  showHelpIcon?: boolean
 }
 
 export interface Interactions {

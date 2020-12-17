@@ -80,6 +80,8 @@ export interface CrudProps extends TableProps {
   logicalDeleteCol?: string
   noFilterOptions?: boolean
   detailView?: (rowData: any) => ReadOnlyConf[]
+  onClickRow?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, rowData: any) => void
+  showHelpIcon?: boolean
 }
 
 interface DataCallProps {
@@ -186,7 +188,7 @@ export default memo(
   forwardRef<RefProps, CrudProps>((props, ref) => {
     const lastFilter = useRef<any>({})
 
-    const { url, response, interaction, onFinished, onError, title, noTitle } = props
+    const { url, response, interaction, onFinished, onError, title, noTitle, showHelpIcon } = props
     const { Left, gender, description, isFormData, transform, transformFilter } = props
     const { name, titleSize, idInUrl, itemName, fields, steps, noFilterOptions } = props
     const {
@@ -417,6 +419,7 @@ export default memo(
               } ${name}`}
               subtitle={description}>
               <Formulario
+                showHelpIcon={showHelpIcon}
                 intials={editObj}
                 loading={loading}
                 accept={

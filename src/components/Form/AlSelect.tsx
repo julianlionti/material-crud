@@ -29,6 +29,7 @@ export interface AlSelectProps extends ComunesProps {
   onAddItem?: (props: HTMLDivElement) => void
   multiple?: boolean
   onSelect?: (val: ValueType, formik: FormikContextType<any>) => void
+  isEditing?: boolean
 }
 
 type SelectFilter = Filter<string | string[]>
@@ -50,6 +51,8 @@ export default memo((props: AlSelectProps) => {
     onSelect,
     keepMounted,
     noFilterOptions,
+    readonly,
+    isEditing,
   } = props
   const formik = useFormikContext()
   const [{ value }, { error, touched }, { setValue }] = useField<ValueType | SelectFilter>(id)
@@ -101,11 +104,24 @@ export default memo((props: AlSelectProps) => {
     [filter, multiple, setValue, value],
   )
 
+  const disabled = useMemo(() => {
+    if (typeof readonly === 'boolean') return readonly
+
+    if (isEditing && readonly === 'edit') return true
+    if (!isEditing && readonly === 'new') return true
+
+    return false
+  }, [readonly, isEditing])
+
   const classes = useClasses()
   return (
     <BaseInput grow={grow} ocultar={hide} keepMounted={keepMounted}>
       <div style={{ display: 'flex' }} ref={(e) => (inputRef.current = e)}>
-        <FormControl disabled={loading} fullWidth error={touched && !!error} variant="outlined">
+        <FormControl
+          disabled={loading || disabled}
+          fullWidth
+          error={touched && !!error}
+          variant="outlined">
           <InputLabel htmlFor={id}>{finalTitle}</InputLabel>
           <Select
             multiple={multiple}

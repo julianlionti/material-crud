@@ -87,6 +87,7 @@ export default () => {
                 placeholder: 'Nombre de la categoría',
                 type: FormTypes.Input,
                 validate: Yup.string().required(),
+                readonly: 'edit',
               },
               {
                 id: 'select3',
@@ -180,13 +181,26 @@ export default () => {
   const fields = useMemo(
     () =>
       createFields([
-        {
-          id: 'nombre',
-          title: 'Nombre',
-          placeholder: 'Nombre de la categoría',
-          type: FormTypes.Input,
-          validate: Yup.string().required(),
-        },
+        [
+          {
+            id: 'nombre',
+            title: 'Nombre',
+            placeholder: 'Nombre de la categoría',
+            type: FormTypes.Input,
+            validate: Yup.string().required(),
+            readonly: 'edit',
+            help: 'Prueba con ayuda e icono',
+          },
+          {
+            id: 'nombre2',
+            title: 'Nombre 2',
+            placeholder: 'Nombre de la categoría',
+            type: FormTypes.Input,
+            validate: Yup.string().required(),
+            readonly: 'edit',
+            help: 'Prueba con ayuda e icono',
+          },
+        ],
         {
           id: 'type',
           title: 'Type',
@@ -284,18 +298,20 @@ export default () => {
   return (
     <React.Fragment>
       <Crud
+        showHelpIcon
         url={'http://192.168.102.50:8000/c2/'}
         // url={'http://localhost:5050/api/contact'}
         gender="F"
         name={name}
-        steps={steps}
-        // fields={fields}
+        // steps={steps}
+        fields={fields}
         columns={columns}
         filters={filters}
         actions={{ edit: true, delete: false }}
+        // onClickRow={(e, rowData) => console.log(e, rowData)}
         noFilterOptions
         extraActions={(rowData) => [
-          <IconButton key="ice">
+          <IconButton key="ice" onClick={(e) => e.stopPropagation()}>
             {name === 'Titulo prueba' ? <FaIceCream /> : <FaBeer />}
           </IconButton>,
         ]}
