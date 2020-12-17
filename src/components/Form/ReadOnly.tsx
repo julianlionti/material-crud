@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react'
+import React, { ReactNode, useCallback } from 'react'
 import { Card, Chip, Divider, makeStyles, Typography } from '@material-ui/core'
 
-type ValProps = string[] | string | number | boolean
+type ValProps = string[] | string | number | boolean | ReactNode
 type RenderSectionData = ValProps[][][]
 export interface ReadOnlyConf {
   title: string
@@ -25,7 +25,7 @@ export default ({ configuration }: Props) => {
         if (Array.isArray(val)) {
           return (
             <ul className={classes.chipRoot}>
-              {val.map((label) => (
+              {(val as string[]).map((label) => (
                 <li key={label}>
                   <Chip label={label} className={classes.chip} />
                 </li>
@@ -33,7 +33,8 @@ export default ({ configuration }: Props) => {
             </ul>
           )
         }
-        return <Typography>{val}</Typography>
+        if (React.isValidElement(val)) return val
+        return <Typography>{val || '-'}</Typography>
       }
 
       return (
