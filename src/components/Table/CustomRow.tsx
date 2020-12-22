@@ -1,5 +1,6 @@
 import React, { memo, ReactNode, useCallback, useMemo } from 'react'
 import { Checkbox, IconButton, makeStyles, TableRow, Tooltip, Typography } from '@material-ui/core'
+import { AiOutlinePushpin, AiFillPushpin } from 'react-icons/ai'
 import { FaEdit, FaEye, FaTrash } from 'react-icons/fa'
 import { ListChildComponentProps } from 'react-window'
 import { compareKeysOmit } from '../../utils/addOns'
@@ -20,6 +21,7 @@ interface Props extends Partial<ListChildComponentProps> {
   onExpanded?: (index: number) => void
   onEdit?: false | ((rowData: any) => void)
   onDelete?: false | ((rowData: any) => void)
+  onPinToTop?: false | ((row: any, exists: boolean) => void)
   onDetail?: (row: any) => void
   onClickRow?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, rowData: any) => void
   showSelecting?: boolean
@@ -29,6 +31,7 @@ interface Props extends Partial<ListChildComponentProps> {
   index: number
   columns: ColumnsProps[]
   extraActions?: (rowdata: any) => ReactNode[]
+  actionsColWidth?: number
 }
 
 export default memo((props: Props) => {
@@ -43,6 +46,7 @@ export default memo((props: Props) => {
     onExpanded,
     onEdit,
     onDelete,
+    onPinToTop,
     onDetail,
     onClickRow,
     showSelecting,
@@ -51,10 +55,11 @@ export default memo((props: Props) => {
     steps,
     columns,
     extraActions,
+    actionsColWidth,
   } = props
 
+  const { list, insertIndex, removeIndex, itemId, pins } = useABM()
   const lang = useLang()
-  const { list, insertIndex, removeIndex, itemId } = useABM()
   const rowData = useMemo(() => list[index], [list, index])
   const classes = useClasses({ index, height: rowHeight, isChild: rowData?.child })
 
@@ -146,6 +151,7 @@ export default memo((props: Props) => {
       !onEdit &&
       !onDelete &&
       !onDetail &&
+      !onPinToTop &&
       (!extraActions || (extraActions && extraActions.length === 0))
     )
       return null
@@ -154,19 +160,35 @@ export default memo((props: Props) => {
       !fields &&
       !steps &&
       !onDetail &&
+      !onPinToTop &&
       (!extraActions || (extraActions && extraActions.length === 0))
     )
       return null
 
-    if (isHeader) return <CustomHeader col={{ width: 1, title: lang.crudCol, align: 'flex-end' }} />
+    const width = actionsColWidth || 1
+
+    if (isHeader) return <CustomHeader col={{ width, title: lang.crudCol, align: 'flex-end' }} />
+    const alreadyPined = !!pins?.find((e) => e[itemId] === rowData[itemId])
 
     return (
       <CustomCell
-        col={{ width: 1, align: 'flex-end' }}
+        col={{ width, align: 'flex-end' }}
         horizontal
         rowHeight={rowHeight}
         rowIndex={index}>
         {extraActions && extraActions(rowData)}
+        {onPinToTop && (
+          <Tooltip title={lang.pinToTop}>
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation()
+                onPinToTop(rowData, alreadyPined)
+              }}>
+              {alreadyPined ? <AiFillPushpin /> : <AiOutlinePushpin />}
+            </IconButton>
+          </Tooltip>
+        )}
         {onDetail && (
           <Tooltip title={lang.seeDetail}>
             <IconButton
@@ -212,11 +234,15 @@ export default memo((props: Props) => {
     index,
     onEdit,
     onDelete,
+    onPinToTop,
     rowData,
     fields,
     extraActions,
     steps,
     onDetail,
+    actionsColWidth,
+    itemId,
+    pins,
   ])
 
   return (

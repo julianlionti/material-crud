@@ -2,6 +2,7 @@ export interface Translations {
   listOf: string
   detailOf: string
   seeDetail: string
+  pinToTop: string
   new: string
   edit: string
   add: string
