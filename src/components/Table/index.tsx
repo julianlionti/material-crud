@@ -83,7 +83,6 @@ export default memo((props: Props) => {
 
   const onPinToTop = useCallback(
     (rowData, exists) => {
-      console.log(rowData, exists)
       if (exists) removePins(rowData[itemId])
       else savePins(rowData)
       // if (listRef.current) listRef.current.resetAfterIndex(0)
