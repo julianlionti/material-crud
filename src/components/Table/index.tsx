@@ -86,7 +86,7 @@ export default memo((props: Props) => {
       console.log(rowData, exists)
       if (exists) removePins(rowData[itemId])
       else savePins(rowData)
-      if (listRef.current) listRef.current.resetAfterIndex(0)
+      // if (listRef.current) listRef.current.resetAfterIndex(0)
     },
     [savePins, removePins, itemId],
   )

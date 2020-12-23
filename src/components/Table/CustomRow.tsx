@@ -58,7 +58,7 @@ export default memo((props: Props) => {
     actionsColWidth,
   } = props
 
-  const { list, insertIndex, removeIndex, itemId, pins } = useABM()
+  const { list, insertIndex, removeIndex, itemId, pins, removePins } = useABM()
   const lang = useLang()
   const rowData = useMemo(() => list[index], [list, index])
   const classes = useClasses({ index, height: rowHeight, isChild: rowData?.child })
@@ -219,6 +219,9 @@ export default memo((props: Props) => {
               size="small"
               onClick={(e) => {
                 e.stopPropagation()
+                const pin = pins.find((p) => p[itemId] === rowData[itemId])
+                if (pin) removePins(pin[itemId])
+
                 onDelete(rowData)
               }}>
               <FaTrash />
@@ -243,6 +246,7 @@ export default memo((props: Props) => {
     actionsColWidth,
     itemId,
     pins,
+    removePins,
   ])
 
   return (

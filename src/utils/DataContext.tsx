@@ -100,6 +100,11 @@ export const useABM = <T extends object>() => {
     [setConfig],
   )
 
+  const { pins, list } = config
+  const finalList = useMemo(() => {
+    return [...pins, ...list.filter((l) => !pins.some((e) => e[itemId] === l[itemId]))]
+  }, [list, pins, itemId])
+
   const add = useCallback(
     (items: T[]) => {
       setConfig((acc) => {
@@ -157,22 +162,22 @@ export const useABM = <T extends object>() => {
 
   const insertIndex = useCallback(
     (index: number, item: T) => {
-      setConfig(({ list, ...etc }) => ({
-        ...etc,
-        list: [...list.slice(0, index), item, ...list.slice(index)],
+      setConfig((acc) => ({
+        ...acc,
+        list: [...finalList.slice(0, index), item, ...finalList.slice(index)],
       }))
     },
-    [setConfig],
+    [setConfig, finalList],
   )
 
   const removeIndex = useCallback(
     (index: number) => {
       setConfig((acc) => ({
         ...acc,
-        list: acc.list.filter((_, i) => i !== index),
+        list: finalList.filter((_, i) => i !== index),
       }))
     },
-    [setConfig],
+    [setConfig, finalList],
   )
 
   const savePins = useCallback(
@@ -205,11 +210,6 @@ export const useABM = <T extends object>() => {
     },
     [setConfig, itemId],
   )
-
-  const { pins, list } = config
-  const finalList = useMemo(() => {
-    return [...pins, ...list.filter((l) => !pins.some((e) => e[itemId] === l[itemId]))]
-  }, [list, pins, itemId])
 
   return {
     add,
