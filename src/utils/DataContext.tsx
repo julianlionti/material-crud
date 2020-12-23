@@ -60,11 +60,12 @@ const DataContext = createContext<Context>([intials, () => {}])
 
 export const DataProvider = (props: ProviderProps) => {
   const { children, itemId, name, withPin } = props
+  const pinName = `${name}-pin`
   const status = useState<ContextProps>({
     ...intials,
     itemId: itemId || '_id',
     name,
-    pins: Storage.getItem(name) || [],
+    pins: Storage.getItem(pinName) || [],
   })
 
   const [{ pins }, setStatus] = status
@@ -74,9 +75,9 @@ export const DataProvider = (props: ProviderProps) => {
 
   useEffect(() => {
     if (withPin) {
-      Storage.saveItem(name, pins)
+      Storage.saveItem(pinName, pins)
     }
-  }, [withPin, name, pins])
+  }, [withPin, pinName, pins])
 
   return <DataContext.Provider value={status}>{children}</DataContext.Provider>
 }
