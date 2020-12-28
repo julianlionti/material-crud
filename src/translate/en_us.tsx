@@ -3,6 +3,8 @@ import { createTranslation } from '.'
 export const enUS = createTranslation({
   listOf: 'List of',
   detailOf: 'Detail of',
+  download: 'Download',
+  share: 'Share',
   seeDetail: 'See detail',
   pinToTop: 'Pin to top',
   add: 'Add',

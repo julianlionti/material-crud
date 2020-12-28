@@ -1,6 +1,8 @@
 export interface Translations {
   listOf: string
   detailOf: string
+  download: string
+  share: string
   seeDetail: string
   pinToTop: string
   new: string

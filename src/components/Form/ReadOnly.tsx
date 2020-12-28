@@ -9,10 +9,10 @@ export interface ReadOnlyConf {
 }
 
 interface Props {
-  configuration: null | ReadOnlyConf[]
+  sections: null | ReadOnlyConf[]
 }
 
-export default ({ configuration }: Props) => {
+export default ({ sections }: Props) => {
   const classes = useClasses()
 
   const renderSection = useCallback(
@@ -60,9 +60,9 @@ export default ({ configuration }: Props) => {
   )
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} id="DetailView">
       <Card variant="outlined" className={classes.cardRoot}>
-        {configuration?.map((e) => renderSection(e.title, e.section))}
+        {sections?.map((e) => renderSection(e.title, e.section))}
       </Card>
     </div>
   )

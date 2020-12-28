@@ -3,6 +3,8 @@ import { createTranslation } from './index'
 export const esAR = createTranslation({
   listOf: 'Listado de',
   detailOf: 'Detalle de',
+  download: 'Descargar',
+  share: 'Compartir',
   seeDetail: 'Ver detalle',
   pinToTop: 'Mantener arriba',
   add: 'Agregar nuev',

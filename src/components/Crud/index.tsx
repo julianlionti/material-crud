@@ -18,11 +18,13 @@ import {
   AppBar,
   Toolbar as MuiToolbar,
   IconButton,
+  Tooltip,
 } from '@material-ui/core'
 
+import JsPDF from 'jspdf'
 import { serialize } from 'object-to-formdata'
 import qs from 'qs'
-import { FaTimes } from 'react-icons/fa'
+import { FaSave, FaShareAlt, FaTimes } from 'react-icons/fa'
 import { compareKeysOmit } from '../../utils/addOns'
 import { useLang } from '../../utils/CrudContext'
 import { ABMResponse, PaginationProps, ReplaceProps, useABM } from '../../utils/DataContext'
@@ -79,7 +81,11 @@ export interface CrudProps extends TableProps {
   big?: boolean
   logicalDeleteCol?: string
   noFilterOptions?: boolean
-  detailView?: (rowData: any) => ReadOnlyConf[]
+  detailView?: {
+    sections: (rowData: any) => ReadOnlyConf[]
+    onShare?: (rowData: any) => void
+    onDownload?: () => void
+  }
   onClickRow?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, rowData: any) => void
   showHelpIcon?: boolean
 }
@@ -402,7 +408,9 @@ export default memo(
             }}
             onEdit={(rowData) => onEditCall(rowData)}
             onDelete={(rowData) => onDeleteCall(rowData)}
-            onDetail={detailView ? (rowData) => setDetailConf(detailView(rowData)) : undefined}
+            onDetail={
+              detailView ? (rowData) => setDetailConf(detailView.sections(rowData)) : undefined
+            }
           />
         </Collapse>
         {(fields || steps) && (
@@ -448,12 +456,42 @@ export default memo(
               <Typography variant="h6" className={classes.title}>
                 {`${lang.detailOf} ${name}`}
               </Typography>
-              <IconButton edge="start" color="inherit" onClick={() => setDetailConf(null)}>
-                <FaTimes />
-              </IconButton>
+              {detailView?.onShare && (
+                <Tooltip title={lang.share}>
+                  <IconButton edge="start" color="inherit" onClick={() => setDetailConf(null)}>
+                    <FaShareAlt />
+                  </IconButton>
+                </Tooltip>
+              )}
+              {detailView?.onDownload && (
+                <Tooltip title={lang.download}>
+                  <IconButton
+                    edge="start"
+                    color="inherit"
+                    onClick={() => {
+                      const detail = document.getElementById('DetailView')
+                      const pdf = new JsPDF({ unit: 'px', format: 'letter', userUnit: 'px' })
+                      pdf.html(detail, { html2canvas: { scale: 0.57 } }).then(() => {
+                        pdf.save('test.pdf')
+                      })
+                      console.log(detail)
+                    }}>
+                    <FaSave />
+                  </IconButton>
+                </Tooltip>
+              )}
+              <Tooltip title={lang.close}>
+                <IconButton
+                  className={classes.closeIcon}
+                  edge="start"
+                  color="inherit"
+                  onClick={() => setDetailConf(null)}>
+                  <FaTimes />
+                </IconButton>
+              </Tooltip>
             </MuiToolbar>
           </AppBar>
-          <ReadOnly configuration={detailConf} />
+          <ReadOnly sections={detailConf} />
         </MuiDialog>
         <Dialog
           show={cartel.visible}
@@ -493,5 +531,8 @@ const useClasses = makeStyles((theme) => ({
   title: {
     marginLeft: theme.spacing(2),
     flex: 1,
+  },
+  closeIcon: {
+    marginLeft: theme.spacing(1),
   },
 }))
