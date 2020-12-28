@@ -61,7 +61,7 @@ export default memo((props: Props) => {
   const { list, insertIndex, removeIndex, itemId, pins, removePins } = useABM()
   const lang = useLang()
   const rowData = useMemo(() => list[index], [list, index])
-  const classes = useClasses({ index, height: rowHeight, isChild: rowData?.child })
+  const classes = useClasses({ index, height: rowHeight, isChild: rowData?.child, onClickRow })
 
   const renderContent = useCallback(() => {
     if (isHeader) {
@@ -266,10 +266,11 @@ export default memo((props: Props) => {
 }, compareKeysOmit(['onDelete', 'onEdit', 'onExpanded', 'onSelect', 'onSort', 'onDetail', 'onClickRow']))
 
 const useClasses = makeStyles((theme) => ({
-  row: ({ index, isChild }: any) => ({
+  row: ({ index, isChild, onClickRow }: any) => ({
     display: 'flex',
     alignItems: isChild ? 'center' : undefined,
     backgroundColor:
       index % 2 !== 0 ? undefined : theme.palette.grey[theme.palette.type === 'dark' ? 600 : 200],
+    cursor: onClickRow ? 'pointer' : undefined,
   }),
 }))
