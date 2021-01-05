@@ -1,6 +1,6 @@
 {
   "name": "material-crud",
-  "version": "0.6.9930",
+  "version": "0.6.9935",
   "description": "CRUD components with @material-ui/core components",
   "author": "Julián Lionti - Mariano Rey",
   "license": "MIT",
@@ -14,7 +14,7 @@
   "scripts": {
     "build": "microbundle-crl --format modern,cjs",
     "start": "microbundle-crl --no-compress --format modern,cjs",
-    "dev": "microbundle-crl --no-compress watch --format modern,cjs",
+    "dev": "microbundle-crl --no-compress watch --format modern",
     "prepare": "run-s build",
     "test": "run-s test:unit test:lint test:build",
     "test:build": "run-s build",

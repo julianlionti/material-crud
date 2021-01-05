@@ -6,7 +6,10 @@ import React, {
   useState,
   Dispatch,
   SetStateAction,
+  useEffect,
+  useMemo,
 } from 'react'
+import Storage from './Storage'
 
 // export interface DataConfigProps {
 //   columns: ColumnsProps[]
@@ -16,6 +19,8 @@ import React, {
 interface ProviderProps /* extends DataConfigProps */ {
   children: ReactNode
   itemId?: 'id' | '_id' | string
+  name: string
+  withPin: boolean
 }
 
 export interface ReplaceProps<T = any> {
@@ -36,6 +41,8 @@ interface ContextProps<T = any> /* extends DataConfigProps */ {
   list: T[]
   pagination: PaginationProps
   itemId: 'id' | '_id' | string
+  name: string
+  pins: any[]
 }
 
 type Context = [ContextProps, Dispatch<SetStateAction<ContextProps>>]
@@ -44,17 +51,33 @@ const intials: ContextProps = {
   list: [],
   pagination: { page: 1, limit: 10 },
   itemId: '_id',
+  name: '',
+  pins: [],
   // columns: [],
 }
 
 const DataContext = createContext<Context>([intials, () => {}])
 
 export const DataProvider = (props: ProviderProps) => {
-  const { children, itemId } = props
+  const { children, itemId, name, withPin } = props
+  const pinName = `${name}-pin`
   const status = useState<ContextProps>({
     ...intials,
     itemId: itemId || '_id',
+    name,
+    pins: Storage.getItem(pinName) || [],
   })
+
+  const [{ pins }, setStatus] = status
+  useEffect(() => {
+    setStatus((sta) => ({ ...sta, name }))
+  }, [name, setStatus])
+
+  useEffect(() => {
+    if (withPin) {
+      Storage.saveItem(pinName, pins)
+    }
+  }, [withPin, pinName, pins])
 
   return <DataContext.Provider value={status}>{children}</DataContext.Provider>
 }
@@ -70,11 +93,18 @@ export interface ABMResponse<T> {
 
 export const useABM = <T extends object>() => {
   const [config, setConfig] = useContext(DataContext) as Context
+  const { itemId } = config
+  // const [pins, setPins] = useState<any[]>(() => Storage.getItem(name) || [])
 
   const setIsLoading = useCallback(
     (isLoading: boolean) => setConfig((acc) => ({ ...acc, isLoading })),
     [setConfig],
   )
+
+  const { pins, list } = config
+  const finalList = useMemo(() => {
+    return [...pins, ...list.filter((l) => !pins.some((e) => e[itemId] === l[itemId]))]
+  }, [list, pins, itemId])
 
   const add = useCallback(
     (items: T[]) => {
@@ -133,23 +163,66 @@ export const useABM = <T extends object>() => {
 
   const insertIndex = useCallback(
     (index: number, item: T) => {
-      setConfig(({ list, ...etc }) => ({
-        ...etc,
-        list: [...list.slice(0, index), item, ...list.slice(index)],
+      setConfig((acc) => ({
+        ...acc,
+        list: [...finalList.slice(0, index), item, ...finalList.slice(index)],
       }))
     },
-    [setConfig],
+    [setConfig, finalList],
   )
 
   const removeIndex = useCallback(
     (index: number) => {
       setConfig((acc) => ({
         ...acc,
-        list: acc.list.filter((_, i) => i !== index),
+        list: finalList.filter((_, i) => i !== index),
       }))
+    },
+    [setConfig, finalList],
+  )
+
+  const savePins = useCallback(
+    (value: any | any[]) => {
+      setConfig((acc) => {
+        let newPins = acc.pins
+        if (Array.isArray(value)) newPins = [...newPins, ...value]
+        if (!newPins.includes(value)) newPins = [...newPins, value]
+
+        return { ...acc, pins: newPins }
+      })
     },
     [setConfig],
   )
 
-  return { add, edit, deleteCall, replace, insertIndex, removeIndex, ...config, setIsLoading }
+  const removePins = useCallback(
+    (id?: string | string[]) => {
+      setConfig((acc) => {
+        let newPins = acc.pins
+        if (!id) {
+          newPins = []
+        } else {
+          newPins = newPins.filter((val) =>
+            Array.isArray(id) ? !id.includes(val[itemId]) : val[itemId] !== id,
+          )
+        }
+
+        return { ...acc, pins: newPins }
+      })
+    },
+    [setConfig, itemId],
+  )
+
+  return {
+    add,
+    edit,
+    deleteCall,
+    replace,
+    insertIndex,
+    removeIndex,
+    ...config,
+    list: finalList,
+    setIsLoading,
+    savePins,
+    removePins,
+  }
 }

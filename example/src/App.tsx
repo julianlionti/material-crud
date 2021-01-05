@@ -8,6 +8,7 @@ import { english } from './lang'
 import CrudTable from './CrudTable'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core'
 import Desarrollo from './screens/Desarrollo'
+import Pucara from './screens/Pucara'
 
 const App = () => {
   const user = {
@@ -42,7 +43,7 @@ const App = () => {
                     <Link to="/table">Table example</Link>
                   </li>
                   <li>
-                    <Link to="/child">ChildTable</Link>
+                    <Link to="/pucara">Pucara</Link>
                   </li>
                   <li>
                     <Link to="/desarrollo">Desarrollo Asociativo</Link>
@@ -55,6 +56,7 @@ const App = () => {
             <Route path="/crud" component={CrudTable} />
             <Route path="/prueba" component={Prueba} />
             <Route path="/desarrollo" component={Desarrollo} />
+            <Route path="/pucara" component={Pucara} />
           </Switch>
         </BrowserRouter>
       </CrudProvider>

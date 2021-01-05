@@ -4,6 +4,7 @@ export const enUS = createTranslation({
   listOf: 'List of',
   detailOf: 'Detail of',
   seeDetail: 'See detail',
+  pinToTop: 'Pin to top',
   add: 'Add',
   addItem: 'Add item',
   new: 'New',

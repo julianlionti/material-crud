@@ -13,6 +13,7 @@ import { enUS } from './translate/en_us'
 import { esAR } from './translate/es_ar'
 import { CrudProvider, useUser, useLang } from './utils/CrudContext'
 import { DataProvider, useABM } from './utils/DataContext'
+import Storage from './utils/Storage'
 import useAxios, { callWs } from './utils/useAxios'
 import useWindowSize from './utils/useWindowSize'
 
@@ -43,4 +44,5 @@ export {
   FormTypes,
   TableTypes,
   createMoreOptions,
+  Storage,
 }

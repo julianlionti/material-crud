@@ -13,7 +13,8 @@
   ],
   "plugins": ["react-hooks"],
   "env": {
-    "node": true
+    "node": true,
+    "browser": true
   },
   "parserOptions": {
     "ecmaVersion": 2020,

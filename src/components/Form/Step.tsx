@@ -67,7 +67,7 @@ export default memo(
           }),
       [isEditing, fields],
     )
-    console.log(isEditing, intials)
+
     const renderInput = useCallback(
       (campo: AllInputTypes, values: any) => {
         if (campo.type === FormTypes.Expandable) return null

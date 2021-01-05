@@ -432,7 +432,6 @@ export default memo(
                 onSubmit={(vals) => {
                   const finalVals =
                     editing && editObj ? { ...vals, [itemId]: editObj[itemId] } : vals
-                  console.log(finalVals)
                   postDataCall(finalVals)
                 }}
               />
