@@ -21,7 +21,6 @@ import {
   Tooltip,
 } from '@material-ui/core'
 
-import JsPDF from 'jspdf'
 import { serialize } from 'object-to-formdata'
 import qs from 'qs'
 import { FaSave, FaShareAlt, FaTimes } from 'react-icons/fa'
@@ -31,7 +30,7 @@ import { ABMResponse, PaginationProps, ReplaceProps, useABM } from '../../utils/
 import useAxios, { CallProps, Error } from '../../utils/useAxios'
 import Formulario from '../Form'
 import { Interactions, FieldProps, StepProps } from '../Form/FormTypes'
-import ReadOnly, { ReadOnlyConf } from '../Form/ReadOnly'
+import ReadOnly, { ReadOnlyConf, ReadOnlyMethods } from '../Form/ReadOnly'
 import AlTable from '../Table/index'
 import { ColumnsProps, TableProps } from '../Table/TableTypes'
 import CenteredCard from '../UI/CenteredCard'
@@ -193,6 +192,7 @@ export interface RefProps extends ABMResponse<any> {
 export default memo(
   forwardRef<RefProps, CrudProps>((props, ref) => {
     const lastFilter = useRef<any>({})
+    const readOnlyRef = useRef<ReadOnlyMethods | null>(null)
 
     const { url, response, interaction, onFinished, onError, title, noTitle, showHelpIcon } = props
     const { Left, gender, description, isFormData, transform, transformFilter } = props
@@ -468,14 +468,7 @@ export default memo(
                   <IconButton
                     edge="start"
                     color="inherit"
-                    onClick={() => {
-                      const detail = document.getElementById('DetailView')
-                      const pdf = new JsPDF({ unit: 'px', format: 'letter', userUnit: 'px' })
-                      pdf.html(detail, { html2canvas: { scale: 0.57 } }).then(() => {
-                        pdf.save('test.pdf')
-                      })
-                      console.log(detail)
-                    }}>
+                    onClick={() => readOnlyRef.current?.generatePDF()}>
                     <FaSave />
                   </IconButton>
                 </Tooltip>
@@ -491,7 +484,7 @@ export default memo(
               </Tooltip>
             </MuiToolbar>
           </AppBar>
-          <ReadOnly sections={detailConf} />
+          <ReadOnly ref={(e) => (readOnlyRef.current = e)} sections={detailConf} />
         </MuiDialog>
         <Dialog
           show={cartel.visible}

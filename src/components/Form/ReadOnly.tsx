@@ -1,5 +1,6 @@
-import React, { ReactNode, useCallback } from 'react'
+import React, { forwardRef, ReactNode, useCallback, useImperativeHandle } from 'react'
 import { Card, Chip, Divider, makeStyles, Typography } from '@material-ui/core'
+import JsPDF from 'jspdf'
 
 type ValProps = string[] | string | number | boolean | ReactNode
 type RenderSectionData = ValProps[][][]
@@ -12,8 +13,32 @@ interface Props {
   sections: null | ReadOnlyConf[]
 }
 
-export default ({ sections }: Props) => {
+export interface ReadOnlyMethods {
+  generatePDF: () => void
+}
+
+export default forwardRef<ReadOnlyMethods, Props>(({ sections }, ref) => {
   const classes = useClasses()
+
+  const generatePDF = useCallback(() => {
+    const doc = new JsPDF({ unit: 'mm' })
+    if (!sections) return
+
+    console.log(sections)
+    sections.forEach((sec) => {
+      doc.text(sec.title, 10, 10)
+      sec.section.forEach((col, i) => {
+        const cols = 210 / col.length
+        const [title, val] = col
+        if (typeof title === 'string') doc.text(title, 10, 30 + 15 * i)
+        console.log(col, cols)
+      })
+      console.log(sec.section)
+    })
+    doc.save('sarasa.pdf')
+  }, [sections])
+
+  useImperativeHandle(ref, () => ({ generatePDF }))
 
   const renderSection = useCallback(
     (title: string, data: RenderSectionData) => {
@@ -66,7 +91,7 @@ export default ({ sections }: Props) => {
       </Card>
     </div>
   )
-}
+})
 
 const useClasses = makeStyles((theme) => ({
   root: {
