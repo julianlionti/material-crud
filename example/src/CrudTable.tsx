@@ -303,7 +303,7 @@ export default () => {
         fields={fields}
         columns={columns}
         filters={filters}
-        actions={{ edit: true, delete: false, pinToTop: true }}
+        actions={{ edit: true, delete: false }}
         // onClickRow={(e, rowData) => console.log(e, rowData)}
         noFilterOptions
         extraActions={(rowData) => [
@@ -340,19 +340,19 @@ export default () => {
           }
           return rowData
         }}
-        detailView={() => [
-          {
-            title: 'Prueba',
-            section: [
-              [
-                [
-                  'Una',
-                  <img src="https://pbs.twimg.com/media/EpXTiVFWEAE250s?format=jpg&name=large" />,
-                ],
-              ],
-            ],
-          },
-        ]}
+        // detailView={() => [
+        //   {
+        //     title: 'Prueba',
+        //     section: [
+        //       [
+        //         [
+        //           'Una',
+        //           <img src="https://pbs.twimg.com/media/EpXTiVFWEAE250s?format=jpg&name=large" />,
+        //         ],
+        //       ],
+        //     ],
+        //   },
+        // ]}
       />
     </React.Fragment>
   )

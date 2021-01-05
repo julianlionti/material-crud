@@ -160,6 +160,7 @@ export default memo((props: Props) => {
       !fields &&
       !steps &&
       !onDetail &&
+      !onDelete &&
       !onPinToTop &&
       (!extraActions || (extraActions && extraActions.length === 0))
     )
@@ -201,7 +202,7 @@ export default memo((props: Props) => {
             </IconButton>
           </Tooltip>
         )}
-        {onEdit && (
+        {onEdit && (fields || steps) && (
           <Tooltip title={lang.edit}>
             <IconButton
               size="small"
