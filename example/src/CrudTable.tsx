@@ -307,14 +307,14 @@ export default () => {
         fields={fields}
         columns={columns}
         filters={filters}
-        actions={{ edit: true, delete: false }}
+        actions={{ edit: false, delete: true }}
         // onClickRow={(e, rowData) => console.log(e, rowData)}
         noFilterOptions
-        extraActions={(rowData) => [
-          <IconButton key="ice" onClick={(e) => e.stopPropagation()}>
-            {name === 'Titulo prueba' ? <FaIceCream /> : <FaBeer />}
-          </IconButton>,
-        ]}
+        // extraActions={(rowData) => [
+        //   <IconButton key="ice" onClick={(e) => e.stopPropagation()}>
+        //     {name === 'Titulo prueba' ? <FaIceCream /> : <FaBeer />}
+        //   </IconButton>,
+        // ]}
         itemId="id"
         height={height - 100}
         rowHeight={75}
@@ -344,19 +344,19 @@ export default () => {
           }
           return rowData
         }}
-        detailView={() => [
-          {
-            title: 'Prueba',
-            section: [
-              [
-                [
-                  'Una',
-                  <img src="https://pbs.twimg.com/media/EpXTiVFWEAE250s?format=jpg&name=large" />,
-                ],
-              ],
-            ],
-          },
-        ]}
+        // detailView={() => [
+        //   {
+        //     title: 'Prueba',
+        //     section: [
+        //       [
+        //         [
+        //           'Una',
+        //           <img src="https://pbs.twimg.com/media/EpXTiVFWEAE250s?format=jpg&name=large" />,
+        //         ],
+        //       ],
+        //     ],
+        //   },
+        // ]}
       />
     </React.Fragment>
   )
