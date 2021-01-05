@@ -55,9 +55,9 @@ export enum TableTypes {
 }
 
 export interface ActionProps {
-  // new?: boolean
   edit?: boolean
   delete?: boolean
+  pinToTop?: boolean
 }
 
 export type ColumnsProps = StringType | DateType | SwtichType | CustomType | ImageType | NumberType
@@ -79,4 +79,5 @@ export interface TableProps {
   showSelecting?: boolean
   rightToolbar?: (props: RightToolbarProps) => ReactNode
   loading?: boolean
+  actionsColWidth?: number
 }

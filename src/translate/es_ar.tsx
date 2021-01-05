@@ -4,6 +4,7 @@ export const esAR = createTranslation({
   listOf: 'Listado de',
   detailOf: 'Detalle de',
   seeDetail: 'Ver detalle',
+  pinToTop: 'Mantener arriba',
   add: 'Agregar nuev',
   addItem: 'Agregar item',
   new: 'Nuev',

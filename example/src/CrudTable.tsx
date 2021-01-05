@@ -18,14 +18,10 @@ export default () => {
   const { height } = useWindowSize()
   const [opciones, setOpciones] = useState<OpcionesProps[]>([{ id: 'assda', title: 'asdas' }])
 
-  const [name, setName] = useState('Titulo prueba')
   const { call, response } = useAxios()
 
   useEffect(() => {
     call({ url: 'http://192.168.102.50:8000/c2/types', method: 'GET' })
-    setTimeout(() => {
-      setName('Vamo ✌')
-    }, 1500)
   }, [call])
 
   const filters = useMemo(
@@ -302,19 +298,19 @@ export default () => {
         url={'http://192.168.102.50:8000/c2/'}
         // url={'http://localhost:5050/api/contact'}
         gender="F"
-        name={name}
+        name={'Crud Table'}
         // steps={steps}
         fields={fields}
         columns={columns}
         filters={filters}
-        actions={{ edit: false, delete: true }}
+        actions={{ edit: true, delete: false }}
         // onClickRow={(e, rowData) => console.log(e, rowData)}
         noFilterOptions
-        // extraActions={(rowData) => [
-        //   <IconButton key="ice" onClick={(e) => e.stopPropagation()}>
-        //     {name === 'Titulo prueba' ? <FaIceCream /> : <FaBeer />}
-        //   </IconButton>,
-        // ]}
+        extraActions={(rowData) => [
+          <IconButton size="small" key="ice" onClick={(e) => e.stopPropagation()}>
+            <FaBeer />
+          </IconButton>,
+        ]}
         itemId="id"
         height={height - 100}
         rowHeight={75}

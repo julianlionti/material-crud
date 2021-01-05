@@ -47,13 +47,14 @@ export default memo((props: Props) => {
     extraActions,
     onDetail,
     onClickRow,
+    actionsColWidth,
   } = props
 
   const { height: windowHeight } = useWindowSize()
   const listRef = useRef<List | null>()
 
   const lang = useLang()
-  const { list, itemId, deleteCall, edit: editCall } = useABM()
+  const { list, itemId, deleteCall, edit: editCall, savePins, removePins } = useABM()
 
   const [rowsSelected, setRowSelected] = useState<any[]>([])
 
@@ -80,6 +81,14 @@ export default memo((props: Props) => {
     [itemId, headerSelected, list],
   )
 
+  const onPinToTop = useCallback(
+    (rowData, exists) => {
+      if (exists) removePins(rowData[itemId])
+      else savePins(rowData)
+      // if (listRef.current) listRef.current.resetAfterIndex(0)
+    },
+    [savePins, removePins, itemId],
+  )
   return (
     <Paper elevation={5} className={classes.container}>
       {loading && <LinearProgress />}
@@ -114,6 +123,7 @@ export default memo((props: Props) => {
         onDetail={onDetail}
         columns={columns}
         extraActions={extraActions}
+        actionsColWidth={actionsColWidth}
       />
       {!loading && list.length === 0 && (
         <div className={classes.noResult}>
@@ -144,11 +154,13 @@ export default memo((props: Props) => {
                   }}
                   onEdit={actions?.edit && onEdit}
                   onDelete={actions?.delete && onDelete}
+                  onPinToTop={actions?.pinToTop && onPinToTop}
                   onDetail={onDetail}
                   onClickRow={onClickRow}
                   showSelecting={showSelecting}
                   columns={columns}
                   extraActions={extraActions}
+                  actionsColWidth={actionsColWidth}
                 />
               )}
             </List>
