@@ -80,4 +80,9 @@ export interface TableProps {
   rightToolbar?: (props: RightToolbarProps) => ReactNode
   loading?: boolean
   actionsColWidth?: number
+  onClickRow?: (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    rowData: any,
+    index: number,
+  ) => void
 }

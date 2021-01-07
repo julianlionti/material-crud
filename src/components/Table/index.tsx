@@ -20,7 +20,6 @@ interface Props extends TableProps {
   onEdit?: (row: any) => void
   onDelete?: (row: any) => void
   onDetail?: (row: any) => void
-  onClickRow?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, row: any) => void
   headerClassName?: string
   fields?: FieldProps[]
   steps?: StepProps[]

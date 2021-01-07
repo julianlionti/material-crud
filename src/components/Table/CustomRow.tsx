@@ -23,7 +23,7 @@ interface Props extends Partial<ListChildComponentProps> {
   onDelete?: false | ((rowData: any) => void)
   onPinToTop?: false | ((row: any, exists: boolean) => void)
   onDetail?: (row: any) => void
-  onClickRow?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, rowData: any) => void
+  onClickRow?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, rowData: any, index: number) => void
   showSelecting?: boolean
   isHeader?: boolean
   fields?: FieldProps[]
@@ -253,7 +253,7 @@ export default memo((props: Props) => {
   return (
     <TableRow
       onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
-        onClickRow && onClickRow(event, rowData)
+        onClickRow && onClickRow(event, rowData, index)
       }
       aria-label={isHeader ? AriaLabels.RowHeader : AriaLabels.RowContent}
       component="div"
