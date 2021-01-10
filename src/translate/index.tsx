@@ -37,8 +37,9 @@ export interface Translations {
   pagination?: {
     all: string
     rowsPerPage: string
-    totalCount: string
     page: string
+    showing: string
+    of: string
   }
   inputs?: {
     image: { new: string; edit: string }

@@ -39,8 +39,9 @@ export const enUS = createTranslation({
   pagination: {
     all: 'All',
     rowsPerPage: 'Items per page',
-    totalCount: 'Total Items',
     page: 'Page',
+    showing: 'Showing',
+    of: 'of',
   },
   inputs: {
     image: {

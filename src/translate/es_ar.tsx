@@ -40,8 +40,9 @@ export const esAR = createTranslation({
   pagination: {
     all: 'Todos',
     rowsPerPage: 'Filas por página',
-    totalCount: 'Cantidad de items',
     page: 'Página',
+    showing: 'Mostrando',
+    of: 'de',
   },
   inputs: {
     image: {

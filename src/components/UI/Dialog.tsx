@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { TransitionProps } from '@material-ui/core/transitions'
+import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 
 export interface CartelState {
@@ -44,7 +45,7 @@ export default memo(({ show, onClose, title, content, loading }: Props) => {
   if (!lang.dialog) return <Typography>Hace falta 'lang.dialog'</Typography>
 
   return (
-    <Dialog open={show} TransitionComponent={Transition}>
+    <Dialog open={show} TransitionComponent={Transition} aria-label={AriaLabels.Dialog.Root}>
       {loading && <LinearProgress />}
       <DialogTitle>{title}</DialogTitle>
       <DialogContent className={clases.contenido}>
@@ -54,6 +55,7 @@ export default memo(({ show, onClose, title, content, loading }: Props) => {
       </DialogContent>
       <DialogActions>
         <Button
+          aria-label={AriaLabels.Dialog.NoBtn}
           onClick={() => {
             if (onClose) onClose(false)
           }}
@@ -61,6 +63,7 @@ export default memo(({ show, onClose, title, content, loading }: Props) => {
           {lang.dialog.cancel}
         </Button>
         <Button
+          aria-label={AriaLabels.Dialog.YesBtn}
           onClick={() => {
             if (onClose) onClose(true)
           }}

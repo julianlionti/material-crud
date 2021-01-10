@@ -1,23 +1,28 @@
 import React from 'react'
-import { act, cleanup, fireEvent, render, queryByLabelText } from '@testing-library/react'
+import { IconButton } from '@material-ui/core'
+import { act, cleanup, render } from '@testing-library/react'
 import Axios from 'axios'
 import MockAdapter from 'axios-mock-adapter'
+import { FaPlus } from 'react-icons/fa'
 import Crud from '../components/Crud/WithProvider'
 import { createFields } from '../components/Form'
 import { FormTypes } from '../components/Form/FormTypes'
-import { createColumns } from '../components/Table'
+import { createColumns, createExtraActions } from '../components/Table'
+import { ActionProps } from '../components/Table/TableTypes'
 import { enUS } from '../translate/en_us'
-import AriaLabels from '../utils/AriaLabels'
 import { CrudProvider } from '../utils/CrudContext'
 
 import { fakeData } from './generators'
+import testList from './helpers/testList'
 
 jest.mock('react-virtualized-auto-sizer', () => ({ children }: any) =>
   children({ height: 600, width: 600 }),
 )
 jest.setTimeout(30000)
+
 const mock = new MockAdapter(Axios)
 mock.onGet().reply(200, fakeData())
+mock.onDelete().reply(200)
 
 describe('CrudComponent FakeData AlimentAPP', () => {
   beforeEach(cleanup)
@@ -61,14 +66,26 @@ describe('CrudComponent FakeData AlimentAPP', () => {
       { id: 'nombre', title: 'Nombre' },
     ])
 
-    const { queryByText, ...crudElement } = render(
+    const filters = createFields([{ id: 'nombre', type: FormTypes.Input, title: 'Nombre' }])
+    const actions: ActionProps = { edit: true, delete: true }
+
+    const extraActions = createExtraActions((rowdata) => [
+      <IconButton key={rowdata._id}>
+        <FaPlus />
+      </IconButton>,
+    ])
+
+    const crudElement = render(
       <CrudProvider lang={currentLang}>
         <Crud
           url={url}
           itemId="_id"
           description={description}
           name={name}
+          actions={actions}
           fields={fields}
+          filters={filters}
+          extraActions={extraActions}
           columns={columns}
           response={{
             list: ({ data }) => ({ items: data.docs, ...data }),
@@ -78,49 +95,16 @@ describe('CrudComponent FakeData AlimentAPP', () => {
     )
     await act(async () => {})
 
-    const listTitle = queryByText(currentLang.listOf, { exact: false })
-    expect(listTitle).toBeTruthy()
-
-    let filterButton = queryByText(`${currentLang.open} ${currentLang.filters}`, { exact: false })
-      ?.parentElement
-    expect(filterButton).toBeTruthy()
-    if (!filterButton) return
-    await fireEvent.click(filterButton)
-    await act(async () => {})
-
-    const fieldsWithFilter = fields.flat().filter((field) => {
-      if (field.type === FormTypes.Expandable) return false
-      return field.filter
+    await testList({
+      lang: currentLang,
+      description,
+      name,
+      url,
+      crudElement,
+      actions,
+      columns,
+      extraActions,
+      filters,
     })
-    const filters = crudElement.queryAllByLabelText(AriaLabels.BaseInput)
-    expect(filters.length).toEqual(fieldsWithFilter.length)
-
-    filters.forEach((filterInput, i) => {
-      const { type } = fieldsWithFilter[i]
-      if (
-        type === FormTypes.Autocomplete ||
-        type === FormTypes.Input ||
-        type === FormTypes.Email ||
-        type === FormTypes.Multiline ||
-        type === FormTypes.Number ||
-        type === FormTypes.Phone ||
-        type === FormTypes.Options
-      ) {
-        const filterType = queryByLabelText(filterInput, AriaLabels.BtnFilterTypes)
-        expect(filterType).toBeTruthy()
-      }
-    })
-
-    filterButton = queryByText(`${currentLang.close} ${currentLang.filters}`, { exact: false })
-      ?.parentElement
-    expect(filterButton).toBeTruthy()
-
-    const header = crudElement.queryByLabelText(AriaLabels.RowHeader)
-    expect(header).toBeTruthy()
-
-    // await new Promise((resolve) => setTimeout(resolve, 20000))
-    // await act(async () => {})
-    const rows = crudElement.queryAllByLabelText(AriaLabels.RowContent)
-    expect(rows.length).toBe(10)
   })
 })

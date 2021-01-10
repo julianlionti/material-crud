@@ -8,6 +8,8 @@ import React, {
   useEffect,
   useState,
 } from 'react'
+import { createFields } from '../components/Form'
+import { createColumns, createExtraActions } from '../components/Table'
 import { Translations } from '../translate'
 import { enUS } from '../translate/en_us'
 
@@ -55,6 +57,18 @@ export const CrudProvider = <T extends any>(props: ProviderProps<T>) => {
 export const useLang = () => {
   const [configuration] = useContext(CrudContext)
   return configuration.lang
+}
+
+export const useCrud = () => {
+  const createExtraActionsCall = useCallback(createExtraActions, [])
+  const createColumnsCall = useCallback(createColumns, [])
+  const createFieldsCall = useCallback(createFields, [])
+
+  return {
+    createExtraActions: createExtraActionsCall,
+    createColumns: createColumnsCall,
+    createFields: createFieldsCall,
+  }
 }
 
 export const useUser = <T extends any = any>() => {

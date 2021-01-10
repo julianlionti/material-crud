@@ -23,7 +23,11 @@ interface Props extends Partial<ListChildComponentProps> {
   onDelete?: false | ((rowData: any) => void)
   onPinToTop?: false | ((row: any, exists: boolean) => void)
   onDetail?: (row: any) => void
-  onClickRow?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, rowData: any, index: number) => void
+  onClickRow?: (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    rowData: any,
+    index: number,
+  ) => void
   showSelecting?: boolean
   isHeader?: boolean
   fields?: FieldProps[]
@@ -179,7 +183,7 @@ export default memo((props: Props) => {
         rowIndex={index}>
         {extraActions && extraActions(rowData)}
         {onPinToTop && (
-          <Tooltip title={lang.pinToTop}>
+          <Tooltip title={lang.pinToTop} aria-label={AriaLabels.Actions.PinTopButton}>
             <IconButton
               size="small"
               onClick={(e) => {
@@ -191,7 +195,7 @@ export default memo((props: Props) => {
           </Tooltip>
         )}
         {onDetail && (
-          <Tooltip title={lang.seeDetail}>
+          <Tooltip title={lang.seeDetail} aria-label={AriaLabels.Actions.DetailButton}>
             <IconButton
               size="small"
               onClick={(e) => {
@@ -203,7 +207,7 @@ export default memo((props: Props) => {
           </Tooltip>
         )}
         {onEdit && (fields || steps) && (
-          <Tooltip title={lang.edit}>
+          <Tooltip title={lang.edit} aria-label={AriaLabels.Actions.EditButton}>
             <IconButton
               size="small"
               onClick={(e) => {
@@ -215,7 +219,7 @@ export default memo((props: Props) => {
           </Tooltip>
         )}
         {onDelete && (
-          <Tooltip title={lang.delete}>
+          <Tooltip title={lang.delete} aria-label={AriaLabels.Actions.DelButton}>
             <IconButton
               size="small"
               onClick={(e) => {
