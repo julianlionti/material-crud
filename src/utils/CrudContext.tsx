@@ -8,8 +8,8 @@ import React, {
   useEffect,
   useState,
 } from 'react'
-import { createFields } from '../components/Form'
-import { createColumns, createExtraActions } from '../components/Table'
+// import { createFields } from '../components/Form'
+// import { createColumns, createExtraActions } from '../components/Table'
 import { Translations } from '../translate'
 import { enUS } from '../translate/en_us'
 
@@ -59,6 +59,7 @@ export const useLang = () => {
   return configuration.lang
 }
 
+/*
 export const useCrud = () => {
   const createExtraActionsCall = useCallback(createExtraActions, [])
   const createColumnsCall = useCallback(createColumns, [])
@@ -69,7 +70,7 @@ export const useCrud = () => {
     createColumns: createColumnsCall,
     createFields: createFieldsCall,
   }
-}
+} */
 
 export const useUser = <T extends any = any>() => {
   const [configuration, setConfiguration] = useContext(CrudContext)

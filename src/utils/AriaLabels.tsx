@@ -13,6 +13,7 @@ export default {
   },
   Dialog: { Root: 'Dialog', YesBtn: 'Yes Button', NoBtn: 'No Button' },
   Pagination: {
+    Docs: 'Current Docs',
     TotalDocs: 'Total docs',
     PerPage: 'Per page',
   },

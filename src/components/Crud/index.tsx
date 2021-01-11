@@ -183,6 +183,8 @@ export interface RefProps extends ABMResponse<any> {
   refresh: () => Promise<void>
 }
 
+export const createResponseConf = (props: ResponseProps) => props
+
 export default memo(
   forwardRef<RefProps, CrudProps>((props, ref) => {
     const lastFilter = useRef<any>({})

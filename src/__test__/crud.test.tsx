@@ -4,6 +4,7 @@ import { act, cleanup, render } from '@testing-library/react'
 import Axios from 'axios'
 import MockAdapter from 'axios-mock-adapter'
 import { FaPlus } from 'react-icons/fa'
+import { createResponseConf } from '../components/Crud'
 import Crud from '../components/Crud/WithProvider'
 import { createFields } from '../components/Form'
 import { FormTypes } from '../components/Form/FormTypes'
@@ -12,7 +13,7 @@ import { ActionProps } from '../components/Table/TableTypes'
 import { enUS } from '../translate/en_us'
 import { CrudProvider } from '../utils/CrudContext'
 
-import { fakeData } from './generators'
+import { fakeGet } from './generators'
 import testList from './helpers/testList'
 
 jest.mock('react-virtualized-auto-sizer', () => ({ children }: any) =>
@@ -20,8 +21,9 @@ jest.mock('react-virtualized-auto-sizer', () => ({ children }: any) =>
 )
 jest.setTimeout(30000)
 
+const fakeData = fakeGet()
 const mock = new MockAdapter(Axios)
-mock.onGet().reply(200, fakeData())
+mock.onGet().reply(200, fakeData)
 mock.onDelete().reply(200)
 
 describe('CrudComponent FakeData AlimentAPP', () => {
@@ -75,6 +77,10 @@ describe('CrudComponent FakeData AlimentAPP', () => {
       </IconButton>,
     ])
 
+    const responseConf = createResponseConf({
+      list: ({ data }) => ({ items: data.docs, ...data }),
+    })
+
     const crudElement = render(
       <CrudProvider lang={currentLang}>
         <Crud
@@ -87,9 +93,7 @@ describe('CrudComponent FakeData AlimentAPP', () => {
           filters={filters}
           extraActions={extraActions}
           columns={columns}
-          response={{
-            list: ({ data }) => ({ items: data.docs, ...data }),
-          }}
+          response={responseConf}
         />
       </CrudProvider>,
     )
@@ -105,6 +109,8 @@ describe('CrudComponent FakeData AlimentAPP', () => {
       columns,
       extraActions,
       filters,
+      fakeData,
+      response: responseConf,
     })
   })
 })

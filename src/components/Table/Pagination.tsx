@@ -11,7 +11,7 @@ interface Props {
   loading?: boolean
 }
 
-const perPageList = [5, 10, 15, 50, 100, 500, 1000]
+export const perPageList = [5, 10, 15, 50, 100, 500, 1000]
 
 export default memo(({ onChange, loading }: Props) => {
   const { pagination, list } = useABM()
@@ -27,17 +27,25 @@ export default memo(({ onChange, loading }: Props) => {
         <div style={{ display: 'flex', alignItems: 'center', padding: 8 }}>
           <Typography component="div" variant="body2">
             {lang.pagination.showing}
-            <Box fontWeight="bold" display="inline">
+            <Box
+              aria-valuetext={list.length.toString()}
+              aria-label={AriaLabels.Pagination.Docs}
+              fontWeight="bold"
+              display="inline">
               {` ${list.length} `}
             </Box>
             {` ${lang.pagination.of} `}
-            <Box fontWeight="bold" display="inline">
+            <Box
+              aria-valuetext={totalDocs?.toString() || '0'}
+              aria-label={AriaLabels.Pagination.TotalDocs}
+              fontWeight="bold"
+              display="inline">
               {` ${totalDocs} - `}
             </Box>
             {`${lang.pagination.rowsPerPage}: `}
           </Typography>
           <Select
-            aria-valuetext={limit?.toString()}
+            aria-valuetext={limit?.toString() || '0'}
             aria-label={AriaLabels.Pagination.PerPage}
             disabled={loading}
             className={classes.perPage}

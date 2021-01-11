@@ -17,12 +17,23 @@ import AriaLabels from '../../utils/AriaLabels'
 interface ProviderProps {
   lang: Translations
   crudElement: RenderResult
+  fakeData: any
 }
 
-type NoResponseProps = Omit<CrudProps, 'response'>
+// type NoResponseProps = Omit<CrudProps, 'response'>
 
-export default async (props: NoResponseProps & ProviderProps) => {
-  const { lang, crudElement, filters, extraActions, columns, actions } = props
+export default async <T extends object = object>(props: CrudProps & ProviderProps) => {
+  const {
+    lang,
+    crudElement,
+    filters,
+    extraActions,
+    columns,
+    actions,
+    fakeData,
+    response,
+    interaction,
+  } = props
   const { queryByText } = crudElement
   const listTitle = queryByText(lang.listOf, { exact: false })
   expect(listTitle).toBeTruthy()
@@ -71,6 +82,13 @@ export default async (props: NoResponseProps & ProviderProps) => {
       (actions?.delete || actions?.edit || actions?.pinToTop || hasEstraActions ? +1 : 0),
   )
 
+  const getTotalDocs = () => {
+    const docsEl = crudElement.queryByLabelText(AriaLabels.Pagination.Docs)
+    return parseInt(docsEl?.getAttribute('aria-valuetext') || '0')
+  }
+
+  const allDocs = getTotalDocs()
+
   if (actions?.delete) {
     const deleteBtn = queryByLabelText(firstRow, AriaLabels.Actions.DelButton)
     expect(deleteBtn).toBeTruthy()
@@ -96,6 +114,9 @@ export default async (props: NoResponseProps & ProviderProps) => {
 
     expect(crudElement.queryAllByLabelText(AriaLabels.RowContent).length).toBe(9)
   }
+
+  const afterDeleteDocs = getTotalDocs()
+  expect(afterDeleteDocs).toBe(allDocs - 1)
 
   if (actions?.edit) {
     expect(queryByLabelText(firstRow, AriaLabels.Actions.EditButton)).toBeTruthy()
