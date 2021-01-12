@@ -1,6 +1,6 @@
 import React from 'react'
 import { createColumns, createFields, Crud, FormTypes, TableTypes, useAxios } from 'material-crud'
-import { IconButton, Tooltip } from '@material-ui/core'
+import { IconButton, Tooltip, Typography } from '@material-ui/core'
 import { useMemo } from 'react'
 import { FaChevronCircleDown, FaChevronCircleUp, FaEye } from 'react-icons/fa'
 import * as Yup from 'yup'
@@ -94,11 +94,18 @@ export default () => {
         types?.results
           .reduce((final, { id, options }): FieldProps[] => {
             const item = options.map(
-              ({ type, name, description, required }: any): FieldProps => ({
+              ({ type, name, description, required, example }: any): FieldProps => ({
                 id: `${id}-${name}`,
                 type: renderType(type),
                 title: name,
-                help: description || '',
+                help: description ? (
+                  <React.Fragment>
+                    <Typography color="inherit">{description}</Typography>
+                    {<em>Example: {example}</em>}
+                  </React.Fragment>
+                ) : (
+                  ''
+                ),
                 depends: (props) => id === props.c2_type,
                 validate:
                   required.toLowerCase() === 'true'
