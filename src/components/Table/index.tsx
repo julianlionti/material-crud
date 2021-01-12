@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo, useRef, useState } from 'react'
+import React, { memo, ReactNode, useCallback, useMemo, useRef, useState } from 'react'
 import { Collapse, lighten, LinearProgress, makeStyles, Paper, Typography } from '@material-ui/core'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import { VariableSizeList as List } from 'react-window'
@@ -13,6 +13,7 @@ import CustomRow from './CustomRow'
 import Pagination from './Pagination'
 
 export const createColumns = (props: ColumnsProps[]) => props
+export const createExtraActions = (props: (rowData: any) => ReactNode[]) => props
 
 interface Props extends TableProps {
   onChangePagination: (page: number, perPage: number) => void
@@ -58,7 +59,7 @@ export default memo((props: Props) => {
   const [rowsSelected, setRowSelected] = useState<any[]>([])
 
   const finalRowHeight = useMemo(() => rowHeight || 48, [rowHeight])
-  const classes = useClasses({ height: height || windowHeight - 190 })
+  const classes = useClasses({ height: height || windowHeight - 130 })
 
   const headerSelected = useMemo(() => {
     if (rowsSelected.length === 0) return false

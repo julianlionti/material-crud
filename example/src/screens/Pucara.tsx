@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { createColumns, createFields, Crud, FormTypes, TableTypes, useAxios } from 'material-crud'
 import { IconButton, Tooltip, Typography } from '@material-ui/core'
 import { useMemo } from 'react'
 import { FaChevronCircleDown, FaChevronCircleUp, FaEye } from 'react-icons/fa'
 import * as Yup from 'yup'
 import { FieldProps } from '../../../dist/components/Form/FormTypes'
+import { createServer } from 'miragejs'
+import fakePucara from '../util/fakePucara'
 
 type RenderType = FormTypes.Input | FormTypes.Number | FormTypes.OnlyTitle | FormTypes.Secure
 
@@ -18,9 +20,16 @@ export const renderType = (type?: string): RenderType => {
 
 export default () => {
   const { response: types } = useAxios<{ results: any[] }>({
-    onInit: {
-      url: 'http://192.168.102.50:8000/c2/types/',
-    },
+    onInit: { url: '/api/types' },
+  })
+
+  useEffect(() => {
+    createServer({
+      routes() {
+        this.get('/api/types', fakePucara.types)
+        this.get('/api/c2', fakePucara.c2Response)
+      },
+    })
   })
 
   const columns = useMemo(
@@ -63,7 +72,7 @@ export default () => {
           width: 1,
           cellComponent: ({ expandRow, isExpanded }) => {
             return (
-              <IconButton onClick={expandRow}>
+              <IconButton size="small" onClick={expandRow}>
                 {isExpanded ? <FaChevronCircleUp /> : <FaChevronCircleDown />}
               </IconButton>
             )
@@ -108,7 +117,7 @@ export default () => {
                 ),
                 depends: (props) => id === props.c2_type,
                 validate:
-                  required.toLowerCase() === 'true'
+                  required?.toLowerCase() === 'true'
                     ? Yup.string().when('c2_type', {
                         is: (val) => val === id,
                         then: Yup.string().required('Required'),
@@ -127,17 +136,6 @@ export default () => {
   const filters = useMemo(
     () =>
       createFields([
-        // {
-        //   id: 'c2_id',
-        //   type: FormTypes.Options,
-        //   options:
-        //     types?.results.map(({ name, id }: any) => ({
-        //       id,
-        //       title: `${name} (${id})`,
-        //     })) || [],
-        //   title: 'C2',
-        //   placeholder: 'Select one C2',
-        // },
         {
           id: 'created_since',
           type: FormTypes.Date,
@@ -161,6 +159,7 @@ export default () => {
           page: cList.current,
           limit: 10,
           totalDocs: cList.count,
+          totalPages: 2,
         }),
         new: (_: any, response: any) => response,
         edit: (_: any, response: any) => response,
@@ -177,7 +176,7 @@ export default () => {
       description="C2 example"
       name="C2"
       actions={{ edit: true, delete: true, pinToTop: true }}
-      url={'http://192.168.102.50:8000/c2/'}
+      url={'/api/c2'}
       filters={filters}
       columns={columns}
       fields={fields}

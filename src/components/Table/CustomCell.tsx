@@ -2,6 +2,7 @@ import React, { memo, PropsWithChildren, ReactNode, useCallback, useMemo } from 
 import { Avatar, makeStyles, TableCell, Tooltip, Typography } from '@material-ui/core'
 import moment from 'moment'
 import { FaCheck, FaTimes } from 'react-icons/fa'
+import AriaLabels from '../../utils/AriaLabels'
 import { useABM } from '../../utils/DataContext'
 import { ColumnsProps, TableTypes } from './TableTypes'
 
@@ -81,7 +82,11 @@ export default memo((props: PropsWithChildren<Props>) => {
   }, [cellData, col, rowHeight, children, onExpand, expanded, rowData])
 
   return (
-    <TableCell component="div" variant="body" className={classes.cell}>
+    <TableCell
+      component="div"
+      variant="body"
+      className={classes.cell}
+      aria-label={AriaLabels.CellContent}>
       {renderContent()}
     </TableCell>
   )

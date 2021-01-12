@@ -1,8 +1,9 @@
+import { createResponseConf } from './components/Crud'
 import { createMoreOptions } from './components/Crud/Toolbar'
 import Crud from './components/Crud/WithProvider'
 import Form, { createFields, createSteps } from './components/Form'
 import { FormTypes } from './components/Form/FormTypes'
-import { createColumns } from './components/Table'
+import { createColumns, createExtraActions } from './components/Table'
 
 import { TableTypes } from './components/Table/TableTypes'
 import CenteredCard from './components/UI/CenteredCard'
@@ -36,6 +37,8 @@ export {
   createFields,
   createColumns,
   createTranslation,
+  createResponseConf,
+  createExtraActions,
   CrudProvider,
   useUser,
   useLang,

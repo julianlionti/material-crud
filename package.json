@@ -21,7 +21,7 @@
     "test:lint": "eslint src/*.{ts,tsx}",
     "test:unit": "cross-env CI=1 react-scripts test --env=jsdom-fourteen",
     "test:watch": "react-scripts test --env=jsdom-fourteen",
-    "predeploy": "cd example && yarn install && yarn run build",
+    "predeploy": "cd example && npm i && npm run build",
     "deploy": "gh-pages -d example/build"
   },
   "peerDependencies": {

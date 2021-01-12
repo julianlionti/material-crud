@@ -24,6 +24,7 @@ import { serialize } from 'object-to-formdata'
 import qs from 'qs'
 import { FaTimes } from 'react-icons/fa'
 import { compareKeysOmit } from '../../utils/addOns'
+import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 import { ABMResponse, PaginationProps, ReplaceProps, useABM } from '../../utils/DataContext'
 import useAxios, { CallProps, Error } from '../../utils/useAxios'
@@ -182,6 +183,8 @@ const getData = async ({ call, response, replace, params, url, transform }: Data
 export interface RefProps extends ABMResponse<any> {
   refresh: () => Promise<void>
 }
+
+export const createResponseConf = (props: ResponseProps) => props
 
 export default memo(
   forwardRef<RefProps, CrudProps>((props, ref) => {
@@ -379,7 +382,7 @@ export default memo(
             getDataCall(lastFilter.current)
           }}
         />
-        {loading && <LinearProgress />}
+        {loading && <LinearProgress aria-label={AriaLabels.LoadingTable} />}
         <Collapse in={!editObj} timeout="auto" unmountOnExit>
           <AlTable
             {...props}
@@ -395,8 +398,8 @@ export default memo(
               getDataCall({
                 ...interactions,
                 ...lastFilter.current,
-                [interaction?.page || lang.pagination?.page || 'page']: page,
-                [interaction?.perPage || lang.pagination?.rowsPerPage || 'perPage']: perPage,
+                [interaction?.page || 'page']: page,
+                [interaction?.perPage || 'perPage']: perPage,
               })
             }}
             onEdit={(rowData) => onEditCall(rowData)}
