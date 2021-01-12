@@ -8,6 +8,7 @@ import {
   waitFor,
   screen,
   waitForElementToBeRemoved,
+  within,
 } from '@testing-library/react'
 import { CrudProps } from '../../components/Crud'
 import { FormTypes } from '../../components/Form/FormTypes'
@@ -17,23 +18,12 @@ import AriaLabels from '../../utils/AriaLabels'
 interface ProviderProps {
   lang: Translations
   crudElement: RenderResult
-  fakeData: any
 }
 
 // type NoResponseProps = Omit<CrudProps, 'response'>
 
 export default async <T extends object = object>(props: CrudProps & ProviderProps) => {
-  const {
-    lang,
-    crudElement,
-    filters,
-    extraActions,
-    columns,
-    actions,
-    fakeData,
-    response,
-    interaction,
-  } = props
+  const { lang, crudElement, filters, extraActions, columns, actions } = props
   const { queryByText } = crudElement
   const listTitle = queryByText(lang.listOf, { exact: false })
   expect(listTitle).toBeTruthy()
@@ -71,7 +61,7 @@ export default async <T extends object = object>(props: CrudProps & ProviderProp
   const header = crudElement.queryByLabelText(AriaLabels.RowHeader)
   expect(header).toBeTruthy()
 
-  const rows = crudElement.queryAllByLabelText(AriaLabels.RowContent)
+  let rows = crudElement.queryAllByLabelText(AriaLabels.RowContent)
   expect(rows.length).toBe(10)
 
   const [firstRow] = rows
@@ -117,6 +107,19 @@ export default async <T extends object = object>(props: CrudProps & ProviderProp
 
   const afterDeleteDocs = getTotalDocs()
   expect(afterDeleteDocs).toBe(allDocs - 1)
+
+  const perPageEl = crudElement.queryByLabelText(AriaLabels.Pagination.PerPage)
+  expect(perPageEl!!).toBeTruthy()
+
+  const perPageQueris = within(perPageEl!!)
+  fireEvent.mouseDown(perPageQueris.getByRole('button'))
+  const pageList = within(screen.getByRole('listbox'))
+  fireEvent.click(pageList.getByText(5))
+  await act(async () => {})
+
+  rows = crudElement.queryAllByLabelText(AriaLabels.RowContent)
+  expect(rows.length).toBe(5)
+  expect(getTotalDocs()).toBe(5)
 
   if (actions?.edit) {
     expect(queryByLabelText(firstRow, AriaLabels.Actions.EditButton)).toBeTruthy()

@@ -21,9 +21,12 @@ jest.mock('react-virtualized-auto-sizer', () => ({ children }: any) =>
 )
 jest.setTimeout(30000)
 
-const fakeData = fakeGet()
 const mock = new MockAdapter(Axios)
-mock.onGet().reply(200, fakeData)
+mock.onGet().reply((data) => {
+  const { page, perPage } = data.params
+  const listado = fakeGet({ page, perPage })
+  return [200, listado]
+})
 mock.onDelete().reply(200)
 
 describe('CrudComponent FakeData AlimentAPP', () => {
@@ -109,7 +112,6 @@ describe('CrudComponent FakeData AlimentAPP', () => {
       columns,
       extraActions,
       filters,
-      fakeData,
       response: responseConf,
     })
   })

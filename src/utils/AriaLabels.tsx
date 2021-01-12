@@ -17,4 +17,5 @@ export default {
     TotalDocs: 'Total docs',
     PerPage: 'Per page',
   },
+  LoadingTable: 'LoadingTable',
 }
