@@ -16,7 +16,7 @@ const App = () => {
     name: 'tano',
     // token:
     //   'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1ZmFjNzY4YWJkNzI2NzJjMThlZTdhYzYiLCJpYXQiOjE2MDYzMTg4MDMsImV4cCI6MTYwNzYxNDgwM30.etu--UFHy3B5YNuRZFHXj893b4vOoEanUMqLJmo1rPE',
-    token: 'Bearer 11ecee644cbaf95ab93c16d254c9b2a5f7a50ef2',
+    token: 'Bearer cd2d52c3d6ddd8d4c538f03c4e282397c3f51718',
   }
 
   return (
