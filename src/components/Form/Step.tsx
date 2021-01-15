@@ -35,9 +35,10 @@ export default memo(
       isFormData,
       noFilterOptions,
       showHelpIcon,
+      isEditing,
     } = props
     const classes = useClases({ inline })
-    const isEditing = useMemo(() => Object.keys(intials || {}).length > 0, [intials])
+    // const isEditing = useMemo(() => Object.keys(intials || {}).length > 0, [intials])
 
     const finalFields = useMemo(
       () =>
@@ -197,7 +198,7 @@ export default memo(
         finalFields
           .flat()
           .filter((e) => e.type !== FormTypes.Expandable && e.type !== FormTypes.OnlyTitle)
-          .reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it) }), {}),
+          .reduce((acc, it) => ({ ...acc, [it.id]: it.defaultValue || generateDefault(it) }), {}),
       [finalFields],
     )
 

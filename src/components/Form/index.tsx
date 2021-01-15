@@ -29,6 +29,7 @@ export interface FormProps {
   isFormData?: boolean
   noFilterOptions?: boolean
   showHelpIcon?: boolean
+  isEditing?: boolean
 }
 
 export const createFields = (props: FieldProps[]) => props
@@ -52,24 +53,41 @@ export default memo((props: FormProps) => {
     noFilterOptions,
     intials,
     showHelpIcon,
+    isEditing,
   } = props
 
   const [tab, setTab] = useState(0)
 
   const classes = useClasses()
 
+  const renderIntials = useCallback(
+    (arrayFields: FieldProps[]) => {
+      if (arrayFields) {
+        const finalIntials = arrayFields.flat().reduce((acc, actual) => {
+          if (!intials || !intials[actual.id]) {
+            if (actual.defaultValue) {
+              return { ...acc, [actual.id]: actual.defaultValue }
+            }
+            return acc
+          }
+          return { ...acc, [actual.id]: intials[actual.id] }
+        }, {})
+        return finalIntials
+      }
+      return null
+    },
+    [intials],
+  )
+
   const renderSteps = useCallback(
     () =>
       intials &&
       steps?.map(({ fields, id }) => {
-        const finalIntials = fields.flat().reduce((acc, actual) => {
-          if (!intials[actual.id]) return acc
-          return { ...acc, [actual.id]: intials[actual.id] }
-        }, {})
         return (
           <Step
+            isEditing={isEditing}
             showHelpIcon={showHelpIcon}
-            intials={finalIntials}
+            intials={renderIntials(fields)}
             key={id}
             isFormData={isFormData}
             fields={fields}
@@ -85,7 +103,7 @@ export default memo((props: FormProps) => {
           />
         )
       }),
-    [steps, isFormData, loading, noFilterOptions, intials, showHelpIcon],
+    [steps, isFormData, loading, noFilterOptions, intials, showHelpIcon, renderIntials, isEditing],
   )
 
   useEffect(() => {
@@ -103,7 +121,14 @@ export default memo((props: FormProps) => {
   }
 
   if (!steps && fields) {
-    return <Step {...props} fields={fields} noFilterOptions={noFilterOptions} />
+    return (
+      <Step
+        {...props}
+        intials={renderIntials(fields)}
+        fields={fields}
+        noFilterOptions={noFilterOptions}
+      />
+    )
   }
 
   if (!steps) return null

@@ -70,6 +70,7 @@ export default () => {
           type: TableTypes.Custom,
           height: 70,
           width: 1,
+          align: 'flex-end',
           cellComponent: ({ expandRow, isExpanded }) => {
             return (
               <IconButton size="small" onClick={expandRow}>
@@ -92,6 +93,12 @@ export default () => {
     () =>
       createFields([
         {
+          id: 'prueba',
+          type: FormTypes.Input,
+          title: 'PROBANDO',
+          defaultValue: 'HOLAAA',
+        },
+        {
           id: 'c2_type',
           title: 'Type',
           type: FormTypes.Options,
@@ -99,6 +106,7 @@ export default () => {
           options: types?.results.map(({ id, name }: any) => ({ id, title: name })) || [],
           validate: Yup.number().required('Required'),
           readonly: 'edit',
+          defaultValue: 1,
         },
         types?.results
           .reduce((final, { id, options }): FieldProps[] => {
@@ -152,6 +160,7 @@ export default () => {
 
   return (
     <Crud
+      withBorder
       showHelpIcon
       response={{
         list: (cList: any) => ({
