@@ -35,9 +35,10 @@ export default memo(
       isFormData,
       noFilterOptions,
       showHelpIcon,
+      isEditing,
     } = props
     const classes = useClases({ inline })
-    const isEditing = useMemo(() => Object.keys(intials || {}).length > 0, [intials])
+    // const isEditing = useMemo(() => Object.keys(intials || {}).length > 0, [intials])
 
     const finalFields = useMemo(
       () =>

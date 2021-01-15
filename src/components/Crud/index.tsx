@@ -421,6 +421,7 @@ export default memo(
               } ${name}`}
               subtitle={description}>
               <Formulario
+                isEditing={editing}
                 showHelpIcon={showHelpIcon}
                 intials={editObj}
                 loading={loading}
