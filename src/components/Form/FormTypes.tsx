@@ -40,6 +40,7 @@ export interface OpcionesProps {
 export interface BaseProps {
   id: string
   title: string
+  defaultValue?: any
 }
 
 export interface ComunesProps extends BaseProps {

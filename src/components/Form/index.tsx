@@ -63,7 +63,12 @@ export default memo((props: FormProps) => {
       intials &&
       steps?.map(({ fields, id }) => {
         const finalIntials = fields.flat().reduce((acc, actual) => {
-          if (!intials[actual.id]) return acc
+          if (!intials[actual.id]) {
+            if (actual.defaultValue) {
+              return { ...acc, [actual.id]: actual.defaultValue }
+            }
+            return acc
+          }
           return { ...acc, [actual.id]: intials[actual.id] }
         }, {})
         return (

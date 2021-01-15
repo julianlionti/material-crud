@@ -15,11 +15,28 @@ interface Props {
   expanded?: boolean
   isChild?: boolean
   horizontal?: boolean
+  withBorder?: boolean
 }
 
 export default memo((props: PropsWithChildren<Props>) => {
-  const { children, rowHeight, col, rowIndex, onExpand, expanded, isChild, horizontal } = props
-  const classes = useClasses({ width: col?.width, align: col?.align, isChild, horizontal })
+  const {
+    children,
+    rowHeight,
+    col,
+    rowIndex,
+    onExpand,
+    expanded,
+    isChild,
+    horizontal,
+    withBorder,
+  } = props
+  const classes = useClasses({
+    width: col?.width,
+    align: col?.align,
+    isChild,
+    horizontal,
+    withBorder,
+  })
   const { list } = useABM()
   const rowData = list[rowIndex]
   const cellData = useMemo(() => {
@@ -93,13 +110,14 @@ export default memo((props: PropsWithChildren<Props>) => {
 })
 
 const useClasses = makeStyles((theme) => ({
-  cell: ({ width, align, isChild, horizontal }: any) => ({
+  cell: ({ width, align, isChild, horizontal, withBorder }: any) => ({
     flex: 1,
     flexDirection: horizontal ? 'row' : 'column',
     flexGrow: width,
     display: 'flex',
     alignItems: horizontal ? (isChild ? 'start' : 'center') : align || 'flex-start',
     justifyContent: horizontal ? align || 'flex-start' : isChild ? 'start' : 'center',
+    border: withBorder ? '1px solid #dee2e6' : undefined,
 
     overflow: 'hidden',
     textOverflow: 'ellipsis',

@@ -36,6 +36,7 @@ interface Props extends Partial<ListChildComponentProps> {
   columns: ColumnsProps[]
   extraActions?: (rowdata: any) => ReactNode[]
   actionsColWidth?: number
+  withBorder?: boolean
 }
 
 export default memo((props: Props) => {
@@ -60,6 +61,7 @@ export default memo((props: Props) => {
     columns,
     extraActions,
     actionsColWidth,
+    withBorder,
   } = props
 
   const { list, insertIndex, removeIndex, itemId, pins, removePins } = useABM()
@@ -112,6 +114,7 @@ export default memo((props: Props) => {
         rowHeight={rowHeight}
         key={col.id}
         col={col}
+        withBorder={withBorder}
       />
     ))
   }, [
@@ -126,6 +129,7 @@ export default memo((props: Props) => {
     list,
     onExpanded,
     rowData,
+    withBorder,
   ])
 
   const renderSelecting = useCallback(() => {
@@ -143,11 +147,15 @@ export default memo((props: Props) => {
       )
 
     return (
-      <CustomCell col={{ width: 0.5 }} rowIndex={index} rowHeight={rowHeight}>
+      <CustomCell
+        col={{ width: 0.5 }}
+        rowIndex={index}
+        rowHeight={rowHeight}
+        withBorder={withBorder}>
         <Checkbox checked={selected} onChange={() => onSelect(rowData)} />
       </CustomCell>
     )
-  }, [showSelecting, onSelect, index, rowHeight, isHeader, rowData, selected])
+  }, [showSelecting, onSelect, index, rowHeight, isHeader, rowData, selected, withBorder])
 
   const renderCrud = useCallback(() => {
     if (rowData?.child) return null
@@ -177,6 +185,7 @@ export default memo((props: Props) => {
 
     return (
       <CustomCell
+        withBorder={withBorder}
         col={{ width, align: 'flex-end' }}
         horizontal
         rowHeight={rowHeight}
@@ -252,6 +261,7 @@ export default memo((props: Props) => {
     itemId,
     pins,
     removePins,
+    withBorder,
   ])
 
   return (

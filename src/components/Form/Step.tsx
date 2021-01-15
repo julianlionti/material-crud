@@ -197,7 +197,7 @@ export default memo(
         finalFields
           .flat()
           .filter((e) => e.type !== FormTypes.Expandable && e.type !== FormTypes.OnlyTitle)
-          .reduce((acc, it) => ({ ...acc, [it.id]: generateDefault(it) }), {}),
+          .reduce((acc, it) => ({ ...acc, [it.id]: it.defaultValue || generateDefault(it) }), {}),
       [finalFields],
     )
 

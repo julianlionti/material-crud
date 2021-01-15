@@ -85,4 +85,5 @@ export interface TableProps {
     rowData: any,
     index: number,
   ) => void
+  withBorder?: boolean
 }
