@@ -70,31 +70,32 @@ export default memo(
               {ImgIcon || <FaFile className={classes.verticalSpace} />}
             </div>
             <div className={classes.valContainer}>
-              {value.map((e) => (
-                <Paper elevation={3} key={e.name} style={{ padding: 8, margin: 8 }}>
-                  <div className={classes.paperRoot}>
-                    <div className={classes.textContainer}>
-                      <div className={classes.imgContainer2}>{ImgIcon || <FaFile />}</div>
-                      <Typography variant="subtitle2" noWrap>
-                        {e.name}
-                      </Typography>
-                      <Typography variant="subtitle2" noWrap>
-                        {niceBytes(e.size)}
-                      </Typography>
+              {value &&
+                value.map((e) => (
+                  <Paper elevation={3} key={e.name} style={{ padding: 8, margin: 8 }}>
+                    <div className={classes.paperRoot}>
+                      <div className={classes.textContainer}>
+                        <div className={classes.imgContainer2}>{ImgIcon || <FaFile />}</div>
+                        <Typography variant="subtitle2" noWrap>
+                          {e.name}
+                        </Typography>
+                        <Typography variant="subtitle2" noWrap>
+                          {niceBytes(e.size)}
+                        </Typography>
+                      </div>
+                      <div>
+                        <IconButton
+                          onClick={(ev) => {
+                            ev.preventDefault()
+                            ev.stopPropagation()
+                            setValue(value.filter((v) => v.name !== e.name))
+                          }}>
+                          <FaTrashAlt />
+                        </IconButton>
+                      </div>
                     </div>
-                    <div>
-                      <IconButton
-                        onClick={(ev) => {
-                          ev.preventDefault()
-                          ev.stopPropagation()
-                          setValue(value.filter((v) => v.name !== e.name))
-                        }}>
-                        <FaTrashAlt />
-                      </IconButton>
-                    </div>
-                  </div>
-                </Paper>
-              ))}
+                  </Paper>
+                ))}
             </div>
           </div>
           {error && touched && <Typography className={classes.error}>{error}</Typography>}
