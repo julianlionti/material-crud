@@ -34,7 +34,7 @@ export default memo(
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
       onDrop: (accepted) => {
-        if (multiple) {
+        if (multiple && value) {
           const ids = new Set(value.map((d) => d.name))
           const merged = [...value, ...accepted.filter((d) => !ids.has(d.name))]
           setValue(merged)
