@@ -5,7 +5,7 @@ import { DataProvider } from '../../utils/DataContext'
 // type Props = DataConfigProps & */CrudProps
 
 export default forwardRef<RefProps, CrudProps>((props, ref) => {
-  const { filters, itemId, name, actions } = props
+  const { filters, itemId, name, actions, noBorder } = props
   const finalFilters = useMemo(
     () =>
       filters?.map((cam) => {
@@ -18,7 +18,7 @@ export default forwardRef<RefProps, CrudProps>((props, ref) => {
   )
 
   return (
-    <DataProvider itemId={itemId} name={name} withPin={!!actions?.pinToTop}>
+    <DataProvider itemId={itemId} name={name} withPin={!!actions?.pinToTop} noBorder={noBorder}>
       <Crud ref={ref} {...props} filters={finalFilters} />
     </DataProvider>
   )

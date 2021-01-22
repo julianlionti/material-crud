@@ -48,7 +48,6 @@ export default memo((props: Props) => {
     onDetail,
     onClickRow,
     actionsColWidth,
-    withBorder,
   } = props
 
   const { height: windowHeight } = useWindowSize()
@@ -109,7 +108,6 @@ export default memo((props: Props) => {
         </div>
       </Collapse>
       <CustomRow
-        withBorder={withBorder}
         index={-1}
         rowHeight={headerHeight || 54}
         customClassName={`${classes.rowHeader} ${headerClassName}`}
@@ -129,7 +127,7 @@ export default memo((props: Props) => {
       />
       {!loading && list.length === 0 && (
         <div className={classes.noResult}>
-          <Typography>{lang.noResults}</Typography>
+          <Typography variant="body2">{lang.noResults}</Typography>
         </div>
       )}
       <div style={{ flex: 1 }}>
@@ -146,7 +144,6 @@ export default memo((props: Props) => {
               {(props) => (
                 <CustomRow
                   {...props}
-                  withBorder={withBorder}
                   fields={fields}
                   steps={steps}
                   rowHeight={list[props.index].height || finalRowHeight}

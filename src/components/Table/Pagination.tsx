@@ -93,13 +93,14 @@ const useClasses = makeStyles((theme) => ({
     },
     paddingTop: theme.spacing(0.5),
     paddingBottom: theme.spacing(0.5),
-    marginRight: theme.spacing(2),
-    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(1),
+    marginLeft: theme.spacing(1),
   },
   perPage: {
     width: 80,
     height: 34,
     textAlign: 'center',
+    marginLeft: theme.spacing(1),
   },
   pagination: {},
 }))

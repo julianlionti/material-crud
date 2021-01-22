@@ -82,6 +82,7 @@ export interface CrudProps extends TableProps {
   noFilterOptions?: boolean
   detailView?: (rowData: any) => ReadOnlyConf[]
   showHelpIcon?: boolean
+  noBorder?: boolean
 }
 
 interface DataCallProps {

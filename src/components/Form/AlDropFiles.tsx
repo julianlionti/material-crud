@@ -45,7 +45,7 @@ export default memo(
     })
 
     const renderTitle = useCallback(() => {
-      if (typeof title === 'string') return <Typography>{title}</Typography>
+      if (typeof title === 'string') return <Typography variant="body2">{title}</Typography>
       return title
     }, [title])
 
@@ -65,7 +65,7 @@ export default memo(
                 },
               })}
             />
-            <Typography>Arrastre el archivo AQUI</Typography>
+            <Typography variant="body1">Arrastre el archivo AQUI</Typography>
             <div className={classes.imgContainer}>
               {ImgIcon || <FaFile className={classes.verticalSpace} />}
             </div>
@@ -98,7 +98,11 @@ export default memo(
                 ))}
             </div>
           </div>
-          {error && touched && <Typography className={classes.error}>{error}</Typography>}
+          {error && touched && (
+            <Typography variant="body1" className={classes.error}>
+              {error}
+            </Typography>
+          )}
         </div>
       </BaseInput>
     )

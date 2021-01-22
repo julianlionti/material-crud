@@ -21,6 +21,7 @@ interface ProviderProps /* extends DataConfigProps */ {
   itemId?: 'id' | '_id' | string
   name: string
   withPin: boolean
+  noBorder?: boolean
 }
 
 export interface ReplaceProps<T = any> {
@@ -43,6 +44,7 @@ interface ContextProps<T = any> /* extends DataConfigProps */ {
   itemId: 'id' | '_id' | string
   name: string
   pins: any[]
+  noBorder?: boolean
 }
 
 type Context = [ContextProps, Dispatch<SetStateAction<ContextProps>>]
@@ -59,13 +61,14 @@ const intials: ContextProps = {
 const DataContext = createContext<Context>([intials, () => {}])
 
 export const DataProvider = (props: ProviderProps) => {
-  const { children, itemId, name, withPin } = props
+  const { children, itemId, name, withPin, noBorder } = props
   const pinName = `${name}-pin`
   const status = useState<ContextProps>({
     ...intials,
     itemId: itemId || '_id',
     name,
     pins: Storage.getItem(pinName) || [],
+    noBorder,
   })
 
   const [{ pins }, setStatus] = status
@@ -78,6 +81,10 @@ export const DataProvider = (props: ProviderProps) => {
       Storage.saveItem(pinName, pins)
     }
   }, [withPin, pinName, pins])
+
+  useEffect(() => {
+    setStatus((acc) => ({ ...acc, noBorder }))
+  }, [noBorder, setStatus])
 
   return <DataContext.Provider value={status}>{children}</DataContext.Provider>
 }

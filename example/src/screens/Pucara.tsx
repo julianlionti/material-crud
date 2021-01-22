@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { createColumns, createFields, Crud, FormTypes, TableTypes, useAxios } from 'material-crud'
 import { IconButton, Tooltip, Typography } from '@material-ui/core'
 import { useMemo } from 'react'
@@ -19,6 +19,7 @@ export const renderType = (type?: string): RenderType => {
 }
 
 export default () => {
+  const [border, setBorder] = useState(true)
   const { response: types } = useAxios<{ results: any[] }>({
     onInit: { url: '/api/types' },
   })
@@ -93,6 +94,12 @@ export default () => {
     () =>
       createFields([
         {
+          id: 'imagen',
+          title: 'Imagen',
+          type: FormTypes.Image,
+          help: 'Ayudaaaaa',
+        },
+        {
           id: 'prueba',
           type: FormTypes.Input,
           title: 'PROBANDO',
@@ -158,9 +165,15 @@ export default () => {
     [],
   )
 
+  useEffect(() => {
+    setTimeout(() => {
+      setBorder((b) => !b)
+    }, 2500)
+  }, [])
+
   return (
     <Crud
-      withBorder
+      noBorder={border}
       showHelpIcon
       response={{
         list: (cList: any) => ({
