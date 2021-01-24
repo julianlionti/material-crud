@@ -52,6 +52,11 @@ export const enUS = createTranslation({
       new: 'Click on the icon to upload a file.',
       edit: 'Click on HERE to edit it.',
     },
+    drop: {
+      title: 'Be careful! ⚠',
+      description: 'Are you sure you want to delete the file?',
+      help: 'Click HERE or drag a FILE',
+    },
   },
   dialog: {
     cancel: 'Cancel',

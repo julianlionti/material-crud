@@ -69,7 +69,13 @@ export const callWs = async <T extends any>(
   } catch (ex) {
     const { response } = ex as AxiosError<ErrorResponse>
     if (response?.status === 500) {
-      error = { error: { code: 500, message: lang?.serverError || 'Error en el servidor' } }
+      const fal = response as any
+      error = {
+        error: {
+          code: fal.data?.statusCode || 500,
+          message: fal.data?.code || lang?.serverError || 'Error en el servidor',
+        },
+      }
     } else {
       error = response?.data || { error: { code: 501, message: 'Error' } }
     }

@@ -41,9 +41,10 @@ export interface Translations {
     showing: string
     of: string
   }
-  inputs?: {
+  inputs: {
     image: { new: string; edit: string }
     file: { new: string; edit: string }
+    drop: { title: string; description: string; help: string }
   }
   dialog?: { cancel: string; accept: string }
   serverError: string
