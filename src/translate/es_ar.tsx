@@ -42,8 +42,9 @@ export const esAR = createTranslation({
   pagination: {
     all: 'Todos',
     rowsPerPage: 'Filas por página',
-    totalCount: 'Cantidad de items',
     page: 'Página',
+    showing: 'Mostrando',
+    of: 'de',
   },
   inputs: {
     image: {
@@ -53,6 +54,11 @@ export const esAR = createTranslation({
     file: {
       new: 'Haga click en la Icono para subir un Archivo.',
       edit: 'Haga click ACA para editarlo.',
+    },
+    drop: {
+      title: 'Atención! ⚠',
+      description: 'Está seguro que desea eliminar el archivo?',
+      help: 'Haga click ACA o arrastre un ARCHIVO',
     },
   },
   dialog: {

@@ -303,8 +303,10 @@ export default () => {
         fields={fields}
         columns={columns}
         filters={filters}
-        actions={{ edit: true, delete: false, pinToTop: true }}
-        // onClickRow={(e, rowData) => console.log(e, rowData)}
+        actions={{ edit: true, delete: false }}
+        onClickRow={(e, rowData) => {
+          console.log(e, rowData)
+        }}
         noFilterOptions
         extraActions={(rowData) => [
           <IconButton size="small" key="ice" onClick={(e) => e.stopPropagation()}>
@@ -340,6 +342,19 @@ export default () => {
           }
           return rowData
         }}
+        // detailView={() => [
+        //   {
+        //     title: 'Prueba',
+        //     section: [
+        //       [
+        //         [
+        //           'Una',
+        //           <img src="https://pbs.twimg.com/media/EpXTiVFWEAE250s?format=jpg&name=large" />,
+        //         ],
+        //       ],
+        //     ],
+        //   },
+        // ]}
       />
     </React.Fragment>
   )

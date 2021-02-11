@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { createColumns, createFields, Crud, FormTypes, TableTypes, useAxios } from 'material-crud'
-import { IconButton, Tooltip } from '@material-ui/core'
+import { IconButton, Tooltip, Typography } from '@material-ui/core'
 import { useMemo } from 'react'
-import { FaChevronCircleDown, FaChevronCircleUp, FaEye } from 'react-icons/fa'
+import { FaChevronCircleDown, FaChevronCircleUp, FaEye, FaSave } from 'react-icons/fa'
 import * as Yup from 'yup'
 import { FieldProps } from '../../../dist/components/Form/FormTypes'
+import { createServer } from 'miragejs'
+import fakePucara from '../util/fakePucara'
 
 type RenderType = FormTypes.Input | FormTypes.Number | FormTypes.OnlyTitle | FormTypes.Secure
 
@@ -17,10 +19,18 @@ export const renderType = (type?: string): RenderType => {
 }
 
 export default () => {
+  const [border, setBorder] = useState(true)
   const { response: types } = useAxios<{ results: any[] }>({
-    onInit: {
-      url: 'http://192.168.102.50:8000/c2/types/',
-    },
+    onInit: { url: '/api/types' },
+  })
+
+  useEffect(() => {
+    createServer({
+      routes() {
+        this.get('/api/types', fakePucara.types)
+        this.get('/api/c2', fakePucara.c2Response)
+      },
+    })
   })
 
   const columns = useMemo(
@@ -61,9 +71,10 @@ export default () => {
           type: TableTypes.Custom,
           height: 70,
           width: 1,
+          align: 'flex-end',
           cellComponent: ({ expandRow, isExpanded }) => {
             return (
-              <IconButton onClick={expandRow}>
+              <IconButton size="small" onClick={expandRow}>
                 {isExpanded ? <FaChevronCircleUp /> : <FaChevronCircleDown />}
               </IconButton>
             )
@@ -83,6 +94,18 @@ export default () => {
     () =>
       createFields([
         {
+          id: 'imagen',
+          title: 'Imagen',
+          type: FormTypes.Image,
+          help: 'Ayudaaaaa',
+        },
+        {
+          id: 'prueba',
+          type: FormTypes.Input,
+          title: 'PROBANDO',
+          defaultValue: 'HOLAAA',
+        },
+        {
           id: 'c2_type',
           title: 'Type',
           type: FormTypes.Options,
@@ -90,18 +113,26 @@ export default () => {
           options: types?.results.map(({ id, name }: any) => ({ id, title: name })) || [],
           validate: Yup.number().required('Required'),
           readonly: 'edit',
+          defaultValue: 1,
         },
         types?.results
           .reduce((final, { id, options }): FieldProps[] => {
             const item = options.map(
-              ({ type, name, description, required }: any): FieldProps => ({
+              ({ type, name, description, required, example }: any): FieldProps => ({
                 id: `${id}-${name}`,
                 type: renderType(type),
                 title: name,
-                help: description || '',
+                help: description ? (
+                  <React.Fragment>
+                    <Typography color="inherit">{description}</Typography>
+                    {<em>Example: {example}</em>}
+                  </React.Fragment>
+                ) : (
+                  ''
+                ),
                 depends: (props) => id === props.c2_type,
                 validate:
-                  required.toLowerCase() === 'true'
+                  required?.toLowerCase() === 'true'
                     ? Yup.string().when('c2_type', {
                         is: (val) => val === id,
                         then: Yup.string().required('Required'),
@@ -120,17 +151,6 @@ export default () => {
   const filters = useMemo(
     () =>
       createFields([
-        // {
-        //   id: 'c2_id',
-        //   type: FormTypes.Options,
-        //   options:
-        //     types?.results.map(({ name, id }: any) => ({
-        //       id,
-        //       title: `${name} (${id})`,
-        //     })) || [],
-        //   title: 'C2',
-        //   placeholder: 'Select one C2',
-        // },
         {
           id: 'created_since',
           type: FormTypes.Date,
@@ -145,8 +165,15 @@ export default () => {
     [],
   )
 
+  useEffect(() => {
+    setTimeout(() => {
+      setBorder((b) => !b)
+    }, 2500)
+  }, [])
+
   return (
     <Crud
+      noBorder={border}
       showHelpIcon
       response={{
         list: (cList: any) => ({
@@ -154,6 +181,7 @@ export default () => {
           page: cList.current,
           limit: 10,
           totalDocs: cList.count,
+          totalPages: 2,
         }),
         new: (_: any, response: any) => response,
         edit: (_: any, response: any) => response,
@@ -170,7 +198,7 @@ export default () => {
       description="C2 example"
       name="C2"
       actions={{ edit: true, delete: true, pinToTop: true }}
-      url={'http://192.168.102.50:8000/c2/'}
+      url={'/api/c2'}
       filters={filters}
       columns={columns}
       fields={fields}
@@ -203,6 +231,26 @@ export default () => {
         }, {})
         return { ...data, ...options }
       }}
+      detailView={(rowData) => ({
+        sections: [
+          {
+            title: 'Titulo primero',
+            section: [
+              [
+                ['Primer dato', rowData.id],
+                ['Segudno', 'Daleee'],
+              ],
+            ],
+          },
+        ],
+        actions: [
+          <Tooltip title="Descargar">
+            <IconButton onClick={() => alert(JSON.stringify(rowData))}>
+              <FaSave />
+            </IconButton>
+          </Tooltip>,
+        ],
+      })}
     />
   )
 }

@@ -44,8 +44,8 @@ export default forwardRef<ReadOnlyMethods, Props>(({ sections }, ref) => {
     (title: string, data: RenderSectionData) => {
       const renderVal = (val: ValProps) => {
         if (typeof val === 'boolean') {
-          if (val) return <Typography>✔</Typography>
-          else return <Typography>❌</Typography>
+          if (val) return <Typography variant="body2">✔</Typography>
+          else return <Typography variant="body2">❌</Typography>
         }
         if (Array.isArray(val)) {
           return (
@@ -59,7 +59,7 @@ export default forwardRef<ReadOnlyMethods, Props>(({ sections }, ref) => {
           )
         }
         if (React.isValidElement(val)) return val
-        return <Typography>{val || '-'}</Typography>
+        return <Typography variant="body2">{val || '-'}</Typography>
       }
 
       return (
@@ -71,7 +71,7 @@ export default forwardRef<ReadOnlyMethods, Props>(({ sections }, ref) => {
             <div key={i} className={classes.textRoot}>
               {inner.map((col) => (
                 <div key={col[0] as string} className={classes.inner}>
-                  <Typography className={classes.titulo}>{`${col[0]}:`}</Typography>
+                  <Typography variant="body2" className={classes.titulo}>{`${col[0]}:`}</Typography>
                   {renderVal(col[1])}
                 </div>
               ))}

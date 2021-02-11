@@ -23,7 +23,11 @@ interface Props extends Partial<ListChildComponentProps> {
   onDelete?: false | ((rowData: any) => void)
   onPinToTop?: false | ((row: any, exists: boolean) => void)
   onDetail?: (row: any) => void
-  onClickRow?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, rowData: any) => void
+  onClickRow?: (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    rowData: any,
+    index: number,
+  ) => void
   showSelecting?: boolean
   isHeader?: boolean
   fields?: FieldProps[]
@@ -61,7 +65,7 @@ export default memo((props: Props) => {
   const { list, insertIndex, removeIndex, itemId, pins, removePins } = useABM()
   const lang = useLang()
   const rowData = useMemo(() => list[index], [list, index])
-  const classes = useClasses({ index, height: rowHeight, isChild: rowData?.child })
+  const classes = useClasses({ index, height: rowHeight, isChild: rowData?.child, onClickRow })
 
   const renderContent = useCallback(() => {
     if (isHeader) {
@@ -160,6 +164,7 @@ export default memo((props: Props) => {
       !fields &&
       !steps &&
       !onDetail &&
+      !onDelete &&
       !onPinToTop &&
       (!extraActions || (extraActions && extraActions.length === 0))
     )
@@ -178,7 +183,7 @@ export default memo((props: Props) => {
         rowIndex={index}>
         {extraActions && extraActions(rowData)}
         {onPinToTop && (
-          <Tooltip title={lang.pinToTop}>
+          <Tooltip title={lang.pinToTop} aria-label={AriaLabels.Actions.PinTopButton}>
             <IconButton
               size="small"
               onClick={(e) => {
@@ -190,7 +195,7 @@ export default memo((props: Props) => {
           </Tooltip>
         )}
         {onDetail && (
-          <Tooltip title={lang.seeDetail}>
+          <Tooltip title={lang.seeDetail} aria-label={AriaLabels.Actions.DetailButton}>
             <IconButton
               size="small"
               onClick={(e) => {
@@ -201,8 +206,8 @@ export default memo((props: Props) => {
             </IconButton>
           </Tooltip>
         )}
-        {onEdit && (
-          <Tooltip title={lang.edit}>
+        {onEdit && (fields || steps) && (
+          <Tooltip title={lang.edit} aria-label={AriaLabels.Actions.EditButton}>
             <IconButton
               size="small"
               onClick={(e) => {
@@ -214,7 +219,7 @@ export default memo((props: Props) => {
           </Tooltip>
         )}
         {onDelete && (
-          <Tooltip title={lang.delete}>
+          <Tooltip title={lang.delete} aria-label={AriaLabels.Actions.DelButton}>
             <IconButton
               size="small"
               onClick={(e) => {
@@ -252,7 +257,7 @@ export default memo((props: Props) => {
   return (
     <TableRow
       onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
-        onClickRow && onClickRow(event, rowData)
+        onClickRow && onClickRow(event, rowData, index)
       }
       aria-label={isHeader ? AriaLabels.RowHeader : AriaLabels.RowContent}
       component="div"
@@ -266,10 +271,11 @@ export default memo((props: Props) => {
 }, compareKeysOmit(['onDelete', 'onEdit', 'onExpanded', 'onSelect', 'onSort', 'onDetail', 'onClickRow']))
 
 const useClasses = makeStyles((theme) => ({
-  row: ({ index, isChild }: any) => ({
+  row: ({ index, isChild, onClickRow }: any) => ({
     display: 'flex',
     alignItems: isChild ? 'center' : undefined,
     backgroundColor:
       index % 2 !== 0 ? undefined : theme.palette.grey[theme.palette.type === 'dark' ? 600 : 200],
+    cursor: onClickRow ? 'pointer' : undefined,
   }),
 }))

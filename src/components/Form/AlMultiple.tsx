@@ -36,7 +36,7 @@ export default memo((props: AlMultipleProps) => {
     <BaseInput grow={grow} ocultar={hide} keepMounted={keepMounted}>
       <Paper elevation={0}>
         <div className={classes.headerContainer}>
-          <Typography variant="body1">{`${title} (${valFinal?.length})`}</Typography>
+          <Typography variant="body2">{`${title} (${valFinal?.length})`}</Typography>
           {!isOnlyTitle && (
             <IconButton
               disabled={loading}
@@ -122,7 +122,11 @@ export default memo((props: AlMultipleProps) => {
             )}
           </div>
         ))}
-        {error && <Typography className={classes.error}>{error}</Typography>}
+        {error && (
+          <Typography variant="body2" className={classes.error}>
+            {error}
+          </Typography>
+        )}
       </Paper>
     </BaseInput>
   )

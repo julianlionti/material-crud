@@ -1,3 +1,4 @@
+import { ReactNode } from 'react'
 import * as Yup from 'yup'
 import { AlAutocompleteProps } from './AlAutocomplete'
 import { AlCustomProps } from './AlCustom'
@@ -39,12 +40,13 @@ export interface OpcionesProps {
 export interface BaseProps {
   id: string
   title: string
+  defaultValue?: any
 }
 
 export interface ComunesProps extends BaseProps {
   validate?: Yup.Schema<any>
   grow?: number
-  help?: string
+  help?: string | ReactNode
   loading?: boolean
   readonly?: boolean | 'new' | 'edit'
   depends?: (props: any) => boolean

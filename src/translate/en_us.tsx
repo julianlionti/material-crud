@@ -41,8 +41,9 @@ export const enUS = createTranslation({
   pagination: {
     all: 'All',
     rowsPerPage: 'Items per page',
-    totalCount: 'Total Items',
     page: 'Page',
+    showing: 'Showing',
+    of: 'of',
   },
   inputs: {
     image: {
@@ -52,6 +53,11 @@ export const enUS = createTranslation({
     file: {
       new: 'Click on the icon to upload a file.',
       edit: 'Click on HERE to edit it.',
+    },
+    drop: {
+      title: 'Be careful! ⚠',
+      description: 'Are you sure you want to delete the file?',
+      help: 'Click HERE or drag a FILE',
     },
   },
   dialog: {

@@ -2,12 +2,12 @@ import React, {
   useState,
   useEffect,
   useRef,
-  ReactNode,
   useCallback,
   memo,
   useMemo,
   forwardRef,
   useImperativeHandle,
+  ReactNode,
 } from 'react'
 import {
   Collapse,
@@ -25,6 +25,7 @@ import { serialize } from 'object-to-formdata'
 import qs from 'qs'
 import { FaSave, FaShareAlt, FaTimes } from 'react-icons/fa'
 import { compareKeysOmit } from '../../utils/addOns'
+import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 import { ABMResponse, PaginationProps, ReplaceProps, useABM } from '../../utils/DataContext'
 import useAxios, { CallProps, Error } from '../../utils/useAxios'
@@ -80,13 +81,15 @@ export interface CrudProps extends TableProps {
   big?: boolean
   logicalDeleteCol?: string
   noFilterOptions?: boolean
-  detailView?: {
-    sections: (rowData: any) => ReadOnlyConf[]
-    onShare?: (rowData: any) => void
-    onDownload?: () => void
+  detailView?: (
+    rowData: any,
+  ) => {
+    sections: ReadOnlyConf[]
+    actions?: ReactNode[]
   }
   onClickRow?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, rowData: any) => void
   showHelpIcon?: boolean
+  noBorder?: boolean
 }
 
 interface DataCallProps {
@@ -189,6 +192,8 @@ export interface RefProps extends ABMResponse<any> {
   refresh: () => Promise<void>
 }
 
+export const createResponseConf = (props: ResponseProps) => props
+
 export default memo(
   forwardRef<RefProps, CrudProps>((props, ref) => {
     const lastFilter = useRef<any>({})
@@ -225,7 +230,7 @@ export default memo(
     const [cartel, setCartel] = useState<CartelState>({ visible: false })
     const [toolbar, setToolbar] = useState(false)
     const [editObj, setEditObj] = useState<object | null>(null)
-    const [detailConf, setDetailConf] = useState<ReadOnlyConf[] | null>(null)
+    const [detailConf, setDetailConf] = useState<any | null>(null)
 
     const editing = useMemo(() => (editObj ? Object.keys(editObj).length > 0 : false), [editObj])
 
@@ -336,6 +341,11 @@ export default memo(
       }
     }, [getDataCall, interactions])
 
+    const renderActionsDetail = useCallback(() => {
+      if (!detailView || !detailConf) return null
+      return detailView(detailConf).actions
+    }, [detailView, detailConf])
+
     if (columns.length === 0) {
       return <Typography>No están configuradas las columnas</Typography>
     }
@@ -386,7 +396,7 @@ export default memo(
             getDataCall(lastFilter.current)
           }}
         />
-        {loading && <LinearProgress />}
+        {loading && <LinearProgress aria-label={AriaLabels.LoadingTable} />}
         <Collapse in={!editObj} timeout="auto" unmountOnExit>
           <AlTable
             {...props}
@@ -402,15 +412,13 @@ export default memo(
               getDataCall({
                 ...interactions,
                 ...lastFilter.current,
-                [interaction?.page || lang.pagination?.page || 'page']: page,
-                [interaction?.perPage || lang.pagination?.rowsPerPage || 'perPage']: perPage,
+                [interaction?.page || 'page']: page,
+                [interaction?.perPage || 'perPage']: perPage,
               })
             }}
             onEdit={(rowData) => onEditCall(rowData)}
             onDelete={(rowData) => onDeleteCall(rowData)}
-            onDetail={
-              detailView ? (rowData) => setDetailConf(detailView.sections(rowData)) : undefined
-            }
+            onDetail={detailView ? (rowData) => setDetailConf(rowData) : undefined}
           />
         </Collapse>
         {(fields || steps) && (
@@ -427,6 +435,7 @@ export default memo(
               } ${name}`}
               subtitle={description}>
               <Formulario
+                isEditing={editing}
                 showHelpIcon={showHelpIcon}
                 intials={editObj}
                 loading={loading}
@@ -456,23 +465,7 @@ export default memo(
               <Typography variant="h6" className={classes.title}>
                 {`${lang.detailOf} ${name}`}
               </Typography>
-              {detailView?.onShare && (
-                <Tooltip title={lang.share}>
-                  <IconButton edge="start" color="inherit" onClick={() => setDetailConf(null)}>
-                    <FaShareAlt />
-                  </IconButton>
-                </Tooltip>
-              )}
-              {detailView?.onDownload && (
-                <Tooltip title={lang.download}>
-                  <IconButton
-                    edge="start"
-                    color="inherit"
-                    onClick={() => readOnlyRef.current?.generatePDF()}>
-                    <FaSave />
-                  </IconButton>
-                </Tooltip>
-              )}
+              {renderActionsDetail()}
               <Tooltip title={lang.close}>
                 <IconButton
                   className={classes.closeIcon}
@@ -484,7 +477,12 @@ export default memo(
               </Tooltip>
             </MuiToolbar>
           </AppBar>
-          <ReadOnly ref={(e) => (readOnlyRef.current = e)} sections={detailConf} />
+          {detailView && detailConf && (
+            <ReadOnly
+              ref={(e) => (readOnlyRef.current = e)}
+              sections={detailView(detailConf).sections}
+            />
+          )}
         </MuiDialog>
         <Dialog
           show={cartel.visible}

@@ -1,4 +1,4 @@
-import { Chip } from '@material-ui/core'
+import { Chip, IconButton, Tooltip } from '@material-ui/core'
 import {
   createColumns,
   createFields,
@@ -9,6 +9,7 @@ import {
   useWindowSize,
 } from 'material-crud'
 import React, { useMemo } from 'react'
+import { FaSave } from 'react-icons/fa'
 
 export interface Asistencia {
   _id: string
@@ -90,10 +91,8 @@ export default () => {
       height={height - 100}
       interaction={{ page: 'pagina', perPage: 'porPagina', filter: 'filtros', sort: 'orden' }}
       onError={(error) => console.log(error)}
-      detailView={{
-        onDownload: () => {},
-        onShare: () => {},
-        sections: (rowdata) => [
+      detailView={(rowdata) => ({
+        sections: [
           {
             title: 'Contacto solicitante',
             section: [
@@ -108,7 +107,7 @@ export default () => {
             ],
           },
         ],
-      }}
+      })}
     />
   )
 }

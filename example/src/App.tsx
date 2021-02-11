@@ -1,10 +1,10 @@
 import React from 'react'
 import { BrowserRouter, Switch, Route, Link } from 'react-router-dom'
-import FormExample from './FormExample'
+import FormExample from './screens/FormExample'
 import { CrudProvider } from 'material-crud'
 import Prueba from './Prueba'
 import TableExample from './TableExample'
-import { english } from './lang'
+import { english, spanish } from './lang'
 import CrudTable from './CrudTable'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core'
 import Desarrollo from './screens/Desarrollo'
@@ -14,14 +14,15 @@ const App = () => {
   const user = {
     id: 'sadasd',
     name: 'tano',
-    token:
-      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1ZmFjNzY4YWJkNzI2NzJjMThlZTdhYzYiLCJpYXQiOjE2MDYzMTg4MDMsImV4cCI6MTYwNzYxNDgwM30.etu--UFHy3B5YNuRZFHXj893b4vOoEanUMqLJmo1rPE',
+    // token:
+    //   'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1ZmFjNzY4YWJkNzI2NzJjMThlZTdhYzYiLCJpYXQiOjE2MDYzMTg4MDMsImV4cCI6MTYwNzYxNDgwM30.etu--UFHy3B5YNuRZFHXj893b4vOoEanUMqLJmo1rPE',
+    token: 'Bearer cd2d52c3d6ddd8d4c538f03c4e282397c3f51718',
   }
 
   return (
     <ThemeProvider theme={createMuiTheme({ palette: { type: 'light' } })}>
       <CrudProvider
-        lang={english}
+        lang={spanish}
         user={user}
         headers={{
           Authorization: user.token,

@@ -39,12 +39,14 @@ export interface Translations {
   pagination?: {
     all: string
     rowsPerPage: string
-    totalCount: string
     page: string
+    showing: string
+    of: string
   }
-  inputs?: {
+  inputs: {
     image: { new: string; edit: string }
     file: { new: string; edit: string }
+    drop: { title: string; description: string; help: string }
   }
   dialog?: { cancel: string; accept: string }
   serverError: string

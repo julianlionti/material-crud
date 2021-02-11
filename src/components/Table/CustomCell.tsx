@@ -2,6 +2,7 @@ import React, { memo, PropsWithChildren, ReactNode, useCallback, useMemo } from 
 import { Avatar, makeStyles, TableCell, Tooltip, Typography } from '@material-ui/core'
 import moment from 'moment'
 import { FaCheck, FaTimes } from 'react-icons/fa'
+import AriaLabels from '../../utils/AriaLabels'
 import { useABM } from '../../utils/DataContext'
 import { ColumnsProps, TableTypes } from './TableTypes'
 
@@ -18,8 +19,14 @@ interface Props {
 
 export default memo((props: PropsWithChildren<Props>) => {
   const { children, rowHeight, col, rowIndex, onExpand, expanded, isChild, horizontal } = props
-  const classes = useClasses({ width: col?.width, align: col?.align, isChild, horizontal })
-  const { list } = useABM()
+  const { list, noBorder } = useABM()
+  const classes = useClasses({
+    width: col?.width,
+    align: col?.align,
+    isChild,
+    horizontal,
+    noBorder,
+  })
   const rowData = list[rowIndex]
   const cellData = useMemo(() => {
     if (col && col.id) return rowData[col.id]
@@ -81,20 +88,25 @@ export default memo((props: PropsWithChildren<Props>) => {
   }, [cellData, col, rowHeight, children, onExpand, expanded, rowData])
 
   return (
-    <TableCell component="div" variant="body" className={classes.cell}>
+    <TableCell
+      component="div"
+      variant="body"
+      className={classes.cell}
+      aria-label={AriaLabels.CellContent}>
       {renderContent()}
     </TableCell>
   )
 })
 
 const useClasses = makeStyles((theme) => ({
-  cell: ({ width, align, isChild, horizontal }: any) => ({
+  cell: ({ width, align, isChild, horizontal, noBorder }: any) => ({
     flex: 1,
     flexDirection: horizontal ? 'row' : 'column',
     flexGrow: width,
     display: 'flex',
     alignItems: horizontal ? (isChild ? 'start' : 'center') : align || 'flex-start',
     justifyContent: horizontal ? align || 'flex-start' : isChild ? 'start' : 'center',
+    border: noBorder === false ? '1px solid #dee2e6' : undefined,
 
     overflow: 'hidden',
     textOverflow: 'ellipsis',

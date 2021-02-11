@@ -8,6 +8,8 @@ import React, {
   useEffect,
   useState,
 } from 'react'
+// import { createFields } from '../components/Form'
+// import { createColumns, createExtraActions } from '../components/Table'
 import { Translations } from '../translate'
 import { enUS } from '../translate/en_us'
 
@@ -33,7 +35,7 @@ const CrudContext = createContext<[Context, Dispatch<SetStateAction<Context>>]>(
 export const CrudProvider = <T extends any>(props: ProviderProps<T>) => {
   const { children, onUser, headers, ...context } = props
   const state = useState<Context<T>>({ ...context, lang: context.lang || enUS, headers })
-  const [conf, setConf] = state
+  const [, setConf] = state
 
   const [{ user }] = state
   useEffect(() => {
@@ -56,6 +58,19 @@ export const useLang = () => {
   const [configuration] = useContext(CrudContext)
   return configuration.lang
 }
+
+/*
+export const useCrud = () => {
+  const createExtraActionsCall = useCallback(createExtraActions, [])
+  const createColumnsCall = useCallback(createColumns, [])
+  const createFieldsCall = useCallback(createFields, [])
+
+  return {
+    createExtraActions: createExtraActionsCall,
+    createColumns: createColumnsCall,
+    createFields: createFieldsCall,
+  }
+} */
 
 export const useUser = <T extends any = any>() => {
   const [configuration, setConfiguration] = useContext(CrudContext)
