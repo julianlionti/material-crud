@@ -15,7 +15,7 @@ import { esAR } from './translate/es_ar'
 import { CrudProvider, useUser, useLang } from './utils/CrudContext'
 import { DataProvider, useABM } from './utils/DataContext'
 import Storage from './utils/Storage'
-import useAxios, { callWs } from './utils/useAxios'
+import useAxios, { useAxiosAr, callWs } from './utils/useAxios'
 import useWindowSize from './utils/useWindowSize'
 
 export type { CustomComponentProps } from './components/Form/AlCustom'
@@ -31,6 +31,7 @@ export {
   DataProvider,
   useABM,
   useAxios,
+  useAxiosAr,
   callWs,
   useWindowSize,
   createSteps,

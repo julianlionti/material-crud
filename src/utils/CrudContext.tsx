@@ -35,7 +35,7 @@ const CrudContext = createContext<[Context, Dispatch<SetStateAction<Context>>]>(
 export const CrudProvider = <T extends any>(props: ProviderProps<T>) => {
   const { children, onUser, headers, ...context } = props
   const state = useState<Context<T>>({ ...context, lang: context.lang || enUS, headers })
-  const [conf, setConf] = state
+  const [, setConf] = state
 
   const [{ user }] = state
   useEffect(() => {
