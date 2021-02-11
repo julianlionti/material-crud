@@ -8,6 +8,8 @@ import React, {
   forwardRef,
   useImperativeHandle,
   ReactNode,
+  Suspense,
+  lazy,
 } from 'react'
 import {
   Collapse,
@@ -19,24 +21,29 @@ import {
   Toolbar as MuiToolbar,
   IconButton,
   Tooltip,
+  CircularProgress,
 } from '@material-ui/core'
 
 import { serialize } from 'object-to-formdata'
 import qs from 'qs'
-import { FaSave, FaShareAlt, FaTimes } from 'react-icons/fa'
+import { FaTimes } from 'react-icons/fa'
 import { compareKeysOmit } from '../../utils/addOns'
 import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 import { ABMResponse, PaginationProps, ReplaceProps, useABM } from '../../utils/DataContext'
 import useAxios, { CallProps, Error } from '../../utils/useAxios'
-import Formulario from '../Form'
+import Form from '../Form'
 import { Interactions, FieldProps, StepProps } from '../Form/FormTypes'
-import ReadOnly, { ReadOnlyConf, ReadOnlyMethods } from '../Form/ReadOnly'
-import AlTable from '../Table/index'
+import { ReadOnlyConf, ReadOnlyMethods } from '../Form/ReadOnly'
+
 import { ColumnsProps, TableProps } from '../Table/TableTypes'
 import CenteredCard from '../UI/CenteredCard'
 import Dialog, { CartelState, Transition } from '../UI/Dialog'
-import Toolbar, { MoreOptionsProps } from './Toolbar'
+import { MoreOptionsProps } from './Toolbar'
+
+const Toolbar = lazy(() => import('./Toolbar'))
+const AlTable = lazy(() => import('../Table'))
+const ReadOnly = lazy(() => import('../Form/ReadOnly'))
 
 interface OnFlyResponse extends PaginationProps {
   items: any[]
@@ -352,75 +359,79 @@ export default memo(
 
     return (
       <div className={classes.contenedor}>
-        <Toolbar
-          fields={fields}
-          filters={filters}
-          steps={steps}
-          hide={noTitle || (!filters && !fields)}
-          editObj={editObj}
-          Left={Left}
-          onNew={() => setEditObj({})}
-          noTitle={noTitle}
-          gender={gender}
-          title={title}
-          loading={loading}
-          moreOptions={moreOptions}
-          name={name}
-          big={big}
-          show={toolbar}
-          titleSize={titleSize}
-          noFilterOptions={noFilterOptions}
-          handleShow={() => {
-            setToolbar((t) => {
-              const final = !t
-              if (!final) {
-                lastFilter.current = {
-                  ...lastFilter.current,
-                  [interaction?.filter || 'filter']: {},
-                  [interaction?.page || 'page']: 1,
-                }
-                // getDataCall(lastFilter.current)
-              }
-              return final
-            })
-          }}
-          onFilter={(filters) => {
-            let finalFilters = filters
-            if (transformFilter) finalFilters = transformFilter(filters)
-
-            lastFilter.current = {
-              ...lastFilter.current,
-              [interaction?.filter || 'filter']: finalFilters,
-              [interaction?.page || 'page']: 1,
-            }
-            getDataCall(lastFilter.current)
-          }}
-        />
-        {loading && <LinearProgress aria-label={AriaLabels.LoadingTable} />}
-        <Collapse in={!editObj} timeout="auto" unmountOnExit>
-          <AlTable
-            {...props}
+        <Suspense fallback={<LinearProgress />}>
+          <Toolbar
+            fields={fields}
+            filters={filters}
+            steps={steps}
+            hide={noTitle || (!filters && !fields)}
+            editObj={editObj}
+            Left={Left}
+            onNew={() => setEditObj({})}
+            noTitle={noTitle}
+            gender={gender}
+            title={title}
             loading={loading}
-            onSort={(newSort) => {
-              lastFilter.current = {
-                ...lastFilter.current,
-                [interaction?.sort || 'sort']: newSort,
-              }
-              getDataCall({ ...interactions, ...lastFilter.current })
-            }}
-            onChangePagination={(page, perPage) => {
-              getDataCall({
-                ...interactions,
-                ...lastFilter.current,
-                [interaction?.page || 'page']: page,
-                [interaction?.perPage || 'perPage']: perPage,
+            moreOptions={moreOptions}
+            name={name}
+            big={big}
+            show={toolbar}
+            titleSize={titleSize}
+            noFilterOptions={noFilterOptions}
+            handleShow={() => {
+              setToolbar((t) => {
+                const final = !t
+                if (!final) {
+                  lastFilter.current = {
+                    ...lastFilter.current,
+                    [interaction?.filter || 'filter']: {},
+                    [interaction?.page || 'page']: 1,
+                  }
+                  // getDataCall(lastFilter.current)
+                }
+                return final
               })
             }}
-            onEdit={(rowData) => onEditCall(rowData)}
-            onDelete={(rowData) => onDeleteCall(rowData)}
-            onDetail={detailView ? (rowData) => setDetailConf(rowData) : undefined}
+            onFilter={(filters) => {
+              let finalFilters = filters
+              if (transformFilter) finalFilters = transformFilter(filters)
+
+              lastFilter.current = {
+                ...lastFilter.current,
+                [interaction?.filter || 'filter']: finalFilters,
+                [interaction?.page || 'page']: 1,
+              }
+              getDataCall(lastFilter.current)
+            }}
           />
-        </Collapse>
+        </Suspense>
+        {loading && <LinearProgress aria-label={AriaLabels.LoadingTable} />}
+        <Suspense fallback={<CircularProgress />}>
+          <Collapse in={!editObj} timeout="auto" unmountOnExit>
+            <AlTable
+              {...props}
+              loading={loading}
+              onSort={(newSort) => {
+                lastFilter.current = {
+                  ...lastFilter.current,
+                  [interaction?.sort || 'sort']: newSort,
+                }
+                getDataCall({ ...interactions, ...lastFilter.current })
+              }}
+              onChangePagination={(page, perPage) => {
+                getDataCall({
+                  ...interactions,
+                  ...lastFilter.current,
+                  [interaction?.page || 'page']: page,
+                  [interaction?.perPage || 'perPage']: perPage,
+                })
+              }}
+              onEdit={(rowData) => onEditCall(rowData)}
+              onDelete={(rowData) => onDeleteCall(rowData)}
+              onDetail={detailView ? (rowData) => setDetailConf(rowData) : undefined}
+            />
+          </Collapse>
+        </Suspense>
         {(fields || steps) && (
           <Collapse in={!!editObj} timeout="auto" unmountOnExit>
             <CenteredCard
@@ -434,7 +445,7 @@ export default memo(
                   : `Nuev${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
               } ${name}`}
               subtitle={description}>
-              <Formulario
+              <Form
                 isEditing={editing}
                 showHelpIcon={showHelpIcon}
                 intials={editObj}
@@ -477,12 +488,14 @@ export default memo(
               </Tooltip>
             </MuiToolbar>
           </AppBar>
-          {detailView && detailConf && (
-            <ReadOnly
-              ref={(e) => (readOnlyRef.current = e)}
-              sections={detailView(detailConf).sections}
-            />
-          )}
+          <Suspense fallback={<CircularProgress />}>
+            {detailView && detailConf && (
+              <ReadOnly
+                ref={(e) => (readOnlyRef.current = e)}
+                sections={detailView(detailConf).sections}
+              />
+            )}
+          </Suspense>
         </MuiDialog>
         <Dialog
           show={cartel.visible}

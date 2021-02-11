@@ -1,15 +1,6 @@
-import { Chip, IconButton, Tooltip } from '@material-ui/core'
-import {
-  createColumns,
-  createFields,
-  Crud,
-  FormTypes,
-  TableTypes,
-  useAxios,
-  useWindowSize,
-} from 'material-crud'
+import { Chip } from '@material-ui/core'
+import { createColumns, Crud, TableTypes, useWindowSize } from 'material-crud'
 import React, { useMemo } from 'react'
-import { FaSave } from 'react-icons/fa'
 
 export interface Asistencia {
   _id: string
@@ -18,7 +9,6 @@ export interface Asistencia {
 
 export default () => {
   const { height } = useWindowSize()
-  const { response, call } = useAxios()
 
   const columns = useMemo(
     () =>
@@ -50,27 +40,6 @@ export default () => {
         },
       ]),
     [],
-  )
-
-  const fields = useMemo(
-    () =>
-      createFields([
-        { id: 'usuario', title: 'Usuario', type: FormTypes.Input },
-        { id: 'activo', title: 'Activo', type: FormTypes.Switch, new: false },
-        {
-          id: 'busqueda',
-          title: 'Buscar por apellido',
-          type: FormTypes.Autocomplete,
-          options: response?.map((e: any) => ({ id: e.Login, title: `${e.NombreCompleto}` })) || [],
-          onChangeText: (apellido) => {
-            call({ url: 'http://localhost:5050/api/servicios/usuariosAD', params: { apellido } })
-          },
-          onSelect: (val, { setValues }) => {
-            setValues({ usuario: 'sarasa' })
-          },
-        },
-      ]),
-    [response],
   )
 
   return (
