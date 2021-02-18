@@ -44,7 +44,7 @@ interface OnFlyResponse extends PaginationProps {
   items: any[]
 }
 
-interface ResponseProps {
+export interface ResponseProps {
   list: (data: any) => OnFlyResponse
   new?: (data: any, responseWs?: any) => any
   edit?: (data: any, responseWs?: any) => any
