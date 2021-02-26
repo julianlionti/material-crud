@@ -13,7 +13,7 @@ import {
   makeStyles,
 } from '@material-ui/core'
 import { useField, useFormikContext } from 'formik'
-import { FaExclamationCircle, FaEye, FaEyeSlash, FaQuestionCircle } from 'react-icons/fa'
+import { FaExclamationCircle, FaEye, FaEyeSlash } from 'react-icons/fa'
 import { compareKeys } from '../../utils/addOns'
 import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
@@ -73,13 +73,14 @@ export default memo((props: AlInputProps) => {
   const valMax = validate?.describe().tests.find((e) => e.name === 'max')?.params.max
 
   const disabled = useMemo(() => {
+    if (typeof readonly === 'function') return readonly(formik.values)
     if (typeof readonly === 'boolean') return readonly
 
     if (isEditing && readonly === 'edit') return true
     if (!isEditing && readonly === 'new') return true
 
     return false
-  }, [readonly, isEditing])
+  }, [readonly, isEditing, formik.values])
 
   const finalTitle = useMemo<string>(() => {
     if (filter && title) {
