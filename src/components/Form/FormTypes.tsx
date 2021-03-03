@@ -48,7 +48,7 @@ export interface ComunesProps extends BaseProps {
   grow?: number
   help?: string | ReactNode
   loading?: boolean
-  readonly?: boolean | 'new' | 'edit'
+  readonly?: boolean | 'new' | 'edit' | ((props: any) => boolean)
   depends?: (props: any) => boolean
   keepMounted?: boolean
   hide?: boolean

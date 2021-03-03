@@ -1,5 +1,6 @@
-import React, { ReactNode, useCallback } from 'react'
+import React, { forwardRef, ReactNode, useCallback, useImperativeHandle } from 'react'
 import { Card, Chip, Divider, makeStyles, Typography } from '@material-ui/core'
+import JsPDF from 'jspdf'
 
 type ValProps = string[] | string | number | boolean | ReactNode
 type RenderSectionData = ValProps[][][]
@@ -9,18 +10,42 @@ export interface ReadOnlyConf {
 }
 
 interface Props {
-  configuration: null | ReadOnlyConf[]
+  sections: null | ReadOnlyConf[]
 }
 
-export default ({ configuration }: Props) => {
+export interface ReadOnlyMethods {
+  generatePDF: () => void
+}
+
+export default forwardRef<ReadOnlyMethods, Props>(({ sections }, ref) => {
   const classes = useClasses()
+
+  const generatePDF = useCallback(() => {
+    const doc = new JsPDF({ unit: 'mm' })
+    if (!sections) return
+
+    console.log(sections)
+    sections.forEach((sec) => {
+      doc.text(sec.title, 10, 10)
+      sec.section.forEach((col, i) => {
+        const cols = 210 / col.length
+        const [title, val] = col
+        if (typeof title === 'string') doc.text(title, 10, 30 + 15 * i)
+        console.log(col, cols)
+      })
+      console.log(sec.section)
+    })
+    doc.save('sarasa.pdf')
+  }, [sections])
+
+  useImperativeHandle(ref, () => ({ generatePDF }))
 
   const renderSection = useCallback(
     (title: string, data: RenderSectionData) => {
       const renderVal = (val: ValProps) => {
         if (typeof val === 'boolean') {
-          if (val) return <Typography>✔</Typography>
-          else return <Typography>❌</Typography>
+          if (val) return <Typography variant="body2">✔</Typography>
+          else return <Typography variant="body2">❌</Typography>
         }
         if (Array.isArray(val)) {
           return (
@@ -34,7 +59,7 @@ export default ({ configuration }: Props) => {
           )
         }
         if (React.isValidElement(val)) return val
-        return <Typography>{val || '-'}</Typography>
+        return <Typography variant="body2">{val || '-'}</Typography>
       }
 
       return (
@@ -46,7 +71,7 @@ export default ({ configuration }: Props) => {
             <div key={i} className={classes.textRoot}>
               {inner.map((col) => (
                 <div key={col[0] as string} className={classes.inner}>
-                  <Typography className={classes.titulo}>{`${col[0]}:`}</Typography>
+                  <Typography variant="body2" className={classes.titulo}>{`${col[0]}:`}</Typography>
                   {renderVal(col[1])}
                 </div>
               ))}
@@ -60,13 +85,13 @@ export default ({ configuration }: Props) => {
   )
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} id="DetailView">
       <Card variant="outlined" className={classes.cardRoot}>
-        {configuration?.map((e) => renderSection(e.title, e.section))}
+        {sections?.map((e) => renderSection(e.title, e.section))}
       </Card>
     </div>
   )
-}
+})
 
 const useClasses = makeStyles((theme) => ({
   root: {

@@ -3,6 +3,8 @@ import { createTranslation } from './index'
 export const esAR = createTranslation({
   listOf: 'Listado de',
   detailOf: 'Detalle de',
+  download: 'Descargar',
+  share: 'Compartir',
   seeDetail: 'Ver detalle',
   pinToTop: 'Mantener arriba',
   add: 'Agregar nuev',
@@ -52,6 +54,11 @@ export const esAR = createTranslation({
     file: {
       new: 'Haga click en la Icono para subir un Archivo.',
       edit: 'Haga click ACA para editarlo.',
+    },
+    drop: {
+      title: 'Atención! ⚠',
+      description: 'Está seguro que desea eliminar el archivo?',
+      help: 'Haga click ACA o arrastre un ARCHIVO',
     },
   },
   dialog: {

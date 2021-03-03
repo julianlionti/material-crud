@@ -1,6 +1,8 @@
 export interface Translations {
   listOf: string
   detailOf: string
+  download: string
+  share: string
   seeDetail: string
   pinToTop: string
   new: string
@@ -41,9 +43,10 @@ export interface Translations {
     showing: string
     of: string
   }
-  inputs?: {
+  inputs: {
     image: { new: string; edit: string }
     file: { new: string; edit: string }
+    drop: { title: string; description: string; help: string }
   }
   dialog?: { cancel: string; accept: string }
   serverError: string

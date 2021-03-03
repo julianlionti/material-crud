@@ -69,7 +69,13 @@ export const callWs = async <T extends any>(
   } catch (ex) {
     const { response } = ex as AxiosError<ErrorResponse>
     if (response?.status === 500) {
-      error = { error: { code: 500, message: lang?.serverError || 'Error en el servidor' } }
+      const fal = response as any
+      error = {
+        error: {
+          code: fal.data?.statusCode || 500,
+          message: fal.data?.code || lang?.serverError || 'Error en el servidor',
+        },
+      }
     } else {
       error = response?.data || { error: { code: 501, message: 'Error' } }
     }
@@ -79,7 +85,7 @@ export const callWs = async <T extends any>(
   return { error, response, status }
 }
 
-export default <T extends any = any>(props?: UseAxiosProps): Response<T> => {
+const useAxios = <T extends any = any>(props?: UseAxiosProps): Response<T> => {
   const { onInit, onError } = props || {}
   const onInitRef = useRef(false)
   const calling = useRef(false)
@@ -132,3 +138,19 @@ export default <T extends any = any>(props?: UseAxiosProps): Response<T> => {
 
   return { call, clean, ...state }
 }
+
+type ResponseProps<T> = [
+  T | undefined,
+  boolean,
+  CallProps,
+  () => void,
+  number | undefined,
+  ErrorResponse | undefined,
+]
+
+export const useAxiosAr = <T extends any>(props?: UseAxiosProps): ResponseProps<T> => {
+  const { call, response, loading, status, error, clean } = useAxios<T>(props)
+  return [response, !!loading, call, clean, status, error]
+}
+
+export default useAxios

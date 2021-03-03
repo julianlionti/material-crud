@@ -2,13 +2,14 @@ import React, {
   useState,
   useEffect,
   useRef,
-  ReactNode,
   useCallback,
   memo,
   useMemo,
   forwardRef,
   useImperativeHandle,
+  ReactNode,
 } from 'react'
+
 import {
   Collapse,
   makeStyles,
@@ -18,6 +19,7 @@ import {
   AppBar,
   Toolbar as MuiToolbar,
   IconButton,
+  Tooltip,
 } from '@material-ui/core'
 
 import { serialize } from 'object-to-formdata'
@@ -28,10 +30,11 @@ import AriaLabels from '../../utils/AriaLabels'
 import { useLang } from '../../utils/CrudContext'
 import { ABMResponse, PaginationProps, ReplaceProps, useABM } from '../../utils/DataContext'
 import useAxios, { CallProps, Error } from '../../utils/useAxios'
-import Formulario from '../Form'
+import Form from '../Form'
 import { Interactions, FieldProps, StepProps } from '../Form/FormTypes'
-import ReadOnly, { ReadOnlyConf } from '../Form/ReadOnly'
-import AlTable from '../Table/index'
+import ReadOnly, { ReadOnlyConf, ReadOnlyMethods } from '../Form/ReadOnly'
+
+import Table from '../Table'
 import { ColumnsProps, TableProps } from '../Table/TableTypes'
 import CenteredCard from '../UI/CenteredCard'
 import Dialog, { CartelState, Transition } from '../UI/Dialog'
@@ -41,7 +44,7 @@ interface OnFlyResponse extends PaginationProps {
   items: any[]
 }
 
-interface ResponseProps {
+export interface ResponseProps {
   list: (data: any) => OnFlyResponse
   new?: (data: any, responseWs?: any) => any
   edit?: (data: any, responseWs?: any) => any
@@ -80,8 +83,15 @@ export interface CrudProps extends TableProps {
   big?: boolean
   logicalDeleteCol?: string
   noFilterOptions?: boolean
-  detailView?: (rowData: any) => ReadOnlyConf[]
+  detailView?: (
+    rowData: any,
+  ) => {
+    sections: ReadOnlyConf[]
+    actions?: ReactNode[]
+  }
+  onClickRow?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, rowData: any) => void
   showHelpIcon?: boolean
+  noBorder?: boolean
 }
 
 interface DataCallProps {
@@ -189,6 +199,7 @@ export const createResponseConf = (props: ResponseProps) => props
 export default memo(
   forwardRef<RefProps, CrudProps>((props, ref) => {
     const lastFilter = useRef<any>({})
+    const readOnlyRef = useRef<ReadOnlyMethods | null>(null)
 
     const { url, response, interaction, onFinished, onError, title, noTitle, showHelpIcon } = props
     const { Left, gender, description, isFormData, transform, transformFilter } = props
@@ -221,7 +232,7 @@ export default memo(
     const [cartel, setCartel] = useState<CartelState>({ visible: false })
     const [toolbar, setToolbar] = useState(false)
     const [editObj, setEditObj] = useState<object | null>(null)
-    const [detailConf, setDetailConf] = useState<ReadOnlyConf[] | null>(null)
+    const [detailConf, setDetailConf] = useState<any | null>(null)
 
     const editing = useMemo(() => (editObj ? Object.keys(editObj).length > 0 : false), [editObj])
 
@@ -332,6 +343,11 @@ export default memo(
       }
     }, [getDataCall, interactions])
 
+    const renderActionsDetail = useCallback(() => {
+      if (!detailView || !detailConf) return null
+      return detailView(detailConf).actions
+    }, [detailView, detailConf])
+
     if (columns.length === 0) {
       return <Typography>No están configuradas las columnas</Typography>
     }
@@ -384,7 +400,7 @@ export default memo(
         />
         {loading && <LinearProgress aria-label={AriaLabels.LoadingTable} />}
         <Collapse in={!editObj} timeout="auto" unmountOnExit>
-          <AlTable
+          <Table
             {...props}
             loading={loading}
             onSort={(newSort) => {
@@ -404,7 +420,7 @@ export default memo(
             }}
             onEdit={(rowData) => onEditCall(rowData)}
             onDelete={(rowData) => onDeleteCall(rowData)}
-            onDetail={detailView ? (rowData) => setDetailConf(detailView(rowData)) : undefined}
+            onDetail={detailView ? (rowData) => setDetailConf(rowData) : undefined}
           />
         </Collapse>
         {(fields || steps) && (
@@ -420,7 +436,7 @@ export default memo(
                   : `Nuev${gender === 'F' ? 'a' : gender === 'M' ? 'o' : ''}`
               } ${name}`}
               subtitle={description}>
-              <Formulario
+              <Form
                 isEditing={editing}
                 showHelpIcon={showHelpIcon}
                 intials={editObj}
@@ -451,12 +467,24 @@ export default memo(
               <Typography variant="h6" className={classes.title}>
                 {`${lang.detailOf} ${name}`}
               </Typography>
-              <IconButton edge="start" color="inherit" onClick={() => setDetailConf(null)}>
-                <FaTimes />
-              </IconButton>
+              {renderActionsDetail()}
+              <Tooltip title={lang.close}>
+                <IconButton
+                  className={classes.closeIcon}
+                  edge="start"
+                  color="inherit"
+                  onClick={() => setDetailConf(null)}>
+                  <FaTimes />
+                </IconButton>
+              </Tooltip>
             </MuiToolbar>
           </AppBar>
-          <ReadOnly configuration={detailConf} />
+          {detailView && detailConf && (
+            <ReadOnly
+              ref={(e) => (readOnlyRef.current = e)}
+              sections={detailView(detailConf).sections}
+            />
+          )}
         </MuiDialog>
         <Dialog
           show={cartel.visible}
@@ -496,5 +524,8 @@ const useClasses = makeStyles((theme) => ({
   title: {
     marginLeft: theme.spacing(2),
     flex: 1,
+  },
+  closeIcon: {
+    marginLeft: theme.spacing(1),
   },
 }))

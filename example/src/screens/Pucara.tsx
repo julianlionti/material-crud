@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { createColumns, createFields, Crud, FormTypes, TableTypes, useAxios } from 'material-crud'
 import { IconButton, Tooltip, Typography } from '@material-ui/core'
 import { useMemo } from 'react'
-import { FaChevronCircleDown, FaChevronCircleUp, FaEye } from 'react-icons/fa'
+import { FaChevronCircleDown, FaChevronCircleUp, FaEye, FaSave } from 'react-icons/fa'
 import * as Yup from 'yup'
 import { FieldProps } from '../../../dist/components/Form/FormTypes'
 import { createServer } from 'miragejs'
@@ -19,6 +19,7 @@ export const renderType = (type?: string): RenderType => {
 }
 
 export default () => {
+  const [border, setBorder] = useState(true)
   const { response: types } = useAxios<{ results: any[] }>({
     onInit: { url: '/api/types' },
   })
@@ -93,6 +94,12 @@ export default () => {
     () =>
       createFields([
         {
+          id: 'imagen',
+          title: 'Imagen',
+          type: FormTypes.Image,
+          help: 'Ayudaaaaa',
+        },
+        {
           id: 'prueba',
           type: FormTypes.Input,
           title: 'PROBANDO',
@@ -158,9 +165,15 @@ export default () => {
     [],
   )
 
+  useEffect(() => {
+    setTimeout(() => {
+      setBorder((b) => !b)
+    }, 2500)
+  }, [])
+
   return (
     <Crud
-      withBorder
+      noBorder={border}
       showHelpIcon
       response={{
         list: (cList: any) => ({
@@ -218,6 +231,26 @@ export default () => {
         }, {})
         return { ...data, ...options }
       }}
+      detailView={(rowData) => ({
+        sections: [
+          {
+            title: 'Titulo primero',
+            section: [
+              [
+                ['Primer dato', rowData.id],
+                ['Segudno', 'Daleee'],
+              ],
+            ],
+          },
+        ],
+        actions: [
+          <Tooltip title="Descargar">
+            <IconButton onClick={() => alert(JSON.stringify(rowData))}>
+              <FaSave />
+            </IconButton>
+          </Tooltip>,
+        ],
+      })}
     />
   )
 }

@@ -43,7 +43,7 @@ export default memo((props: AlSwitchProps) => {
         label={title}
       />
       <Collapse in={!!error} unmountOnExit timeout="auto">
-        <Typography>{error}</Typography>
+        <Typography variant="body2">{error}</Typography>
       </Collapse>
     </BaseInput>
   )

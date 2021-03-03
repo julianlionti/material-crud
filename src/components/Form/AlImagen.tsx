@@ -31,6 +31,7 @@ export default memo((props: AlImagenProps) => {
     title,
     validate,
     keepMounted,
+    help,
   } = props
   const [base64, setBase64] = useState<string | null>(null)
   const [{ value }, { error, touched }, { setValue, setTouched }] = useField<string | File | null>(
@@ -86,13 +87,16 @@ export default memo((props: AlImagenProps) => {
 
   return (
     <BaseInput grow={grow} ocultar={hide} keepMounted={keepMounted}>
-      <Typography>{finalTitle}</Typography>
+      <Typography variant="body2">{finalTitle}</Typography>
       <Collapse in={!subiendo} timeout="auto">
         <div className={clases.contenedor}>
           {subiendo && <CircularProgress />}
           <label htmlFor={camaraId} className={clases.lblContainer}>
-            <Typography className={clases.pointer} onClick={() => setTouched(true)} variant="body1">
+            <Typography className={clases.pointer} onClick={() => setTouched(true)} variant="body2">
               {renderExplanation()}
+            </Typography>
+            <Typography variant="body2">
+              <em>{help}</em>
             </Typography>
             <IconButton
               disabled={loading}
@@ -103,7 +107,7 @@ export default memo((props: AlImagenProps) => {
             </IconButton>
           </label>
           {!!error && touched && (
-            <Typography variant="caption" className={clases.textoError}>
+            <Typography variant="body2" className={clases.textoError}>
               {error}
             </Typography>
           )}

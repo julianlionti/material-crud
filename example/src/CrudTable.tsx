@@ -304,7 +304,9 @@ export default () => {
         columns={columns}
         filters={filters}
         actions={{ edit: true, delete: false }}
-        onClickRow={(e, rowData, index) => console.log(e, rowData, index)}
+        onClickRow={(e, rowData) => {
+          console.log(e, rowData)
+        }}
         noFilterOptions
         extraActions={(rowData) => [
           <IconButton size="small" key="ice" onClick={(e) => e.stopPropagation()}>

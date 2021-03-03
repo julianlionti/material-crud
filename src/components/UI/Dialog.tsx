@@ -56,7 +56,8 @@ export default memo(({ show, onClose, title, content, loading }: Props) => {
       <DialogActions>
         <Button
           aria-label={AriaLabels.Dialog.NoBtn}
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation()
             if (onClose) onClose(false)
           }}
           color="primary">
@@ -64,7 +65,8 @@ export default memo(({ show, onClose, title, content, loading }: Props) => {
         </Button>
         <Button
           aria-label={AriaLabels.Dialog.YesBtn}
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation()
             if (onClose) onClose(true)
           }}
           color="primary"

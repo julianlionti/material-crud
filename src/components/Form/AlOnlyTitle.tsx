@@ -12,7 +12,7 @@ export default memo((props: AlOnlyTitleProps) => {
   const { title, titleProps } = props
   return (
     <BaseInput>
-      <Typography variant="body1" {...titleProps}>
+      <Typography variant="body2" {...titleProps}>
         {title}
       </Typography>
     </BaseInput>
