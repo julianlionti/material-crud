@@ -32,7 +32,7 @@ import { ABMResponse, PaginationProps, ReplaceProps, useABM } from '../../utils/
 import useAxios, { CallProps, Error } from '../../utils/useAxios'
 import Form from '../Form'
 import { Interactions, FieldProps, StepProps } from '../Form/FormTypes'
-import ReadOnly, { ReadOnlyConf, ReadOnlyMethods } from '../Form/ReadOnly'
+import { ReadOnly, ReadOnlyConf } from '../Form/ReadOnly'
 
 import Table from '../Table'
 import { ColumnsProps, TableProps } from '../Table/TableTypes'
@@ -199,7 +199,6 @@ export const createResponseConf = (props: ResponseProps) => props
 export default memo(
   forwardRef<RefProps, CrudProps>((props, ref) => {
     const lastFilter = useRef<any>({})
-    const readOnlyRef = useRef<ReadOnlyMethods | null>(null)
 
     const { url, response, interaction, onFinished, onError, title, noTitle, showHelpIcon } = props
     const { Left, gender, description, isFormData, transform, transformFilter } = props
@@ -479,12 +478,7 @@ export default memo(
               </Tooltip>
             </MuiToolbar>
           </AppBar>
-          {detailView && detailConf && (
-            <ReadOnly
-              ref={(e) => (readOnlyRef.current = e)}
-              sections={detailView(detailConf).sections}
-            />
-          )}
+          {detailView && detailConf && <ReadOnly sections={detailView(detailConf).sections} />}
         </MuiDialog>
         <Dialog
           show={cartel.visible}
