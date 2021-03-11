@@ -36,6 +36,7 @@ interface Props extends Partial<ListChildComponentProps> {
   columns: ColumnsProps[]
   extraActions?: (rowdata: any) => ReactNode[]
   actionsColWidth?: number
+  rowStyle?: (rowData: any, index: number) => string
 }
 
 export default memo((props: Props) => {
@@ -60,6 +61,7 @@ export default memo((props: Props) => {
     columns,
     extraActions,
     actionsColWidth,
+    rowStyle,
   } = props
 
   const { list, insertIndex, removeIndex, itemId, pins, removePins } = useABM()
@@ -254,6 +256,11 @@ export default memo((props: Props) => {
     removePins,
   ])
 
+  const customStyle = useMemo(() => {
+    if (rowStyle) return rowStyle(rowData, index)
+    return ''
+  }, [rowStyle, rowData, index])
+
   return (
     <TableRow
       onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
@@ -261,7 +268,7 @@ export default memo((props: Props) => {
       }
       aria-label={isHeader ? AriaLabels.RowHeader : AriaLabels.RowContent}
       component="div"
-      className={`${classes.row} ${(isHeader && customClassName) || ''}`}
+      className={`${classes.row} ${(isHeader && customClassName) || ''} ${customStyle}`}
       style={style}>
       {renderSelecting()}
       {renderContent()}

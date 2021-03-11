@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { createColumns, createFields, Crud, FormTypes, TableTypes, useAxios } from 'material-crud'
-import { IconButton, Tooltip, Typography } from '@material-ui/core'
+import { IconButton, makeStyles, Tooltip, Typography } from '@material-ui/core'
 import { useMemo } from 'react'
 import { FaChevronCircleDown, FaChevronCircleUp, FaEye, FaSave } from 'react-icons/fa'
 import * as Yup from 'yup'
@@ -19,6 +19,7 @@ export const renderType = (type?: string): RenderType => {
 }
 
 export default () => {
+  const classes = useClasses()
   const [border, setBorder] = useState(true)
   const { response: types } = useAxios<{ results: any[] }>({
     onInit: { url: '/api/types' },
@@ -201,6 +202,10 @@ export default () => {
       url={'/api/c2'}
       filters={filters}
       columns={columns}
+      rowStyle={(rowData, index) => {
+        if (index === 0) return classes.filaVerde
+        return ''
+      }}
       fields={fields}
       extraActions={(rowData) => {
         return [
@@ -231,26 +236,32 @@ export default () => {
         }, {})
         return { ...data, ...options }
       }}
-      detailView={(rowData) => ({
-        sections: [
-          {
-            title: 'Titulo primero',
-            section: [
-              [
-                ['Primer dato', rowData.id],
-                ['Segudno', 'Daleee'],
-              ],
-            ],
-          },
-        ],
-        actions: [
-          <Tooltip title="Descargar">
-            <IconButton onClick={() => alert(JSON.stringify(rowData))}>
-              <FaSave />
-            </IconButton>
-          </Tooltip>,
-        ],
-      })}
+      // detailView={(rowData) => ({
+      //   sections: [
+      //     {
+      //       title: 'Titulo primero',
+      //       section: [
+      //         [
+      //           ['Primer dato', rowData.id],
+      //           ['Segudno', 'Daleee'],
+      //         ],
+      //       ],
+      //     },
+      //   ],
+      //   actions: [
+      //     <Tooltip title="Descargar">
+      //       <IconButton onClick={() => alert(JSON.stringify(rowData))}>
+      //         <FaSave />
+      //       </IconButton>
+      //     </Tooltip>,
+      //   ],
+      // })}
     />
   )
 }
+
+const useClasses = makeStyles((theme) => ({
+  filaVerde: {
+    backgroundColor: 'green',
+  },
+}))
