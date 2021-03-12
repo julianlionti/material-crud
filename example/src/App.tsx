@@ -6,9 +6,10 @@ import Prueba from './Prueba'
 import TableExample from './TableExample'
 import { english, spanish } from './lang'
 import CrudTable from './CrudTable'
-import { createMuiTheme, ThemeProvider } from '@material-ui/core'
+import { ThemeProvider } from '@material-ui/core'
 import Desarrollo from './screens/Desarrollo'
 import Pucara from './screens/Pucara'
+import { useColorTheme, getTheme } from './util/Theme'
 
 const App = () => {
   const user = {
@@ -19,8 +20,10 @@ const App = () => {
     token: 'Bearer cd2d52c3d6ddd8d4c538f03c4e282397c3f51718',
   }
 
+  const { color } = useColorTheme()
+
   return (
-    <ThemeProvider theme={createMuiTheme({ palette: { type: 'light' } })}>
+    <ThemeProvider theme={getTheme(color)}>
       <CrudProvider
         lang={spanish}
         user={user}
