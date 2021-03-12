@@ -48,6 +48,7 @@ export default memo((props: Props) => {
     onDetail,
     onClickRow,
     actionsColWidth,
+    rowStyle,
   } = props
 
   const { height: windowHeight } = useWindowSize()
@@ -161,6 +162,7 @@ export default memo((props: Props) => {
                   columns={columns}
                   extraActions={extraActions}
                   actionsColWidth={actionsColWidth}
+                  rowStyle={rowStyle}
                 />
               )}
             </List>
