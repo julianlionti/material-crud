@@ -117,6 +117,7 @@ export default memo((props: Props) => {
         onSort={onSort}
         onEdit={actions?.edit && onEdit}
         onDelete={actions?.delete && onDelete}
+        onPinToTop={actions?.pinToTop && onPinToTop}
         showSelecting={showSelecting}
         isHeader
         fields={fields}

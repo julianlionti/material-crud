@@ -1,3 +1,4 @@
+import { CSSProperties } from '@material-ui/core/styles/withStyles'
 import { ReactNode } from 'react'
 
 interface CellComponentProps {
@@ -85,5 +86,5 @@ export interface TableProps {
     rowData: any,
     index: number,
   ) => void
-  rowStyle?: (rowData: any, index: number) => string
+  rowStyle?: (rowData: any, index: number) => CSSProperties
 }

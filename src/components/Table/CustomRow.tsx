@@ -1,5 +1,6 @@
 import React, { memo, ReactNode, useCallback, useMemo } from 'react'
 import { Checkbox, IconButton, makeStyles, TableRow, Tooltip, Typography } from '@material-ui/core'
+import { CSSProperties } from '@material-ui/core/styles/withStyles'
 import { AiOutlinePushpin, AiFillPushpin } from 'react-icons/ai'
 import { FaEdit, FaEye, FaTrash } from 'react-icons/fa'
 import { ListChildComponentProps } from 'react-window'
@@ -36,7 +37,7 @@ interface Props extends Partial<ListChildComponentProps> {
   columns: ColumnsProps[]
   extraActions?: (rowdata: any) => ReactNode[]
   actionsColWidth?: number
-  rowStyle?: (rowData: any, index: number) => string
+  rowStyle?: (rowData: any, index: number) => CSSProperties
 }
 
 export default memo((props: Props) => {
@@ -256,10 +257,10 @@ export default memo((props: Props) => {
     removePins,
   ])
 
-  const customStyle = useMemo(() => {
-    if (rowStyle) return rowStyle(rowData, index)
-    return ''
-  }, [rowStyle, rowData, index])
+  const finalStyle = useMemo(() => {
+    if (!rowStyle) return style
+    return { ...style, ...rowStyle(rowData, index) }
+  }, [rowStyle, style, rowData, index])
 
   return (
     <TableRow
@@ -268,8 +269,8 @@ export default memo((props: Props) => {
       }
       aria-label={isHeader ? AriaLabels.RowHeader : AriaLabels.RowContent}
       component="div"
-      className={`${classes.row} ${(isHeader && customClassName) || ''} ${customStyle}`}
-      style={style}>
+      className={`${classes.row} ${(isHeader && customClassName) || ''}`}
+      style={finalStyle}>
       {renderSelecting()}
       {renderContent()}
       {renderCrud()}
