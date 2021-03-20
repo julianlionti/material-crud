@@ -1,5 +1,5 @@
-import { CSSProperties } from '@material-ui/core/styles/withStyles'
 import { ReactNode } from 'react'
+import { CSSProperties } from '@material-ui/core/styles/withStyles'
 
 interface CellComponentProps {
   rowData: any

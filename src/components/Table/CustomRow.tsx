@@ -69,6 +69,7 @@ export default memo((props: Props) => {
   const lang = useLang()
   const rowData = useMemo(() => list[index], [list, index])
   const classes = useClasses({ index, height: rowHeight, isChild: rowData?.child, onClickRow })
+  const nextIsChild = useMemo(() => !!list[index + 1]?.child, [list, index])
 
   const renderContent = useCallback(() => {
     if (isHeader) {
@@ -83,7 +84,6 @@ export default memo((props: Props) => {
       )
     }
 
-    const nextIsChild = !!list[index + 1]?.child
     return columns.map((col) => (
       <CustomCell
         expanded={nextIsChild}
@@ -94,14 +94,14 @@ export default memo((props: Props) => {
           switch (col.type) {
             case TableTypes.Custom:
               insertIndex(index + 1, {
-                [itemId]: col.id + 'child',
+                [itemId]: 'child' + index,
                 child: col.content,
                 height: col.height,
               })
               break
             default:
               insertIndex(index + 1, {
-                [itemId]: col.id + 'child',
+                [itemId]: 'child' + index,
                 child: () => (
                   <Typography variant="body2">
                     Para usar content el atributo 'type' debe ser CUSTOM
@@ -129,6 +129,7 @@ export default memo((props: Props) => {
     list,
     onExpanded,
     rowData,
+    nextIsChild,
   ])
 
   const renderSelecting = useCallback(() => {
@@ -229,7 +230,6 @@ export default memo((props: Props) => {
                 e.stopPropagation()
                 const pin = pins.find((p) => p[itemId] === rowData[itemId])
                 if (pin) removePins(pin[itemId])
-
                 onDelete(rowData)
               }}>
               <FaTrash />

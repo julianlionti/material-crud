@@ -23,7 +23,6 @@ export default () => {
   const { setColor, isDarkTheme } = useColorTheme()
 
   const classes = useClasses()
-  const [border, setBorder] = useState(true)
   const { response: types } = useAxios<{ results: any[] }>({
     onInit: { url: '/api/types' },
   })
@@ -83,12 +82,14 @@ export default () => {
               </IconButton>
             )
           },
-          content: (rowData) =>
-            !rowData?.options.length
+          content: (rowData) => {
+            // console.log(rowData)
+            return !rowData?.options || !rowData?.options.length
               ? 'Without options'
               : rowData?.options.map(({ name, value }: any) => (
-                  <span key={name}>{`${name} (${value})`}</span>
-                )),
+                  <span key={name}>{`${name} (${value}) - ID ${rowData.id}`}</span>
+                ))
+          },
         },
       ]),
     [],
@@ -169,12 +170,6 @@ export default () => {
     [],
   )
 
-  useEffect(() => {
-    setTimeout(() => {
-      setBorder((b) => !b)
-    }, 2500)
-  }, [])
-
   return (
     <div>
       <Button
@@ -184,7 +179,6 @@ export default () => {
         {isDarkTheme ? 'LIGHT' : 'DARK'}
       </Button>
       <Crud
-        noBorder={border}
         showHelpIcon
         response={{
           list: (cList: any) => ({
@@ -208,7 +202,7 @@ export default () => {
         }}
         description="C2 example"
         name="C2"
-        actions={{ edit: false, delete: false, pinToTop: false }}
+        actions={{ edit: false, delete: true, pinToTop: true }}
         url={'/api/c2'}
         filters={filters}
         columns={columns}
