@@ -12,7 +12,7 @@ export const enUS = createTranslation({
   new: 'New',
   edit: 'Edit',
   delete: 'Delete',
-  crudCol: 'CRUD',
+  crudCol: 'Actions',
   selected: 'selected',
   delExplanation: (name) => `You are going to delete ${name}!! Are you sure?!`,
   filter: 'Filter',

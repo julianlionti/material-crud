@@ -11,6 +11,7 @@ export interface Error {
 export interface UseAxiosProps {
   onInit?: AxiosRequestConfig
   onError?: (error: Error) => void
+  logging?: boolean
 }
 
 export type CallProps = (props: AxiosRequestConfig, authorize?: boolean) => Promise<CallResponse>
@@ -50,6 +51,7 @@ export const callWs = async <T extends any>(
   config: AxiosRequestConfig,
   headers?: any | null,
   lang?: Translations,
+  logging?: boolean,
 ) => {
   let response: undefined | T
   let error: undefined | ErrorResponse
@@ -63,10 +65,13 @@ export const callWs = async <T extends any>(
         headers: { ...config.headers, ...headers },
       }
     }
-    const { data, status: s } = await axios(final)
-    response = data
-    status = s
+    if (logging) console.log('Request', JSON.stringify(final))
+    const axiosResponse = await axios(final)
+    response = axiosResponse.data
+    status = axiosResponse.status
+    if (logging) console.log('Response', JSON.stringify(axiosResponse))
   } catch (ex) {
+    if (logging) console.log('Error', JSON.stringify(ex))
     const { response } = ex as AxiosError<ErrorResponse>
     if (response?.status === 500) {
       const fal = response as any
@@ -86,7 +91,7 @@ export const callWs = async <T extends any>(
 }
 
 const useAxios = <T extends any = any>(props?: UseAxiosProps): Response<T> => {
-  const { onInit, onError } = props || {}
+  const { onInit, onError, logging } = props || {}
   const onInitRef = useRef(false)
   const calling = useRef(false)
   const [state, dispatch] = useReducer(reducer, initial)
@@ -115,14 +120,19 @@ const useAxios = <T extends any = any>(props?: UseAxiosProps): Response<T> => {
       if (!calling.current) {
         calling.current = true
         dispatch({ loading: true, error: undefined, response: undefined, status: undefined })
-        const { error, response, status } = await callWs(config, noHeader ? {} : headers, lang)
+        const { error, response, status } = await callWs(
+          config,
+          noHeader ? {} : headers,
+          lang,
+          logging,
+        )
         dispatch({ loading: false, response, error, status: status })
         calling.current = false
         return { response, error, status }
       }
       return {}
     },
-    [headers, lang],
+    [headers, lang, logging],
   )
 
   const clean = useCallback(() => {
