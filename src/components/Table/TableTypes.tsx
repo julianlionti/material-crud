@@ -72,6 +72,7 @@ export interface RightToolbarProps {
 
 /* Las propiedades configurables de la tabla */
 export interface TableProps {
+  fullWidth?: boolean
   height?: number
   headerHeight?: number
   rowHeight?: number
