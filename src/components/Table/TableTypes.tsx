@@ -1,5 +1,5 @@
-import { CSSProperties } from '@material-ui/core/styles/withStyles'
 import { ReactNode } from 'react'
+import { CSSProperties } from '@material-ui/core/styles/withStyles'
 
 interface CellComponentProps {
   rowData: any
@@ -72,6 +72,7 @@ export interface RightToolbarProps {
 
 /* Las propiedades configurables de la tabla */
 export interface TableProps {
+  fullWidth?: boolean
   height?: number
   headerHeight?: number
   rowHeight?: number

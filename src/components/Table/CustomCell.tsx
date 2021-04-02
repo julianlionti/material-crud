@@ -106,7 +106,7 @@ const useClasses = makeStyles((theme) => ({
     display: 'flex',
     alignItems: horizontal ? (isChild ? 'start' : 'center') : align || 'flex-start',
     justifyContent: horizontal ? align || 'flex-start' : isChild ? 'start' : 'center',
-    border: noBorder === false ? '1px solid #dee2e6' : undefined,
+    border: !noBorder ? '1px solid #dee2e6' : undefined,
 
     overflow: 'hidden',
     textOverflow: 'ellipsis',

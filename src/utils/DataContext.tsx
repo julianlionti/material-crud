@@ -195,7 +195,7 @@ export const useABM = <T extends object>() => {
         if (Array.isArray(value)) newPins = [...newPins, ...value]
         if (!newPins.includes(value)) newPins = [...newPins, value]
 
-        return { ...acc, pins: newPins }
+        return { ...acc, list: acc.list.filter((x) => !x.child), pins: newPins }
       })
     },
     [setConfig],
@@ -213,7 +213,7 @@ export const useABM = <T extends object>() => {
           )
         }
 
-        return { ...acc, pins: newPins }
+        return { ...acc, list: acc.list.filter((x) => !x.child), pins: newPins }
       })
     },
     [setConfig, itemId],

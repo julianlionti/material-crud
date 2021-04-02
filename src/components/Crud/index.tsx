@@ -202,7 +202,7 @@ export default memo(
 
     const { url, response, interaction, onFinished, onError, title, noTitle, showHelpIcon } = props
     const { Left, gender, description, isFormData, transform, transformFilter } = props
-    const { name, titleSize, idInUrl, itemName, fields, steps, noFilterOptions } = props
+    const { name, titleSize, fullWidth, idInUrl, itemName, fields, steps, noFilterOptions } = props
     const {
       transformToEdit,
       big,
@@ -283,7 +283,7 @@ export default memo(
       ],
     )
 
-    const classes = useClasses({ titleSize })
+    const classes = useClasses({ titleSize, fullWidth })
 
     const interactions = useMemo(
       () => ({
@@ -494,10 +494,10 @@ export default memo(
 )
 
 const useClasses = makeStyles((theme) => ({
-  contenedor: {
-    width: '85%',
+  contenedor: ({ fullWidth }: any) => ({
+    width: fullWidth ? '100%' : '85%',
     margin: '0 auto',
-  },
+  }),
   colapseContainer: {
     display: 'flex',
     alignItems: 'center',
