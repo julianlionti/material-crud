@@ -83,6 +83,7 @@ export interface CrudProps extends TableProps {
   big?: boolean
   logicalDeleteCol?: string
   noFilterOptions?: boolean
+  filtersHeight?: number
   detailView?: (
     rowData: any,
   ) => {
@@ -201,7 +202,15 @@ export default memo(
     const lastFilter = useRef<any>({})
 
     const { url, response, interaction, onFinished, onError, title, noTitle, showHelpIcon } = props
-    const { Left, gender, description, isFormData, transform, transformFilter } = props
+    const {
+      Left,
+      gender,
+      description,
+      isFormData,
+      transform,
+      transformFilter,
+      filtersHeight,
+    } = props
     const { name, titleSize, fullWidth, idInUrl, itemName, fields, steps, noFilterOptions } = props
     const {
       transformToEdit,
@@ -404,6 +413,7 @@ export default memo(
           <Table
             {...props}
             isFiltering={isFiltering}
+            filtersHeight={filtersHeight}
             loading={loading}
             onSort={(newSort) => {
               lastFilter.current = {

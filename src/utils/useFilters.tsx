@@ -102,6 +102,6 @@ export default (): FilterResponse => {
     numeric: [equal, greater, lower],
     autocomplete: [contains, equal, different],
     select: [equal, different],
-    date: [equal, different, greater, lower],
+    date: [equal, greater, lower],
   }
 }
