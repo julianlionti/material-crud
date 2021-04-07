@@ -75,7 +75,9 @@ export default memo(
         if (campo.type === FormTypes.OnlyTitle) return <AlOnlyTitle key={campo.id} {...campo} />
 
         const { depends } = campo
-        const hidden = depends && depends(values) === false
+        let hidden = depends && depends(values) === false
+        if (campo.hide) hidden = true
+
         switch (campo.type) {
           case FormTypes.Input:
           case FormTypes.Email:

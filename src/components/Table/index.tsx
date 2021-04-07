@@ -25,6 +25,7 @@ interface Props extends TableProps {
   fields?: FieldProps[]
   steps?: StepProps[]
   columns: ColumnsProps[]
+  isFiltering?: boolean
 }
 
 export default memo((props: Props) => {
@@ -49,6 +50,7 @@ export default memo((props: Props) => {
     onClickRow,
     actionsColWidth,
     rowStyle,
+    isFiltering,
   } = props
 
   const { height: windowHeight } = useWindowSize()
@@ -60,7 +62,7 @@ export default memo((props: Props) => {
   const [rowsSelected, setRowSelected] = useState<any[]>([])
 
   const finalRowHeight = useMemo(() => rowHeight || 48, [rowHeight])
-  const classes = useClasses({ height: height || windowHeight - 130 })
+  const classes = useClasses({ height: (height || windowHeight - 130) - (isFiltering ? 60 : 0) })
 
   const headerSelected = useMemo(() => {
     if (rowsSelected.length === 0) return false

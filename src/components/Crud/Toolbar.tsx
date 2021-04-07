@@ -126,7 +126,7 @@ export default memo((props: Props) => {
           </div>
         </div>
         {filters && (
-          <Collapse in={show} timeout="auto" unmountOnExit>
+          <Collapse in={show} timeout={1000} unmountOnExit>
             <Form
               inline
               accept={lang.filter}

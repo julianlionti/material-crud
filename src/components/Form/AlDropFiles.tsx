@@ -1,7 +1,7 @@
 import React, { memo, ReactNode, useCallback, useState } from 'react'
 import { IconButton, makeStyles, Paper, Typography } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import { useField } from 'formik'
+import { useField, useFormikContext } from 'formik'
 import { useDropzone } from 'react-dropzone'
 import { FaFile, FaTrashAlt } from 'react-icons/fa'
 import { compareKeys } from '../../utils/addOns'
@@ -18,7 +18,7 @@ export interface AlDropFilesProps extends NoTitle {
   ImgIcon?: ReactNode
   title: string | ReactNode
   renderPreview?: (name: string) => ReactNode
-  onDeleteFile?: (name: string) => Promise<boolean> | boolean
+  onDeleteFile?: (name: string, values: any) => Promise<boolean> | boolean
 }
 
 const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
@@ -51,6 +51,8 @@ export default memo(
     )
     const [deleteDialog, showDeleteDialog] = useState('')
     const [loading, setLoading] = useState(false)
+
+    const { values } = useFormikContext()
 
     const {
       inputs: { drop },
@@ -188,7 +190,7 @@ export default memo(
           onClose={async (onYes) => {
             if (onYes && onDeleteFile) {
               setLoading(true)
-              const hasToDelete = await onDeleteFile(deleteDialog)
+              const hasToDelete = await onDeleteFile(deleteDialog, values)
               if (hasToDelete) {
                 setValue(
                   value.filter((v) => {
@@ -249,10 +251,12 @@ const useClasses = makeStyles((theme) => ({
     position: 'absolute',
     left: theme.spacing(1),
     right: theme.spacing(1),
-    bottom: theme.spacing(1),
+    // bottom: theme.spacing(1),
+    top: theme.spacing(4),
     zIndex: 200,
     display: 'flex',
     flexWrap: 'wrap',
+    overflow: 'overlay',
   },
   paperRoot: {
     display: 'flex',

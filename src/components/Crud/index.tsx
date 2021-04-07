@@ -226,6 +226,7 @@ export default memo(
       insertIndex,
       removeIndex,
     } = useABM()
+    const [isFiltering, setIsFiltering] = useState(false)
     const { loading, call } = useAxios<any>({ onError })
 
     const [cartel, setCartel] = useState<CartelState>({ visible: false })
@@ -372,6 +373,7 @@ export default memo(
           titleSize={titleSize}
           noFilterOptions={noFilterOptions}
           handleShow={() => {
+            setIsFiltering((act) => !act)
             setToolbar((t) => {
               const final = !t
               if (!final) {
@@ -401,6 +403,7 @@ export default memo(
         <Collapse in={!editObj} timeout="auto" unmountOnExit>
           <Table
             {...props}
+            isFiltering={isFiltering}
             loading={loading}
             onSort={(newSort) => {
               lastFilter.current = {

@@ -45,6 +45,7 @@ export default memo((props: PropsWithChildren<Props>) => {
     switch (col?.type) {
       case TableTypes.Image: {
         const finalSize = rowHeight - 8
+        if (!cellData) return <Typography variant="body2">-</Typography>
         return (
           <Avatar
             alt={cellData}
