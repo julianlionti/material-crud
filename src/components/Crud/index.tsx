@@ -367,7 +367,7 @@ export default memo(
           fields={fields}
           filters={filters}
           steps={steps}
-          hide={noTitle || (!filters && !fields)}
+          hide={noTitle || (!filters && !fields && !steps)}
           editObj={editObj}
           Left={Left}
           onNew={() => setEditObj({})}
