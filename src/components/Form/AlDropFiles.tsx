@@ -161,6 +161,11 @@ export default memo(
         <div className={classes.base}>
           {renderTitle()}
           <div {...getRootProps({ className: classes.dropzone })}>
+            <div style={{ position: 'absolute', top: 40, left: 16 }}>
+              <Typography className={classes.title} variant="body1">
+                {help || drop.help}
+              </Typography>
+            </div>
             <input
               {...getInputProps({
                 name: id,
@@ -171,9 +176,6 @@ export default memo(
                 },
               })}
             />
-            <Typography className={classes.title} variant="body1">
-              {help || drop.help}
-            </Typography>
             <div className={classes.imgContainer}>
               {ImgIcon || <FaFile className={classes.verticalSpace} />}
             </div>
@@ -243,6 +245,7 @@ const useClasses = makeStyles((theme) => ({
     borderWidth: 5,
     display: 'flex',
     alignItems: 'center',
+    zIndex: 500,
     justifyContent: 'center',
     flexDirection: 'column',
     backgroundColor: isDragActive ? 'coral' : 'white',
@@ -252,7 +255,8 @@ const useClasses = makeStyles((theme) => ({
     left: theme.spacing(1),
     right: theme.spacing(1),
     // bottom: theme.spacing(1),
-    top: theme.spacing(4),
+    height: 195,
+    top: theme.spacing(9.3),
     zIndex: 200,
     display: 'flex',
     flexWrap: 'wrap',
