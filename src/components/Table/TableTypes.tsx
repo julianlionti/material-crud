@@ -18,6 +18,8 @@ interface CommonProps {
 
 interface NumberType extends CommonProps {
   type: TableTypes.Number
+  decimals: number
+  separateDecimals: ',' | '.'
 }
 
 interface StringType extends CommonProps {
