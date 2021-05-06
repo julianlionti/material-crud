@@ -15,6 +15,7 @@ const c2Response = ({ page, limit }: { page: number; limit: number }) => ({
       id: page - 1 * 1 + (page === 1 ? 1 : 10) + i,
       c2_type: random(1, 3),
       creation_date: randomDate(new Date(2012, 0, 1), new Date()),
+      numero: random(1, 10000),
       options: [
         { name: 'url', value: 'https://127.0.0.1:7443' },
         { name: 'username', value: 'cobbr' },

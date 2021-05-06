@@ -66,7 +66,16 @@ export default () => {
           id: 'creation_date',
           title: 'Date',
           type: TableTypes.Date,
-          width: 3,
+          width: 1,
+        },
+        {
+          id: 'numero',
+          title: 'Probando numeros',
+          type: TableTypes.Number,
+          decimals: 0,
+          separateDecimals: ',',
+          width: 2,
+          align: 'center',
         },
         {
           id: 'expand',

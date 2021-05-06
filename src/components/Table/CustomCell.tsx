@@ -65,6 +65,16 @@ export default memo((props: PropsWithChildren<Props>) => {
       }
       case TableTypes.Switch:
         return cellData ? <FaCheck size={18} color="green" /> : <FaTimes size={18} color="red" />
+      case TableTypes.Number: {
+        if (!cellData) return <Typography variant="body2">-</Typography>
+
+        let final = cellData.toFixed(col.decimals)
+        if (col.separateDecimals === ',')
+          final = final.replace('.', ',').replace(/\B(?<!,\d*)(?=(\d{3})+(?!\d))/g, '.')
+        else final = final.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+
+        return <Typography variant="body2">{final}</Typography>
+      }
       default: {
         let finalString = cellData || '-'
         if (Array.isArray(cellData)) finalString = cellData.join(' - ')
