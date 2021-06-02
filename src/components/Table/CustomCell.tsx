@@ -68,10 +68,15 @@ export default memo((props: PropsWithChildren<Props>) => {
       case TableTypes.Number: {
         if (!cellData) return <Typography variant="body2">-</Typography>
 
-        let final = cellData.toFixed(col.decimals)
-        if (col.separateDecimals === ',')
-          final = final.replace('.', ',').replace(/\B(?<!,\d*)(?=(\d{3})+(?!\d))/g, '.')
-        else final = final.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+        let final = cellData
+        if (col.decimals) {
+          final = final.toFixed(col.decimals)
+          if (col.separateDecimals) {
+            if (col.separateDecimals === ',')
+              final = final.replace('.', ',').replace(/\B(?<!,\d*)(?=(\d{3})+(?!\d))/g, '.')
+            else final = final.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+          }
+        }
 
         return <Typography variant="body2">{final}</Typography>
       }

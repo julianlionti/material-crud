@@ -60,6 +60,7 @@ export default () => {
           id: 'personeriaVigente',
           title: 'Personería vigente',
           type: FormTypes.Switch,
+          // variant: 'checkbox',
         },
         { id: 'detalle', title: '3. Detalle', type: FormTypes.OnlyTitle },
         {
