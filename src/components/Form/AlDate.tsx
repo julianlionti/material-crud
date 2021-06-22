@@ -48,6 +48,7 @@ export default memo((props: AlDateProps) => {
     loading,
     keepMounted,
     noFilterOptions,
+    validate,
   } = props
   const [{ value }, { error, touched }, { setTouched, setValue }] = useField<
     DateValue | DateFilter
@@ -66,6 +67,16 @@ export default memo((props: AlDateProps) => {
     return actualVal
   }, [value, filter])
 
+  const finalTitle = useMemo<string>(() => {
+    const mandatory = !!validate?.describe().tests.find((e) => e.name === 'required')
+
+    if (filter && title) {
+      return title
+    } else {
+      return `${title} ${mandatory ? '*' : ''}`
+    }
+  }, [title, filter, validate])
+
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeWrapper[locale || 'es']}>
       <BaseInput grow={grow} fullWidth={fullWidth} ocultar={hide} keepMounted={keepMounted}>
@@ -76,7 +87,7 @@ export default memo((props: AlDateProps) => {
           variant="inline"
           inputVariant="outlined"
           format={finalFormat}
-          label={title}
+          label={finalTitle}
           helperText={(touched && error) || help}
           fullWidth={fullWidth || true}
           value={finalValue}
