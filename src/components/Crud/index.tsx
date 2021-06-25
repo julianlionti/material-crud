@@ -191,6 +191,7 @@ const getData = async ({ call, response, replace, params, url, transform }: Data
 
 export interface RefProps extends ABMResponse<any> {
   refresh: () => Promise<void>
+  interactions: () => any
 }
 
 export const createResponseConf = (props: ResponseProps) => props
@@ -198,8 +199,6 @@ export const createResponseConf = (props: ResponseProps) => props
 export default memo(
   forwardRef<RefProps, CrudProps>((props, ref) => {
     const lastFilter = useRef<any>({})
-
-    console.log(lastFilter)
 
     const { url, response, interaction, onFinished, onError, title, noTitle, showHelpIcon } = props
     const { Left, gender, description, isFormData, transform, transformFilter, filtersHeight } =
@@ -323,13 +322,13 @@ export default memo(
 
     useImperativeHandle(ref, () => ({
       refresh: () => getDataCall(interactions),
+      interactions: () => lastFilter.current,
       editItem: editABM,
       addItems: add,
       deleteItem: deleteCall,
       insertItemIndex: insertIndex,
       removeItemIndex: removeIndex,
       replaceItem: replace,
-      interactions: () => lastFilter.current,
     }))
 
     useEffect(() => {
