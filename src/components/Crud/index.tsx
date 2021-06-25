@@ -84,9 +84,7 @@ export interface CrudProps extends TableProps {
   logicalDeleteCol?: string
   noFilterOptions?: boolean
   filtersHeight?: number
-  detailView?: (
-    rowData: any,
-  ) => {
+  detailView?: (rowData: any) => {
     sections: ReadOnlyConf[]
     actions?: ReactNode[]
   }
@@ -201,26 +199,14 @@ export default memo(
   forwardRef<RefProps, CrudProps>((props, ref) => {
     const lastFilter = useRef<any>({})
 
+    console.log(lastFilter)
+
     const { url, response, interaction, onFinished, onError, title, noTitle, showHelpIcon } = props
-    const {
-      Left,
-      gender,
-      description,
-      isFormData,
-      transform,
-      transformFilter,
-      filtersHeight,
-    } = props
+    const { Left, gender, description, isFormData, transform, transformFilter, filtersHeight } =
+      props
     const { name, titleSize, fullWidth, idInUrl, itemName, fields, steps, noFilterOptions } = props
-    const {
-      transformToEdit,
-      big,
-      logicalDeleteCol,
-      filters,
-      columns,
-      moreOptions,
-      detailView,
-    } = props
+    const { transformToEdit, big, logicalDeleteCol, filters, columns, moreOptions, detailView } =
+      props
 
     const lang = useLang()
     const called = useRef(false)
@@ -343,6 +329,7 @@ export default memo(
       insertItemIndex: insertIndex,
       removeItemIndex: removeIndex,
       replaceItem: replace,
+      interactions: () => lastFilter.current,
     }))
 
     useEffect(() => {
