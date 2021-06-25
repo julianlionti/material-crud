@@ -342,19 +342,19 @@ export default () => {
           }
           return rowData
         }}
-        // detailView={() => [
-        //   {
-        //     title: 'Prueba',
-        //     section: [
-        //       [
-        //         [
-        //           'Una',
-        //           <img src="https://pbs.twimg.com/media/EpXTiVFWEAE250s?format=jpg&name=large" />,
-        //         ],
-        //       ],
-        //     ],
-        //   },
-        // ]}
+      // detailView={() => [
+      //   {
+      //     title: 'Prueba',
+      //     section: [
+      //       [
+      //         [
+      //           'Una',
+      //           <img src="https://pbs.twimg.com/media/EpXTiVFWEAE250s?format=jpg&name=large" />,
+      //         ],
+      //       ],
+      //     ],
+      //   },
+      // ]}
       />
     </React.Fragment>
   )

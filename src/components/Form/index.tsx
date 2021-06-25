@@ -13,7 +13,7 @@ Yup.setLocale({
     max: ({ path, max }) => `${path} debe contener ${max} caracteres máximo`,
   },
   mixed: {
-    required: ({ path }) => `El ${path} es obligatorio`,
+    required: ({ path }) => `El campo '${path}' es obligatorio`,
   },
 })
 
