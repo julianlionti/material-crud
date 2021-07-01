@@ -6,6 +6,7 @@ import SwipeableViews from 'react-swipeable-views'
 import * as Yup from 'yup'
 import { compareKeys } from '../../utils/addOns'
 import { StepProps, FieldProps } from './FormTypes'
+import { generateDefault } from './helpers'
 import Step from './Step'
 
 Yup.setLocale({
@@ -68,7 +69,8 @@ export default memo((props: FormProps) => {
             if (actual.defaultValue) {
               return { ...acc, [actual.id]: actual.defaultValue }
             }
-            return acc
+            // return acc
+            return { ...acc, [actual.id]: generateDefault(actual) }
           }
           return { ...acc, [actual.id]: intials[actual.id] }
         }, {})
