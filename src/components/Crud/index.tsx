@@ -84,9 +84,7 @@ export interface CrudProps extends TableProps {
   logicalDeleteCol?: string
   noFilterOptions?: boolean
   filtersHeight?: number
-  detailView?: (
-    rowData: any,
-  ) => {
+  detailView?: (rowData: any) => {
     sections: ReadOnlyConf[]
     actions?: ReactNode[]
   }
@@ -193,6 +191,7 @@ const getData = async ({ call, response, replace, params, url, transform }: Data
 
 export interface RefProps extends ABMResponse<any> {
   refresh: () => Promise<void>
+  interactions: () => any
 }
 
 export const createResponseConf = (props: ResponseProps) => props
@@ -202,25 +201,11 @@ export default memo(
     const lastFilter = useRef<any>({})
 
     const { url, response, interaction, onFinished, onError, title, noTitle, showHelpIcon } = props
-    const {
-      Left,
-      gender,
-      description,
-      isFormData,
-      transform,
-      transformFilter,
-      filtersHeight,
-    } = props
+    const { Left, gender, description, isFormData, transform, transformFilter, filtersHeight } =
+      props
     const { name, titleSize, fullWidth, idInUrl, itemName, fields, steps, noFilterOptions } = props
-    const {
-      transformToEdit,
-      big,
-      logicalDeleteCol,
-      filters,
-      columns,
-      moreOptions,
-      detailView,
-    } = props
+    const { transformToEdit, big, logicalDeleteCol, filters, columns, moreOptions, detailView } =
+      props
 
     const lang = useLang()
     const called = useRef(false)
@@ -337,6 +322,7 @@ export default memo(
 
     useImperativeHandle(ref, () => ({
       refresh: () => getDataCall(interactions),
+      interactions: () => lastFilter.current,
       editItem: editABM,
       addItems: add,
       deleteItem: deleteCall,
