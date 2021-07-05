@@ -1,6 +1,6 @@
 {
   "name": "material-crud",
-  "version": "0.7.294",
+  "version": "0.7.3",
   "description": "CRUD components with @material-ui/core components",
   "author": "Julián Lionti - Mariano Rey",
   "license": "MIT",
@@ -52,7 +52,6 @@
     "@types/yup": "^0.29.7",
     "@typescript-eslint/eslint-plugin": "^2.26.0",
     "@typescript-eslint/parser": "^2.26.0",
-    "axios": "^0.21.1",
     "axios-mock-adapter": "^1.18.2",
     "babel-eslint": "^10.0.3",
     "cross-env": "^7.0.2",
@@ -88,6 +87,7 @@
   ],
   "dependencies": {
     "@date-io/date-fns": "1.x",
+    "axios": "^0.21.1",
     "date-fns": "^2.16.1",
     "formik": "^2.1.5",
     "jspdf": "^2.2.0",

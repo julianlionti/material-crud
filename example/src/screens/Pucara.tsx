@@ -96,8 +96,8 @@ export default () => {
             return !rowData?.options || !rowData?.options.length
               ? 'Without options'
               : rowData?.options.map(({ name, value }: any) => (
-                <span key={name}>{`${name} (${value}) - ID ${rowData.id}`}</span>
-              ))
+                  <span key={name}>{`${name} (${value}) - ID ${rowData.id}`}</span>
+                ))
           },
         },
       ]),
@@ -117,7 +117,7 @@ export default () => {
           id: 'fehca',
           title: 'Fecha',
           type: FormTypes.Date,
-          validate: Yup.string().required().nullable()
+          validate: Yup.string().required().nullable(),
         },
         {
           id: 'prueba',
@@ -154,10 +154,10 @@ export default () => {
                 validate:
                   required?.toLowerCase() === 'true'
                     ? Yup.string().when('c2_type', {
-                      is: (val) => val === id,
-                      then: Yup.string().required('Required'),
-                      otherwise: Yup.string().notRequired(),
-                    })
+                        is: (val) => val === id,
+                        then: Yup.string().required('Required'),
+                        otherwise: Yup.string().notRequired(),
+                      })
                     : undefined,
               }),
             )
@@ -229,7 +229,7 @@ export default () => {
         extraActions={(rowData) => {
           return [
             <Tooltip title="Go to listeners" key={rowData.id}>
-              <IconButton size="small" onClick={() => { }}>
+              <IconButton size="small" onClick={() => {}}>
                 <FaEye />
               </IconButton>
             </Tooltip>,
@@ -255,26 +255,27 @@ export default () => {
           }, {})
           return { ...data, ...options }
         }}
-      // detailView={(rowData) => ({
-      //   sections: [
-      //     {
-      //       title: 'Titulo primero',
-      //       section: [
-      //         [
-      //           ['Primer dato', rowData.id],
-      //           ['Segudno', 'Daleee'],
-      //         ],
-      //       ],
-      //     },
-      //   ],
-      //   actions: [
-      //     <Tooltip title="Descargar">
-      //       <IconButton onClick={() => alert(JSON.stringify(rowData))}>
-      //         <FaSave />
-      //       </IconButton>
-      //     </Tooltip>,
-      //   ],
-      // })}
+        detailView={(rowData) => ({
+          sections: [
+            {
+              title: 'Titulo primero',
+              section: [
+                [
+                  ['Primer dato', rowData.id],
+                  isDarkTheme ? ['Segudno', 'Daleee'] : undefined,
+                  ['Terce', 'Terce'],
+                ],
+              ],
+            },
+          ],
+          actions: [
+            <Tooltip title="Descargar">
+              <IconButton onClick={() => alert(JSON.stringify(rowData))}>
+                <FaSave />
+              </IconButton>
+            </Tooltip>,
+          ],
+        })}
       />
     </div>
   )

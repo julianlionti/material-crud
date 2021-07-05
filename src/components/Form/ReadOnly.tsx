@@ -2,7 +2,8 @@ import React, { ReactNode, useCallback } from 'react'
 import { Card, Chip, Divider, makeStyles, Typography } from '@material-ui/core'
 
 type ValProps = string[] | string | number | boolean | ReactNode
-type RenderSectionData = ValProps[][][]
+type RenderSectionDataFinal = ValProps[][][]
+type RenderSectionData = (undefined | boolean | ValProps[])[][]
 export interface ReadOnlyConf {
   title: string
   section: RenderSectionData
@@ -19,8 +20,7 @@ export const ReadOnly = ({ sections }: Props) => {
     (title: string, data: RenderSectionData) => {
       const renderVal = (val: ValProps) => {
         if (typeof val === 'boolean') {
-          if (val) return <Typography variant="body2">✔</Typography>
-          else return <Typography variant="body2">❌</Typography>
+          return <Typography variant="body2">{`${val ? '✔' : '❌'}`}</Typography>
         }
         if (Array.isArray(val)) {
           return (
@@ -44,12 +44,19 @@ export const ReadOnly = ({ sections }: Props) => {
           </Typography>
           {data.map((inner, i) => (
             <div key={i} className={classes.textRoot}>
-              {inner.map((col) => (
-                <div key={col[0] as string} className={classes.inner}>
-                  <Typography variant="body2" className={classes.titulo}>{`${col[0]}:`}</Typography>
-                  {renderVal(col[1])}
-                </div>
-              ))}
+              {inner
+                .filter((e) => e)
+                .map((col) => {
+                  if (!col) return null
+                  return (
+                    <div key={col[0] as string} className={classes.inner}>
+                      <Typography
+                        variant="body2"
+                        className={classes.titulo}>{`${col[0]}:`}</Typography>
+                      {renderVal(col[1])}
+                    </div>
+                  )
+                })}
             </div>
           ))}
           <Divider className={classes.spacing} />
@@ -62,7 +69,10 @@ export const ReadOnly = ({ sections }: Props) => {
   return (
     <div className={classes.root} id="DetailView">
       <Card variant="outlined" className={classes.cardRoot}>
-        {sections?.map((e) => renderSection(e.title, e.section))}
+        {sections?.map((e) => {
+          if (!e.section) return null
+          return renderSection(e.title, e.section)
+        })}
       </Card>
     </div>
   )

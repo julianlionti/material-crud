@@ -33,7 +33,9 @@ export interface FormProps {
   isEditing?: boolean
 }
 
-export const createFields = (props: FieldProps[]) => props
+export const createFields = (props: (FieldProps | undefined | false)[]) =>
+  props.filter((e) => e) as FieldProps[]
+
 export const createSteps = (props: StepProps[]) => props
 
 interface RefProps {
