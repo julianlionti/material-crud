@@ -2,12 +2,15 @@ import React, { ReactNode, useCallback } from 'react'
 import { Card, Chip, Divider, makeStyles, Typography } from '@material-ui/core'
 
 type ValProps = string[] | string | number | boolean | ReactNode
-type RenderSectionDataFinal = ValProps[][][]
-type RenderSectionData = (undefined | boolean | ValProps[])[][]
-export interface ReadOnlyConf {
-  title: string
-  section: RenderSectionData
-}
+
+type RenderSectionData = (undefined | false | ValProps[])[][]
+export type ReadOnlyConf =
+  | {
+      title: string
+      section: RenderSectionData
+    }
+  | undefined
+  | false
 
 interface Props {
   sections: null | ReadOnlyConf[]
@@ -68,12 +71,14 @@ export const ReadOnly = ({ sections }: Props) => {
 
   return (
     <div className={classes.root} id="DetailView">
-      <Card variant="outlined" className={classes.cardRoot}>
-        {sections?.map((e) => {
-          if (!e.section) return null
-          return renderSection(e.title, e.section)
-        })}
-      </Card>
+      {sections?.map((e) => {
+        if (!e) return null
+        return (
+          <Card key={e.title} variant="outlined" className={classes.cardRoot}>
+            {renderSection(e.title, e.section)}
+          </Card>
+        )
+      })}
     </div>
   )
 }

@@ -262,14 +262,18 @@ export default () => {
               section: [
                 [
                   ['Primer dato', rowData.id],
-                  isDarkTheme ? ['Segudno', 'Daleee'] : undefined,
+                  ['Segudno', 'Daleee'],
                   ['Terce', 'Terce'],
                 ],
               ],
             },
+            isDarkTheme && {
+              title: 'Sarason',
+              section: [[['Sarason', 'Dos']]],
+            },
           ],
           actions: [
-            <Tooltip title="Descargar">
+            <Tooltip title="Descargar" key="descargar">
               <IconButton onClick={() => alert(JSON.stringify(rowData))}>
                 <FaSave />
               </IconButton>
