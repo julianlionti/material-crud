@@ -6,6 +6,7 @@ import SwipeableViews from 'react-swipeable-views'
 import * as Yup from 'yup'
 import { compareKeys } from '../../utils/addOns'
 import { StepProps, FieldProps } from './FormTypes'
+import { generateDefault } from './helpers'
 import Step from './Step'
 
 Yup.setLocale({
@@ -32,7 +33,9 @@ export interface FormProps {
   isEditing?: boolean
 }
 
-export const createFields = (props: FieldProps[]) => props
+export const createFields = (props: (FieldProps | undefined | false)[]) =>
+  props.filter((e) => e) as FieldProps[]
+
 export const createSteps = (props: StepProps[]) => props
 
 interface RefProps {
@@ -68,7 +71,8 @@ export default memo((props: FormProps) => {
             if (actual.defaultValue) {
               return { ...acc, [actual.id]: actual.defaultValue }
             }
-            return acc
+            // return acc
+            return { ...acc, [actual.id]: generateDefault(actual) }
           }
           return { ...acc, [actual.id]: intials[actual.id] }
         }, {})

@@ -25,7 +25,7 @@ import { FormTypes, ComunesProps, OpcionesProps } from './FormTypes'
 export interface AlSelectProps extends ComunesProps {
   type: FormTypes.Options
   placeholder: string
-  options: OpcionesProps[]
+  options: OpcionesProps[] | undefined
   onAddItem?: (props: HTMLDivElement) => void
   multiple?: boolean
   onSelect?: (val: ValueType, formik: FormikContextType<any>) => void
@@ -148,7 +148,7 @@ export default memo((props: AlSelectProps) => {
                       <div className={classes.chips}>
                         {finalValueArray?.map((e) => {
                           const { id, title } =
-                            options.find((elem) => elem.id.toString() === e) || {}
+                            options?.find((elem) => elem.id.toString() === e) || {}
                           return (
                             <Chip
                               onMouseDown={(event) => {
@@ -190,7 +190,7 @@ export default memo((props: AlSelectProps) => {
             <MenuItem value="">
               <em>{placeholder || 'Seleccione una opción'}</em>
             </MenuItem>
-            {options.map((e) => (
+            {options?.map((e) => (
               <MenuItem key={e.id} value={e.id}>
                 {e.title || e.id}
               </MenuItem>

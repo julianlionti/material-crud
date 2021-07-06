@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react'
 import { Checkbox, Collapse, FormControlLabel, Switch, Typography } from '@material-ui/core'
-import { useField } from 'formik'
+import { FormikContextType, useField, useFormikContext } from 'formik'
 import { compareKeys } from '../../utils/addOns'
 import { Filter } from '../../utils/useFilters'
 import BaseInput from './BaseInput'
@@ -9,13 +9,15 @@ import { ComunesProps, FormTypes } from './FormTypes'
 export interface AlSwitchProps extends ComunesProps {
   type: FormTypes.Switch
   variant?: 'switch' | 'checkbox'
+  onSelect?: (val: boolean, formik: FormikContextType<any>) => void
 }
 type SwitchFilter = Filter<boolean>
 export default memo((props: AlSwitchProps) => {
-  const { id, title, grow, hide, loading, filter, keepMounted, variant } = props
+  const { id, title, grow, hide, loading, filter, keepMounted, variant, onSelect } = props
   // const filterOptions = useFilters()
   const [{ value }, { error }, { setValue }] = useField<boolean | SwitchFilter>(id)
 
+  const formik = useFormikContext()
   const finalValue = useMemo(() => {
     if (filter) {
       return (value as SwitchFilter).value
@@ -29,10 +31,11 @@ export default memo((props: AlSwitchProps) => {
       if (filter) {
         setValue({ filter: 'equal', value })
       } else {
+        if (onSelect) onSelect(value, formik)
         setValue(value)
       }
     },
-    [filter, setValue],
+    [filter, setValue, formik, onSelect],
   )
 
   const renderControl = useMemo(() => {
