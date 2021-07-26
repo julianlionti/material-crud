@@ -12,7 +12,7 @@ import {
   Tooltip,
   makeStyles,
 } from '@material-ui/core'
-import { useField, useFormikContext } from 'formik'
+import { FormikContextType, useField, useFormikContext } from 'formik'
 import { FaExclamationCircle, FaEye, FaEyeSlash } from 'react-icons/fa'
 import { compareKeys } from '../../utils/addOns'
 import AriaLabels from '../../utils/AriaLabels'
@@ -37,6 +37,7 @@ export interface AlInputProps extends ComunesProps {
   fullWidth?: boolean
   onBlur?: (val: string) => void
   isEditing?: boolean
+  onChange?: (val: string, formik: FormikContextType<any>) => string
 }
 
 type InputFilter = Filter<string>
@@ -61,6 +62,7 @@ export default memo((props: AlInputProps) => {
     keepMounted,
     noFilterOptions,
     showHelpIcon,
+    onChange,
   } = props
   const [hasSecure, setHasSecure] = useState(true)
   const lang = useLang()
@@ -169,7 +171,9 @@ export default memo((props: AlInputProps) => {
           value={finalValue}
           onChange={({ target }) => {
             if (typeof value !== 'object') {
-              setValue(target.value)
+              let final = target.value
+              if (onChange) final = onChange(target.value, formik)
+              setValue(final)
             } else {
               setValue({
                 filter: (value as InputFilter).filter,
