@@ -70,12 +70,9 @@ export default memo((props: PropsWithChildren<Props>) => {
 
         let final = cellData
         if (col.decimals) {
-          final = final.toFixed(col.decimals)
-          if (col.separateDecimals) {
-            if (col.separateDecimals === ',')
-              final = final.replace('.', ',').replace(/\B(?<!,\d*)(?=(\d{3})+(?!\d))/g, '.')
-            else final = final.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
-          }
+          final = final.toLocaleString(col.separateDecimals === ',' ? 'es-AR' : 'en', {
+            minimumFractionDigits: col.decimals,
+          })
         }
 
         return <Typography variant="body2">{final}</Typography>

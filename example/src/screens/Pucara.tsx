@@ -72,7 +72,7 @@ export default () => {
           id: 'numero',
           title: 'Probando numeros',
           type: TableTypes.Number,
-          decimals: 0,
+          decimals: 3,
           separateDecimals: ',',
           width: 2,
           align: 'center',
