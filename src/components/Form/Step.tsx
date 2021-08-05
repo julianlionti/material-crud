@@ -137,6 +137,7 @@ export default memo(
                 loading={loading}
                 hide={hidden}
                 noFilterOptions={noFilterOptions}
+                showHelpIcon={showHelpIcon}
               />
             )
           case FormTypes.Multiple:
@@ -147,6 +148,7 @@ export default memo(
                 loading={loading}
                 hide={hidden}
                 noFilterOptions={noFilterOptions}
+                showHelpIcon={showHelpIcon}
               />
             )
           case FormTypes.Custom:
