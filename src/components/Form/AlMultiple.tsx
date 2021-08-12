@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from 'react'
-import { IconButton, makeStyles, Paper, Typography } from '@material-ui/core'
+import { IconButton, makeStyles, Paper, Tooltip, Typography } from '@material-ui/core'
 import { useField } from 'formik'
-import { FaPlus, FaTrash } from 'react-icons/fa'
+import { FaExclamationCircle, FaPlus, FaTrash } from 'react-icons/fa'
 import { compareKeys } from '../../utils/addOns'
 import AlAutocomplete from './AlAutocomplete'
 import AlCustom from './AlCustom'
@@ -22,7 +22,7 @@ export interface AlMultipleProps extends ComunesProps {
 }
 
 export default memo((props: AlMultipleProps) => {
-  const { id, title, grow, hide, configuration, loading, keepMounted } = props
+  const { id, title, grow, hide, configuration, loading, keepMounted, showHelpIcon, help } = props
   const [{ value }, { error }, { setValue }] = useField<ValuesProps[]>(id)
   const classes = useClasses()
 
@@ -36,7 +36,16 @@ export default memo((props: AlMultipleProps) => {
     <BaseInput grow={grow} ocultar={hide} keepMounted={keepMounted}>
       <Paper elevation={0}>
         <div className={classes.headerContainer}>
-          <Typography variant="body2">{`${title} (${valFinal?.length})`}</Typography>
+          <Typography
+            variant="body2"
+            className={classes.title}>{`${title} (${valFinal?.length})`}</Typography>
+          {showHelpIcon && help && (
+            <Tooltip title={help}>
+              <IconButton size="small" color="inherit">
+                <FaExclamationCircle />
+              </IconButton>
+            </Tooltip>
+          )}
           {!isOnlyTitle && (
             <IconButton
               disabled={loading}
@@ -136,10 +145,12 @@ const useClasses = makeStyles((theme) => ({
   headerContainer: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
   },
   horizontal: {
     display: 'flex',
+  },
+  title: {
+    flex: 1,
   },
   error: {
     color: theme.palette.error.main,

@@ -1,6 +1,15 @@
 import React, { memo, useCallback, useMemo } from 'react'
-import { Checkbox, Collapse, FormControlLabel, Switch, Typography } from '@material-ui/core'
+import {
+  Checkbox,
+  Collapse,
+  FormControlLabel,
+  IconButton,
+  Switch,
+  Tooltip,
+  Typography,
+} from '@material-ui/core'
 import { FormikContextType, useField, useFormikContext } from 'formik'
+import { FaExclamationCircle } from 'react-icons/fa'
 import { compareKeys } from '../../utils/addOns'
 import { Filter } from '../../utils/useFilters'
 import BaseInput from './BaseInput'
@@ -26,6 +35,8 @@ export default memo((props: AlSwitchProps) => {
     onSelect,
     readonly,
     isEditing,
+    help,
+    showHelpIcon,
   } = props
   // const filterOptions = useFilters()
   const [{ value }, { error }, { setValue }] = useField<boolean | SwitchFilter>(id)
@@ -70,6 +81,13 @@ export default memo((props: AlSwitchProps) => {
   return (
     <BaseInput grow={grow} centrado ocultar={hide} keepMounted={keepMounted}>
       <FormControlLabel disabled={disabled} control={renderControl} label={title} />
+      {showHelpIcon && help && (
+        <Tooltip title={help}>
+          <IconButton size="small" color="inherit">
+            <FaExclamationCircle />
+          </IconButton>
+        </Tooltip>
+      )}
       <Collapse in={!!error} unmountOnExit timeout="auto">
         <Typography variant="body2">{error}</Typography>
       </Collapse>
